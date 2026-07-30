@@ -77,10 +77,10 @@ Everything downstream reads this data. Get it right before writing logic against
 
 | # | Task | Agent | Depends | Done when |
 |---|---|---|---|---|
-| [ ] A1 | Adapter interface + shared normalization helpers (units, time, equipment) | builder | M1 | One place per rule |
-| [ ] A2 | TMS A adapter | builder | A1 | `example_sync.jsonc` → expected canonical load |
-| [ ] A3 | TMS B adapter — kg/km, **DST-aware** Central, rate-row summing | builder | A1 | July = UTC-5; negatives included |
-| [ ] A4 | TMS C adapter — referenced_records, per-line-item weight units, null equipment | builder | A1 | Null equipment → `UNKNOWN`, never `DRY_VAN` |
+| [x] A1 | Adapter interface + shared normalization helpers (units, time, equipment) | builder | M1 | `backend/app/adapters/{base,normalize}.py`. One function per rule; `AdaptedSync.rate_contributions()` makes TMS B's per-file money delta explicit. D16 lands in `backend/app/domain/localtime.py` |
+| [x] A2 | TMS A adapter | builder | A1 | `example_sync.jsonc` → ACTIVE / DRY_VAN / 24000 lb / 242.1 mi / 750→774; blank free text → `UNKNOWN` |
+| [x] A3 | TMS B adapter — kg/km, **DST-aware** Central, rate-row summing | builder | A1 | 10886.2 kg → 23999.93 lb, 389.6 km → 242.09 mi; 06:00 naive → 11:00 UTC (CDT) via zoneinfo; negatives kept, rate-only sync emits a `RATE_LINE` for a load absent from `loads` |
+| [x] A4 | TMS C adapter — referenced_records, per-line-item weight units, null equipment | builder | A1 | 3 null-equipment loads → `UNKNOWN`, 0 → `DRY_VAN`; SHP6701343 = 9300 lb + 6800 kg = 24291.42 lb; D16 reproduces all seven broker_c on-time counts |
 | [ ] A5 | Adapter unit tests, all three | unit-tester | A2-4 | Arithmetic shown in every assertion |
 
 ---
@@ -120,7 +120,7 @@ The correction-handling story lives here. This is the heart of the assignment.
 
 | # | Task | Agent | Depends | Done when |
 |---|---|---|---|---|
-| [ ] R1 | Five signals: lane experience, recency, equipment, deadhead, on-time | builder | L2, I8 | Each 0–1, independently testable |
+| [ ] R1 | Five signals: lane experience, recency, equipment, deadhead, on-time | builder | L2, I8 | Each 0–1, independently testable. **On-time's denominator is "loads with a verdict", not "loads"** — `delivered_on_time` returns `None` (not `False`) for a load with no arrival yet, and `on_time_count / load_count` would silently count every in-transit load as a miss, understating exactly the carriers with trucks rolling |
 | [ ] R2 | Shrinkage toward lane average, `k=5` | builder | R1 | 2-for-2 doesn't beat 164-for-200 |
 | [ ] R3 | Weighted score 0–100 | builder | R2 | Weights match PRD §8 |
 | [ ] R4 | **Reasons generated from the same values that produced the score** | builder | R3 | Single computation feeds both |
