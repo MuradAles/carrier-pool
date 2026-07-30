@@ -523,7 +523,7 @@ class TestDegenerateInputs:
         assert estimate.high_usd is None
         assert estimate.provenance == (
             "no estimate: no tier reached the 5-load minimum for dry van "
-            "(tried ZIP3 0, METRO 0, REGION 0, REGION_ANY 0)"
+            "(tried ZIP3 0, METRO 0, REGION 0, REGION_ANY 0), so no dollar estimate"
         )
 
     def test_empty_lane_for_a_geo_null_load_only_tries_the_region_rungs(self) -> None:
@@ -545,7 +545,7 @@ class TestDegenerateInputs:
         estimate = price_estimate(load, walk)
         assert estimate.provenance == (
             "no estimate: no tier reached the 5-load minimum for dry van "
-            "(tried REGION 0, REGION_ANY 0)"
+            "(tried REGION 0, REGION_ANY 0), so no dollar estimate"
         )
 
 

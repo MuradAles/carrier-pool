@@ -324,11 +324,19 @@ export interface Signal {
   reason: string;
 }
 
-/** Where a carrier's truck last ended up, and which load put it there. */
+/**
+ * Where a carrier's truck last ended up, and which load put it there.
+ *
+ * `lat`/`lon` are null when the delivery went to a town the offline geo table
+ * does not know — we have the load and the place name, and nothing to measure
+ * from, so `deadhead_miles` is null too and the deadhead reason says so. That is
+ * a different response from `last_delivery: null`, which means the carrier has
+ * never delivered anything for this broker (DECISIONS.md D23).
+ */
 export interface LastDelivery {
   source_load_id: string;
-  lat: number;
-  lon: number;
+  lat: number | null;
+  lon: number | null;
   at: string | null;
   location: StopLocation;
 }

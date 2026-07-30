@@ -46,6 +46,7 @@ greppable and reviewable.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -152,8 +153,32 @@ def broker_session(conn: psycopg.Connection, broker_id: str) -> Iterator[psycopg
 
 
 def _f(value: Any) -> float | None:
-    """NUMERIC comes back as ``Decimal``; the canonical model speaks floats."""
-    return None if value is None else float(value)
+    """NUMERIC comes back as ``Decimal``; the canonical model speaks floats.
+
+    A non-finite value reads as ``None`` (D23). ``NUMERIC`` accepts ``'NaN'``,
+    and ``percentile_cont`` over a column holding one returns it, so this is the
+    last place a NaN can be stopped before it becomes a published rate that
+    serialises to JSON ``null`` while the provenance line beside it still quotes
+    a median. Adapters refuse non-finite input (:func:`normalize.optional_float`)
+    so it should never arrive; this is the belt to that pair of braces.
+    """
+    if value is None:
+        return None
+    number = float(value)
+    return number if math.isfinite(number) else None
+
+
+def _unstorable(value: str) -> bool:
+    """True for an identifier Postgres could never have stored (D23).
+
+    A NUL byte is the only such character in ``text``: psycopg refuses to send
+    it and raises, which turns a malformed load id into a 500 where every other
+    malformed id — quotes, semicolons, 4,000 letters — is a clean 404. An id
+    that cannot be stored cannot have been stored, so "no such row" is not a
+    workaround, it is the correct answer, and returning it here keeps every
+    lookup path honest instead of only the one route that noticed.
+    """
+    return "\x00" in value
 
 
 def _iso(value: datetime | date | None) -> str | None:
@@ -400,9 +425,12 @@ class BrokerRepository:
         """Bind to ``broker_id``, or raise :class:`UnknownBroker`.
 
         The check lives here rather than in :meth:`for_broker` alone so that the
-        plain constructor cannot be the lenient way in.
+        plain constructor cannot be the lenient way in. A broker id holding a
+        NUL byte is refused the same way, and for the same reason as
+        :func:`_unstorable`: it names a tenant that cannot exist, and it must
+        read as a 404 rather than as a driver error.
         """
-        if get_broker(conn, broker_id) is None:
+        if _unstorable(broker_id) or get_broker(conn, broker_id) is None:
             raise UnknownBroker(broker_id)
         self._conn = conn
         self._broker_id = broker_id
@@ -463,17 +491,28 @@ class BrokerRepository:
         raw_json: dict,
         event_seq: int,
         source_load_id: str | None = None,
-    ) -> int:
+    ) -> int | None:
         """Append one entity-level event. There is no update or delete path.
 
         ``carrier_pool_app`` holds only SELECT and INSERT on this table, so
         append-only is a privilege, not a convention.
+
+        ``None`` means the event was already in the log: a ``RATE_LINE`` whose
+        ``source_entity_id`` (the TMS B ``rate_id``) has been recorded before,
+        under this or any earlier file. That is DECISIONS.md D3's second dedupe
+        key, enforced by ``sync_events_rate_line_identity_idx`` rather than by a
+        check a call site could forget (D22) — a restated line item is the same
+        $700, and counting it twice is a silently wrong carrier rate. A genuine
+        correction carries a *new* rate_id, so it conflicts with nothing and is
+        appended like any other contribution.
         """
         with self._cursor() as cur:
             cur.execute(
                 "INSERT INTO sync_events (sync_file_id, broker_id, entity_type,"
                 " source_entity_id, source_load_id, raw_json, event_seq, synced_at)"
                 " VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                " ON CONFLICT (broker_id, source_entity_id)"
+                "   WHERE entity_type = 'RATE_LINE' DO NOTHING"
                 " RETURNING id",
                 (
                     sync_file_id,
@@ -486,7 +525,8 @@ class BrokerRepository:
                     synced_at,
                 ),
             )
-            return cur.fetchone()["id"]
+            row = cur.fetchone()
+            return None if row is None else row["id"]
 
     def events_for_load(self, source_load_id: str) -> list[SyncEvent]:
         """Every event mentioning this load, in arrival order.
@@ -676,7 +716,11 @@ class BrokerRepository:
         A load id belonging to another broker returns ``None`` — the same
         answer as an id that does not exist. The caller cannot tell the two
         apart, which is the point: existence is itself another tenant's data.
+        An id holding a NUL byte gets that same answer without a query, because
+        no such row can exist (:func:`_unstorable`).
         """
+        if _unstorable(source_load_id):
+            return None
         with self._cursor() as cur:
             cur.execute(
                 "SELECT source_load_id, load_number, status, equipment, weight_lbs,"
@@ -755,6 +799,8 @@ class BrokerRepository:
             )
 
     def get_carrier(self, source_carrier_id: str) -> Carrier | None:
+        if _unstorable(source_carrier_id):
+            return None
         with self._cursor() as cur:
             cur.execute(
                 "SELECT source_carrier_id, name, mc_number, dot_number, phone,"
@@ -767,14 +813,41 @@ class BrokerRepository:
             return None if row is None else _carrier_from_row(row)
 
     def list_carriers(self) -> list[Carrier]:
-        """Every carrier this broker has used — the ranking's candidate pool."""
+        """Every carrier this broker has used — the ranking's candidate pool.
+
+        **Including one known only by the id on a load** (D24). A TMS can reference a
+        ``carrier_ref`` whose ``carriers`` record never arrives, and adapters
+        deliberately do not invent a carrier from a dangling reference (nothing
+        is known about it but the id, and a fabricated name is worse than a
+        missing one). But the loads are real: they count toward
+        ``lane_stats.load_count`` and they produce ``carrier_stats`` rows, so a
+        ranking built from the ``carriers`` table alone would omit the only
+        carrier that ever ran the lane while the basis line beside it reported
+        that lane's loads. PRD section 8 says score every carrier the broker has
+        used, and a broker who paid them has used them.
+
+        Such a row carries the id and nothing else — every other field is NULL,
+        which is what "we have only ever seen a reference" looks like, and the
+        reasons then describe the loads without claiming a name we do not have.
+        """
         with self._cursor() as cur:
             cur.execute(
                 "SELECT source_carrier_id, name, mc_number, dot_number, phone,"
                 " home_city, home_state, last_delivery_lat, last_delivery_lon,"
                 " last_delivery_at"
-                " FROM carriers WHERE broker_id = %s ORDER BY source_carrier_id",
-                (self._broker_id,),
+                " FROM carriers WHERE broker_id = %s"
+                " UNION ALL"
+                " SELECT DISTINCT l.source_carrier_id, NULL::text, NULL::text,"
+                " NULL::text, NULL::text, NULL::text, NULL::text,"
+                " NULL::double precision, NULL::double precision,"
+                " NULL::timestamptz"
+                " FROM loads l"
+                " WHERE l.broker_id = %s AND l.source_carrier_id IS NOT NULL"
+                "   AND NOT EXISTS (SELECT 1 FROM carriers c"
+                "     WHERE c.broker_id = l.broker_id"
+                "       AND c.source_carrier_id = l.source_carrier_id)"
+                " ORDER BY source_carrier_id",
+                (self._broker_id, self._broker_id),
             )
             return [_carrier_from_row(row) for row in cur.fetchall()]
 
@@ -789,6 +862,8 @@ class BrokerRepository:
             )
 
     def get_customer(self, source_customer_id: str) -> Customer | None:
+        if _unstorable(source_customer_id):
+            return None
         with self._cursor() as cur:
             cur.execute(
                 "SELECT source_customer_id, name FROM customers"
@@ -1190,9 +1265,9 @@ class BrokerRepository:
         and its last drop, so the deadhead reason can name the town without a
         second query that might land on a different load.
 
-        A carrier with nothing placeable behind them is simply absent, which the
-        deadhead signal renders as "no known last delivery" rather than as a
-        distance of zero.
+        A carrier with nothing placeable behind them is simply absent here;
+        :meth:`unplaceable_deliveries` is what separates "has never delivered"
+        from "delivered somewhere we cannot put on a map".
         """
         with self._cursor() as cur:
             cur.execute(
@@ -1220,6 +1295,52 @@ class BrokerRepository:
                 source_load_id=row["source_load_id"],
                 lat=row["delivery_lat"],
                 lon=row["delivery_lon"],
+                at=row["delivery_actual_at"],
+                location=drop.location,
+            )
+        return deliveries
+
+    def unplaceable_deliveries(self) -> dict[str, LastDelivery]:
+        """Each carrier's most recent delivery that we could **not** map.
+
+        Same statuses, same tie-break and same shape as :meth:`last_deliveries`,
+        with the coordinate filter inverted, so the two are read together:
+        :meth:`ranking_inputs` overlays the placeable map on this one, which
+        leaves an entry here only for a carrier with no placeable delivery at
+        all. Nothing about scoring changes — an entry from here has no
+        coordinates, so it earns the same 0.0 proximity credit as no entry —
+        but the deadhead reason can now say *why* it earned nothing.
+
+        The distinction is real work for a rep: "has never delivered for you" and
+        "delivered to Nowheresville yesterday, which is not in our geo table" are
+        opposite pieces of advice, and D20 requires the reason to name the gap
+        rather than imply a distance.
+        """
+        with self._cursor() as cur:
+            cur.execute(
+                "SELECT DISTINCT ON (source_carrier_id) source_carrier_id,"
+                " source_load_id, delivery_actual_at, stops"
+                " FROM loads"
+                " WHERE broker_id = %s AND source_carrier_id IS NOT NULL"
+                " AND status = ANY(%s) AND delivery_actual_at IS NOT NULL"
+                " AND (delivery_lat IS NULL OR delivery_lon IS NULL)"
+                " ORDER BY source_carrier_id, delivery_actual_at DESC,"
+                " source_load_id DESC",
+                (
+                    self._broker_id,
+                    [str(LoadStatus.DELIVERED), str(LoadStatus.COMPLETED)],
+                ),
+            )
+            rows = cur.fetchall()
+        deliveries: dict[str, LastDelivery] = {}
+        for row in rows:
+            stops = _stops_from_json(row["stops"])
+            drop = next((s for s in reversed(stops) if s.is_drop), stops[-1])
+            deliveries[row["source_carrier_id"]] = LastDelivery(
+                source_carrier_id=row["source_carrier_id"],
+                source_load_id=row["source_load_id"],
+                lat=None,
+                lon=None,
                 at=row["delivery_actual_at"],
                 location=drop.location,
             )
@@ -1276,7 +1397,16 @@ class BrokerRepository:
             carriers=tuple(self.list_carriers()),
             carrier_stats=stats,
             equipment_loads=self.carrier_equipment_loads(),
-            last_deliveries=self.last_deliveries(),
+            # A placeable delivery always wins: it is the position the score can
+            # actually measure from, even when a later delivery went somewhere
+            # we cannot map. The unplaceable entries are only ever the answer
+            # for a carrier with no placeable delivery at all, where they turn
+            # "nothing is known about this truck" into "we know where it went
+            # and cannot place it".
+            last_deliveries={
+                **self.unplaceable_deliveries(),
+                **self.last_deliveries(),
+            },
             lane_on_time_count=on_time[0],
             lane_on_time_eligible_count=on_time[1],
         )

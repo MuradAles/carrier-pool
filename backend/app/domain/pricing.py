@@ -229,11 +229,13 @@ class PriceEstimate:
     """What this load should cost to cover, and exactly what backs that number.
 
     Every money field is nullable, and each ``None`` means something different
-    from zero: no rung accepted (nothing to go on), or a load with no usable
-    distance (a rate per mile that cannot be turned into dollars). Rendering
-    either as ``$0`` would be a wrong number wearing a confident label, which is
-    the failure invariant 6 exists to prevent — hence ``provenance``, which is
-    populated in every one of those cases and says which one it is.
+    from zero: no rung accepted (nothing to go on), a lane with no rate per mile
+    at all, or a load whose distance is missing, zero or negative (a rate that
+    cannot be turned into dollars). Rendering any of them as ``$0`` would be a
+    wrong number wearing a confident label, which is the failure invariant 6
+    exists to prevent — hence ``provenance``, which is populated in every one of
+    those cases, says which one it is, and always ends in the words "no dollar
+    estimate" when the dollars are absent (D23).
 
     ``equipment_mix`` is empty when the equipment filter was on, and otherwise
     counts the accepted pool by type (DECISIONS.md D15).
@@ -263,27 +265,58 @@ class PriceEstimate:
         return len(self.equipment_mix) > 1
 
 
+def _usable_miles(miles: float | None) -> float | None:
+    """The load's distance if it can multiply a rate into dollars, else ``None``.
+
+    Zero, ``None`` and **negative** all fail. A TMS that reports −271 mi has told
+    us something impossible, and multiplying by it produces MINUS $700 wearing a
+    medium-confidence label; a negative dollar figure means nothing at all, where
+    a missing one means "we could not say" (D23). The distance itself is still
+    reported on the estimate and still displayed — refusing to price it is not
+    the same as pretending it was never stated.
+    """
+    if miles is None or miles <= 0:
+        return None
+    return miles
+
+
 def _dollars(rate: float | None, miles: float | None) -> float | None:
     """``rate × miles``, rounded to cents. ``None`` when either is unusable.
 
-    Guards the zero-mile load explicitly: a load with no distance, or a distance
-    of zero, has no dollar figure to give — the *rate* is still reported, and the
-    provenance says why the dollars are missing.
+    Guards the unusable distance explicitly: a load with no distance, a distance
+    of zero or a negative one has no dollar figure to give — the *rate* is still
+    reported, and the provenance says why the dollars are missing.
     """
-    if rate is None or not miles:
+    usable = _usable_miles(miles)
+    if rate is None or usable is None:
         return None
-    return round(rate * miles, 2)
+    return round(rate * usable, 2)
 
 
-def _confidence(*, tier: str | None, load_count: int, heterogeneous: bool) -> Confidence:
-    """PRD section 9, then the D15 cap.
+def _confidence(
+    *,
+    tier: str | None,
+    load_count: int,
+    heterogeneous: bool,
+    non_positive_rate: bool,
+) -> Confidence:
+    """PRD section 9, then the D15 cap, then the D23 one.
 
-    The cap can only bind on rungs 1-3 with the filter off, i.e. the D6
+    The D15 cap can only bind on rungs 1-3 with the filter off, i.e. the D6
     filter-skip case: rung 4 is unfiltered too, but it is already low by rule.
+
+    ``non_positive_rate`` says a published percentile is at or below zero, which
+    happens when booked rates of $0 sit in the pool — two of them in a five-load
+    lane put p25 exactly on zero. The percentile is arithmetically right and the
+    dollar figure it produces ($0.00) is not a price anyone would quote, so the
+    estimate goes out at **low** confidence with the provenance naming it, which
+    is the one thing the earlier version did not do (D23).
     """
     if tier is None or load_count < MIN_SAMPLE:
         return Confidence.LOW
     if tier in (TIER_REGION, TIER_REGION_ANY):
+        return Confidence.LOW
+    if non_positive_rate:
         return Confidence.LOW
     level = (
         Confidence.HIGH if load_count >= HIGH_CONFIDENCE_LOADS else Confidence.MEDIUM
@@ -354,8 +387,14 @@ def price_estimate(
         else central_date(stats.last_load_at)
     )
     load_count = 0 if accepted is None else accepted.load_count
+    # Computed once, here, and handed to both the label and the sentence, so
+    # neither can describe a pool the other did not see.
+    non_positive = _non_positive_rates(p25, p50, p75)
     confidence = _confidence(
-        tier=walk.tier, load_count=load_count, heterogeneous=len(mix) > 1
+        tier=walk.tier,
+        load_count=load_count,
+        heterogeneous=len(mix) > 1,
+        non_positive_rate=bool(non_positive),
     )
 
     return PriceEstimate(
@@ -384,10 +423,24 @@ def price_estimate(
             last_date=last_date,
             mix=mix,
             confidence=confidence,
+            non_positive=non_positive,
             walk=walk,
         ),
         walk=walk,
     )
+
+
+def _non_positive_rates(
+    p25: float | None, p50: float | None, p75: float | None
+) -> tuple[tuple[str, float], ...]:
+    """The published percentiles that are at or below zero, named (D23).
+
+    Zero is what a lane looks like when booked rates of $0 are in it — "we were
+    not told what this cost" recorded as a number. The percentile is honest; the
+    dollars it produces are not a price, so the estimate must say so.
+    """
+    named = (("p25", p25), ("median", p50), ("p75", p75))
+    return tuple((label, value) for label, value in named if value is not None and value <= 0)
 
 
 def _provenance(
@@ -401,6 +454,7 @@ def _provenance(
     last_date: date | None,
     mix: tuple[tuple[str, int], ...],
     confidence: Confidence,
+    non_positive: tuple[tuple[str, float], ...],
     walk: TierWalk,
 ) -> str:
     """The one-line explanation, formatted from the estimate's own values.
@@ -409,6 +463,12 @@ def _provenance(
     arrangement of the code in which the sentence and the fields come from two
     different places. Every branch says which tier and how many loads, because a
     walk that found nothing still has to report what it tried (invariant 6).
+
+    **Every absent dollar figure ends in the words "no dollar estimate".** That
+    is the contract :class:`PriceEstimate` states, and it has to hold in the
+    branch where no rung was accepted too, not only where a rate exists and the
+    distance is missing — a reader (or a UI) checking one phrase must not have to
+    know which of four ways the dollars went missing (D23).
     """
     if key is None:
         tried = ", ".join(
@@ -417,7 +477,8 @@ def _provenance(
         pool = _EQUIPMENT_WORDS.get(walk.equipment, walk.equipment)
         return (
             f"no estimate: no tier reached the {MIN_SAMPLE}-load minimum for {pool} "
-            f"(tried {tried or 'nothing — lane ends not on the map'})"
+            f"(tried {tried or 'nothing — lane ends not on the map'}), so no "
+            "dollar estimate"
         )
 
     # The equipment phrase names the *load* on rung 4 (the lane label already
@@ -440,11 +501,22 @@ def _provenance(
             f"; mixed pool ({load_count} loads: {_mix_phrase(mix)}), "
             "so confidence is capped at medium"
         )
+    if non_positive:
+        stated = ", ".join(f"{label} {value:.4f}" for label, value in non_positive)
+        line += (
+            f"; {stated} $/mi — loads with no positive booked rate are in this "
+            "pool, so confidence is held at low"
+        )
     if p50 is None:
         line += "; no rate per mile on this lane, so no dollar estimate"
-    elif not miles:
+    elif miles is None or miles == 0:
         line += (
             f"; {p50:.4f} $/mi, but this load has no distance, so no dollar estimate"
+        )
+    elif miles < 0:
+        line += (
+            f"; {p50:.4f} $/mi, but this load's distance is {miles:.1f} mi, which "
+            "cannot be priced, so no dollar estimate"
         )
     return line
 

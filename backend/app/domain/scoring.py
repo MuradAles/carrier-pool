@@ -35,7 +35,16 @@ read as claiming the adjustment was the observation. Both come from the same
 Shrinking the *count* toward a lane average would let a carrier with no loads on
 the lane score like an average one — rewarding the absence of evidence. The
 saturating form is zero at zero and monotone, so 2-for-2 (0.29) cannot beat
-164-for-200 (0.98) on either signal (CLAUDE.md, Known traps).
+164-for-200 (0.98) **on experience**.
+
+On the **on-time** signal it can, and that is correct rather than a defect
+(DECISIONS.md D21): ``(2 + 5L)/7 > (164 + 5L)/205`` whenever the lane average
+``L > 738/990 ≈ 0.7455``, because with two loads of evidence the estimate sits
+near the lane mean and a veteran demonstrating 82% on a lane averaging 92% is
+genuinely below average. It cannot reorder a ranking: on-time carries 0.10 and
+can hand the rookie at most 1.8 points, against the 24.1 experience carries away
+from them. CLAUDE.md's Known traps used to state the unqualified version, which
+was false as written.
 
 The two shapes PRD section 8 left open are pinned by DECISIONS.md D12 and by
 ``data/TRACEABILITY.md``, which was computed before this module existed::
@@ -304,7 +313,10 @@ class CarrierScore:
     #: Loads this carrier ran on the accepted lane — the experience numerator.
     lane_loads: int
     #: Central date of their most recent delivery on that lane, and the gap to
-    #: the as-of date, which is what recency decays over.
+    #: the as-of date, which is what recency decays over. The gap is ``None``
+    #: when there is no such delivery *or* when it is dated after the as-of date
+    #: and was therefore refused as a measurement (D23) — the date itself is
+    #: still reported, so the refused fact stays visible.
     last_lane_load_date: date | None
     days_since_lane_load: int | None
     #: Loads of the *load's* equipment type this carrier has hauled anywhere for
@@ -430,7 +442,17 @@ def _plural(count: int, word: str = "load") -> str:
 
 
 def _ago(days: int) -> str:
-    if days <= 0:
+    """How a gap of ``days`` before the as-of date reads in a sentence.
+
+    A **negative** gap is a timestamp later than the day the ranking is answered
+    for — a garbage or provisional date, not a delivery that has happened. It
+    gets its own wording rather than collapsing into "today", because a sentence
+    reading "delivered today" beside a date 19 days in the future is a reason
+    disagreeing with its own basis (invariant 2, D23).
+    """
+    if days < 0:
+        return f"dated {-days} days after this ranking"
+    if days == 0:
         return "today"
     if days == 1:
         return "yesterday"
@@ -468,10 +490,19 @@ def _experience(*, lane_loads: int, lane_phrase: str | None, tier: str | None) -
 
 
 def _recency(
-    *, days_since: int | None, last_date: date | None, lane_loads: int
+    *, days_since: int | None, last_date: date | None, lane_loads: int, as_of: date
 ) -> Signal:
     value = recency_credit(None if days_since is None else float(days_since))
-    if days_since is not None and last_date is not None:
+    if days_since is None and last_date is not None:
+        # The delivery is dated later than the day we are answering for, so
+        # ``score_carrier`` refused it as a measurement (D23). Full credit would
+        # let a garbage future date buy maximum recency permanently, and the
+        # sentence has to say which date it is refusing.
+        reason = (
+            f"Last load on this lane is dated {last_date}, after the {as_of} "
+            "as-of date — not a usable recency measurement, so no credit"
+        )
+    elif days_since is not None and last_date is not None:
         reason = f"Last load on this lane {_ago(days_since)} ({last_date})"
     elif lane_loads > 0:
         # On the lane, but nothing delivered: the loads are still rolling, so
@@ -524,13 +555,20 @@ def _deadhead(
     as_of: date,
     pickup_known: bool,
 ) -> Signal:
-    """Proximity credit, and which of three things the number means.
+    """Proximity credit, and which of four things the number means.
 
-    Three cases, deliberately scored differently (see :func:`deadhead_credit`):
+    Four cases, three of them scored the same and *worded* differently (see
+    :func:`deadhead_credit`):
 
     * **Measured** — the curve.
     * **This carrier has no known delivery** — 0.0. Their own gap; neutral
       credit here would outrank carriers we know are far away.
+    * **This carrier's last delivery is not on the map** — 0.0, the same credit,
+      because it is the same kind of gap: we cannot measure *them*. It is a
+      different sentence, because "no known recent delivery" said about a truck
+      that unloaded yesterday ten miles from the pickup is false, and it is the
+      opposite of what a rep would do with it (D23). The score is unaffected;
+      only the explanation is, which is exactly what invariant 2 is about.
     * **This load's pickup has no coordinates** — :data:`NEUTRAL`. The load's
       gap, so it applies to every carrier identically and cannot reorder the
       list; scoring it 0.0 would instead drag every carrier down 20 points for
@@ -551,6 +589,17 @@ def _deadhead(
     elif last_delivery is None:
         value = deadhead_credit(None)
         reason = "No known recent delivery for this carrier, so no proximity credit"
+    elif not last_delivery.is_placeable:
+        value = deadhead_credit(None)
+        when = (
+            ""
+            if last_delivery.at is None
+            else f" {_ago((as_of - central_date(last_delivery.at)).days)}"
+        )
+        reason = (
+            f"Last delivered to {last_delivery.location}{when}, which is not on "
+            "the map, so proximity could not be measured — no proximity credit"
+        )
     else:
         value = deadhead_credit(miles)
         assert miles is not None
@@ -647,17 +696,26 @@ def score_carrier(
         if stats is None or stats.last_load_at is None
         else central_date(stats.last_load_at)
     )
-    days_since = (
-        None if last_lane_load_date is None else (as_of - last_lane_load_date).days
-    )
+    gap = None if last_lane_load_date is None else (as_of - last_lane_load_date).days
+    # A delivery dated *after* the day the question is asked for is not a
+    # measurement of freshness — it is bad data, or a scheduled date recorded as
+    # an actual one. ``recency_credit`` clamps at zero days, so passing the
+    # negative gap through would hand it the maximum 20 points forever, and the
+    # sentence beside it would read "today" for a date weeks away (D23). Refused
+    # here, once, so the value the score used and the number the reason quotes
+    # are the same ``None``.
+    days_since = None if gap is None or gap < 0 else gap
 
     pickup = load.origin.location.place if load.origin is not None else None
+    measurable = (
+        pickup is not None and last_delivery is not None and last_delivery.is_placeable
+    )
     deadhead_miles = (
-        None
-        if pickup is None or last_delivery is None
-        else round(
+        round(
             road_miles(last_delivery.lat, last_delivery.lon, pickup.lat, pickup.lon), 1
         )
+        if measurable
+        else None
     )
 
     on_time_count = 0 if stats is None else stats.on_time_count
@@ -673,6 +731,7 @@ def score_carrier(
             days_since=days_since,
             last_date=last_lane_load_date,
             lane_loads=lane_loads,
+            as_of=as_of,
         ),
         _equipment(load_equipment=load.equipment, equipment_loads=equipment_loads),
         _deadhead(

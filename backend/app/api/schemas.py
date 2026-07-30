@@ -552,11 +552,17 @@ class LastDeliveryOut(BaseModel):
     The deadhead miles were measured from ``lat``/``lon``; ``location`` is the
     town the reason names. One object, one event — so the distance scored and
     the place named cannot come apart.
+
+    ``lat``/``lon`` are ``null`` when the delivery went somewhere the offline geo
+    table does not know: we have the load and the town, and no coordinates to
+    measure from, so ``deadhead_miles`` is ``null`` too and the reason says which
+    gap it is (D23). That is a different response from ``last_delivery: null``,
+    which means the carrier has never delivered anything for this broker.
     """
 
     source_load_id: str
-    lat: float
-    lon: float
+    lat: float | None
+    lon: float | None
     at: datetime | None
     location: StopLocationOut
 

@@ -22,6 +22,7 @@ acquire a plausible-looking default. So:
 
 from __future__ import annotations
 
+import math
 from datetime import date, datetime
 
 from ..domain.geo import resolve_place
@@ -120,18 +121,52 @@ def optional_float(value: object) -> float | None:
     resulting load displays with a blank weight instead of failing the whole
     file, and ``None`` already means "we were not told" everywhere downstream. It
     cannot be mistaken for a real value, which is the property that matters.
+
+    ``"NaN"`` and ``"Infinity"`` parse in Python and are **refused here** (D23).
+    They are not measurements, and a non-finite value propagates rather than
+    failing: a NaN mileage divides into a NaN rate per mile, which is neither
+    NULL nor a number, survives ``rate_per_mile IS NOT NULL``, poisons a
+    percentile, and finally serialises to JSON ``null`` beside a provenance line
+    still claiming a median of five loads.
     """
     if value is None or isinstance(value, bool):
         return None
     try:
-        return float(value)  # type: ignore[arg-type]
+        parsed = float(value)  # type: ignore[arg-type]
     except (TypeError, ValueError):
         return None
+    return parsed if math.isfinite(parsed) else None
 
 
 #: Money is just a number here; the alias exists so a reader of an adapter can
 #: see which fields are dollars (CLAUDE.md, Money row) without checking types.
 money = optional_float
+
+
+#: Unit labels that are already pounds, so no conversion applies.
+_LBS_UNITS = frozenset({"lb", "lbs", "pound", "pounds"})
+
+#: Everything else :func:`weight_to_lbs` recognizes, and its factor into pounds.
+#: A *short* ton is 2000 lb (US freight); a metric tonne is 1000 kg. They differ
+#: by 10%, so they are separate entries rather than one approximate one, and a
+#: bare ``"t"`` — which could be either — is deliberately absent. A label in
+#: neither table is refused rather than guessed at.
+_WEIGHT_FACTORS: dict[str, float] = {
+    "kg": KG_TO_LBS,
+    "kgs": KG_TO_LBS,
+    "kilo": KG_TO_LBS,
+    "kilos": KG_TO_LBS,
+    "kilogram": KG_TO_LBS,
+    "kilograms": KG_TO_LBS,
+    "ton": 2000.0,
+    "tons": 2000.0,
+    "short ton": 2000.0,
+    "short tons": 2000.0,
+    "tonne": 1000.0 * KG_TO_LBS,
+    "tonnes": 1000.0 * KG_TO_LBS,
+    "metric ton": 1000.0 * KG_TO_LBS,
+    "metric tons": 1000.0 * KG_TO_LBS,
+}
 
 
 def kg_to_lbs(kg: object) -> float | None:
@@ -151,10 +186,17 @@ def weight_to_lbs(weight: object, units: object) -> float | None:
 
     TMS C states ``bos__Weight_Units__c`` **per line item**, so a ``kg`` item can
     sit among ``lbs`` items on the same load and the units must be applied before
-    summing, never after. An unrecognized unit label is treated as pounds, which
-    is what the schema comment says the field usually is; the alternative —
-    dropping the line item — would silently understate the load's weight, and
-    weight is never used to make a decision, only displayed.
+    summing, never after.
+
+    **An unrecognized label is ``None``, not pounds.** The earlier version fell
+    back to pounds and justified it by saying that dropping the item "would
+    silently understate the load's weight" — but reading ``"tons"`` as pounds
+    understates it 2000-fold, which is the same failure a great deal larger and
+    invisible instead of visible. ``None`` means "we were not told this item's
+    weight", which is true, and it shows up as a blank weight on the line item
+    beside its commodity rather than as a confident wrong number. A *missing*
+    label is still pounds: the schema comment says the field is usually lbs, and
+    "not stated" is the case that default was written for.
 
     Each item is rounded here, so the load's total is the exact sum of the parts
     the UI displays beside it. Rounding the total instead would let a line-item
@@ -164,9 +206,10 @@ def weight_to_lbs(weight: object, units: object) -> float | None:
     if value is None:
         return None
     label = (text(units) or "").lower()
-    if label in ("kg", "kgs", "kilogram", "kilograms"):
-        return round(value * KG_TO_LBS, UNIT_DECIMALS)
-    return round(value, UNIT_DECIMALS)
+    if label == "" or label in _LBS_UNITS:
+        return round(value, UNIT_DECIMALS)
+    factor = _WEIGHT_FACTORS.get(label)
+    return None if factor is None else round(value * factor, UNIT_DECIMALS)
 
 
 # ---------------------------------------------------------------------------

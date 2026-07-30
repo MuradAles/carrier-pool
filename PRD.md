@@ -203,8 +203,8 @@ five signals, each 0–1.
 | On-time | 0.10 | Actual vs. scheduled delivery, shrunk |
 
 ### Cold start
-Raw rates on tiny samples are noise — 2-for-2 is not better than 164-for-200. Two different
-corrections, because the two signals are different kinds of number (see `DECISIONS.md` D5):
+Raw rates on tiny samples are noise. Two different corrections, because the two signals are
+different kinds of number (see `DECISIONS.md` D5):
 
 ```
 experience = n / (n + k)                                    k = 5   # a count, saturating
@@ -214,6 +214,14 @@ on_time    = (observed × n + lane_average × k) / (n + k)    k = 5   # a rate, 
 A carrier with 2 loads sits at 0.29 on experience and near the lane average on on-time, then
 climbs as evidence accumulates. A good new carrier still surfaces; it just cannot leapfrog a
 proven one on 2 data points.
+
+**"2-for-2 is not better than 164-for-200" holds on the composite score and on experience, not
+on the on-time signal** (`DECISIONS.md` D21). `(2 + 5L)/7 > (164 + 5L)/205` whenever the lane
+average `L > 738/990 ≈ 0.7455`, which is every substantial lane in the fixture — and that is
+what shrinkage *means*: with two loads of evidence the estimate sits near the lane mean, so a
+veteran demonstrating 82% on a lane averaging 92% reads as below average, because it is.
+On-time carries 0.10 and can hand the rookie at most 1.8 points; experience carries 0.35 and
+hands the veteran 24.1. The order a rep sees never inverts on this pair.
 
 ### Score precision (the presentation contract)
 
@@ -256,9 +264,16 @@ Same tier walk. From completed/covered loads on the matched tier, take carrier r
 - **Range** = p25 → p75 × load miles
 - **Confidence** = high (≥15 loads) / medium (5–14) / low (<5, or the `REGION`/`REGION_ANY` tiers)
 
+Two caps on top of that count: a pool that is **heterogeneous in equipment** cannot be high
+(`DECISIONS.md` D15), and a pool whose published percentiles include one **at or below $0.00/mi**
+drops to low, because $0 booked rates in the pool make the range floor a dollar figure nobody
+would quote (`DECISIONS.md` D23).
+
 Always returned with: which tier, how many loads backed it, the date range they span, and the
 equipment filter. A low-confidence estimate is labeled as such rather than hidden — the broker
-decides whether to trust it.
+decides whether to trust it. Every absent money field is explained by the provenance line beside
+it, which ends in the words "no dollar estimate" whenever the dollars are missing — no rung
+accepted, no rate per mile on the lane, or a distance that is missing, zero or negative.
 
 ---
 

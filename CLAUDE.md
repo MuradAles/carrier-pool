@@ -31,7 +31,7 @@ Python 3.12 + FastAPI + Postgres 16 (plain SQL, no ORM) + React 19/Vite/TypeScri
 
 | Field | Rule |
 |---|---|
-| Weight | → lbs. TMS B `weight_kg × 2.20462`. TMS C: check `bos__Weight_Units__c` **per line item**, then sum |
+| Weight | → lbs. TMS B `weight_kg × 2.20462`. TMS C: check `bos__Weight_Units__c` **per line item**, then sum. A *missing* label is lbs (the schema's own default); an **unrecognized** one is `None` for that item, never lbs — reading `tons` as pounds understates it 2000-fold (`DECISIONS.md` D23) |
 | Distance | → miles. TMS B `dist_km × 0.621371` |
 | Equipment | → `DRY_VAN` \| `REEFER` \| `FLATBED` \| `UNKNOWN`. A free-text, B `V`/`R`/`F`, C picklist |
 | Money | A/C: totals as given. **B: sum of ALL `rates` line items ever appended** per side (`pay`→carrier, `bill`→customer), including negatives |
@@ -48,7 +48,14 @@ Python 3.12 + FastAPI + Postgres 16 (plain SQL, no ORM) + React 19/Vite/TypeScri
 - **TMS C silent restatement.** `bos__Carrier_Rate__c` changes with no marker that it changed.
 - **Filenames are local Central; payload timezones differ per TMS.** Sorting by filename only
   works because all three share the same local clock. Keep that assumption explicit.
-- **Cold start.** Shrink toward the lane average, `k = 5`. 2-for-2 must not beat 164-for-200.
+- **Cold start.** Shrink toward the lane average, `k = 5`. 2-for-2 must not beat 164-for-200
+  **on the composite score, and never on lane experience** — which is `n/(n+5)`, monotone in the
+  count, so a 2-load carrier gives away 24.1 of the 35 experience points. On the *on-time signal
+  alone* the rookie does come out ahead whenever the lane average exceeds `738/990 ≈ 0.7455`, and
+  that is shrinkage working, not a bug: with two loads of evidence the estimate sits near the
+  lane mean, and a veteran at 82% on a lane averaging 92% is genuinely below average. On-time
+  carries 0.10, so the reversal is worth at most 1.8 points against a 24.1-point gap. The
+  original one-line version of this trap was **false as written** — see `DECISIONS.md` D21.
 - **Minimum sample is 5 loads** to accept a tier.
 
 ## Dates

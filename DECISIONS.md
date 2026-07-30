@@ -143,9 +143,14 @@ Backwards: the signal would reward absence of evidence.
   Monotonic, saturating, zero at zero.
 - **On-time** = the shrinkage formula, toward the lane's average on-time rate, `k = 5`.
 
-**Why this keeps the invariant.** `CLAUDE.md`'s "2-for-2 must not beat 164-for-200" is an
-on-time framing, and on-time still uses shrinkage. Under the saturating curve, 2 loads (0.29)
-also cannot outscore 200 loads (0.98) on experience. Both readings hold.
+**Why this keeps the invariant — corrected by D21.** This entry originally read: *"`CLAUDE.md`'s
+'2-for-2 must not beat 164-for-200' is an on-time framing, and on-time still uses shrinkage.
+Under the saturating curve, 2 loads (0.29) also cannot outscore 200 loads (0.98) on experience.
+Both readings hold."* **The on-time half of that is false**, and `breaker` proved it: shrinkage
+toward the lane mean puts 2-for-2 *above* 164-for-200 for every lane average above
+`738/990 ≈ 0.7455`. The experience half holds — `n/(n+5)` is monotone in the count — and so does
+the composite, by 22.4 points or more. The formulas here are unchanged and correct; it was the
+claim about them that was wrong. See D21 for the algebra and why the formula stays.
 
 ---
 
@@ -749,6 +754,182 @@ rules agree; the earlier framing just generalized from the wrong half of the tab
 delivery, so neither branch fires on the current fixture. Both are reachable on real data, which
 is precisely why they need a stated rule rather than whatever the first `None` check happened to
 return.
+
+---
+
+## D21 — "2-for-2 must not beat 164-for-200" was false as written; the formula is right
+
+**What was claimed.** `CLAUDE.md`'s Known traps, PRD §8 and D5 above all asserted, without
+naming a signal, that a 2-for-2 carrier must not out-rank a 164-for-200 veteran. D5 went further
+and said the claim "is an on-time framing", i.e. that it holds *there specifically*.
+
+**What is true.** With `k = 5` and a lane average `L`, the shrunk on-time rates are
+
+```
+rookie  = (2   + 5L) / (2   + 5) = (2 + 5L)/7
+veteran = (164 + 5L) / (200 + 5) = (164 + 5L)/205
+
+(2 + 5L)/7 > (164 + 5L)/205
+  205(2 + 5L) > 7(164 + 5L)
+  410 + 1025L > 1148 + 35L
+       990L   > 738
+          L   > 738/990 = 0.74545...
+```
+
+Every substantial lane in the shipped fixture sits between 0.80 and 1.00 — the real `DFW→HOU`
+METRO on-time rates are 0.9565 and 0.9032 — so the condition is not hypothetical. At `L = 0.82`
+the rookie shrinks to 0.8714 and the veteran to 0.8200.
+
+**Decision: change the claim, not the formula.** Shrinkage toward the lane mean says *with
+little evidence, assume average*. If a lane averages 92% and a veteran has demonstrated 82% over
+200 loads, that veteran **is** below average, and a 2-load carrier whose estimate sits near the
+mean reading better *on that one signal* is correct statistics. Rewriting the formula to force
+the old sentence would mean punishing a carrier for having enough evidence to be measured.
+
+**Why the trap it was written to prevent is still prevented.** Verified through the production
+scorer, not by re-deriving the weights (`tests/adversarial/test_adversarial.py::
+test_two_for_two_does_not_beat_164_for_200_on_the_composite_score`), holding equipment history,
+truck position and last-load date equal:
+
+```
+                 experience   recency   equipment   deadhead   on-time    total
+rookie  2/2        10.000      19.344     15.000      0.000      8.714     53.1
+veteran 164/200    34.146      19.344     15.000      0.000      8.200     76.7
+```
+
+On-time carries 0.10, so the largest advantage it can ever hand the rookie is at `L = 1.0`:
+`100 × 0.10 × (1.0000 − 0.8244) = 1.76` points. Lane experience carries 0.35 with `n/(n+5)`,
+which is monotone in the count, and hands the veteran `100 × 0.35 × (0.9756 − 0.2857) = 24.15`.
+**The veteran leads by at least 22.4 points on every lane average**, so no ranking a rep sees
+inverts on this pair.
+
+**Recorded rather than reworded.** The original sentence was in three documents and one module
+docstring, and a decisions document that quietly edits a false claim into a true one is worth
+less than one that says it was wrong. `unit-tester` had in fact already found the
+prior-dependence (`TASKS.md` R2, and
+`test_2_for_2_does_not_outrank_164_for_200_at_a_realistic_lane_rate`, which picks `L = 0.70` —
+below the crossover — and says so in its docstring). The finding is that the *documents* were
+never updated to match what the tests already knew.
+
+**Rejected:** shrinking on-time by a count-saturating curve like experience. It makes the
+sentence true, but it re-answers a question D5 already settled correctly: on-time is a rate, and
+a rate with no evidence behind it must fall back to a prior, not to zero.
+
+**Rejected:** raising `k` until the crossover exceeds 1.0. `(2 + kL)/(2 + k) > (164 + kL)/(200 + k)`
+holds for *some* `L < 1` at every `k > 0`, so no constant makes the claim true; it would only
+move the threshold while degrading every real cold-start estimate.
+
+---
+
+## D22 — A rate line is deduped on its own id, not just on its file
+
+**The problem.** `breaker` FINDING 1. Invariant 4's idempotency key is `(broker_id, sync_file)`,
+which stops a file being ingested twice — but not the same *rate line* arriving in two different
+files. HaulDesk's `rates` array is append-only at the source, so an overlapping sync window, or
+an operator re-pulling a day under a new filename, restates a line item already delivered.
+`_rebuild_money` re-sums whole files, so the load's carrier rate silently doubled. D3 had already
+claimed `source_entity_id` *"gives a second dedupe key beneath the file-level one"*; nothing
+implemented it.
+
+**Decision.** Implement the claim, in two places, because one is not enough:
+
+1. `sync_events_rate_line_identity_idx` — `UNIQUE (broker_id, source_entity_id) WHERE
+   entity_type = 'RATE_LINE'`, with `ON CONFLICT ... DO NOTHING` in `append_event`. A repeated
+   `rate_id` writes no second event, enforced by the database rather than by a check a call site
+   could forget. Only `RATE_LINE` is covered: `LOAD` and `CARRIER` events are restatements of
+   current truth and are *supposed* to arrive many times.
+2. `_rebuild_money` counts each `rate_id` once. The rebuild re-parses whole *files*, so a file
+   that mixes one already-recorded line with one new line would otherwise re-add the old one
+   even though its event was refused. First occurrence wins, and files are processed in filename
+   order, so the surviving contribution is the one the log recorded.
+
+**What is deliberately not deduped.** A **new** `rate_id` carrying a negative amount is TMS B's
+correction mechanism (CLAUDE.md, Known traps) and must still apply — it conflicts with nothing.
+A repeated `rate_id` carrying a *different* amount is treated as a duplicate, not a silent
+restatement: TMS B states corrections by appending, and the raw bytes of both files remain in
+`sync_files` for anyone who needs to see the discrepancy.
+
+**Effect on the shipped fixture: none.** All 380 rate rows across the 132 files have distinct
+`rate_id`s, so no stored number, no traceability figure and no ranking moves. The defect was
+reachable only from data the fixture does not contain, which is exactly why it survived to
+Phase 9.
+
+**Rejected:** verifying that a re-sent file matches what was stored and raising on a mismatch.
+It answers a different question (did the source change its mind?) at the cost of failing an
+ingest over a duplicate that is harmless once counted once.
+
+---
+
+## D23 — An impossible input is not a measurement, and the sentence beside it must say so
+
+**The pattern behind five of `breaker`'s findings.** Each was a field that arrived holding
+something no measurement can hold — a delivery dated after the day we are answering for, a `NaN`
+mileage, a distance of −271 mi, a booked rate of $0, a unit label we do not know — and in every
+case the code carried it through the arithmetic and then printed a confident sentence beside the
+result. The score was wrong in some and right in others; the *label* was wrong in all of them,
+which is the failure invariant 2 and invariant 6 both exist to prevent.
+
+**Decision. One rule, applied at the boundary each value crosses:**
+
+| Input | Refused where | Becomes | And the sentence says |
+|---|---|---|---|
+| `NaN`/`Infinity` in any numeric field (FINDING 9) | `normalize.optional_float`, plus `_f` on the way back out of NUMERIC | `None` | the lane has no rate per mile, so no dollar estimate |
+| Delivery dated after the ranking's as-of date (FINDING 3) | `scoring.score_carrier` | `days_since = None`, recency credit 0.0 | "…is dated 2026-07-25, after the 2026-07-06 as-of date — not a usable recency measurement" |
+| Distance ≤ 0 (FINDING 5) | `pricing._usable_miles` | no dollar figure; the rate is still published | "…$/mi, but this load's distance is −271.0 mi, which cannot be priced, so no dollar estimate" |
+| A published percentile ≤ 0 (FINDING 4) | `pricing._confidence` | confidence **low** | "p25 0.0000 $/mi — loads with no positive booked rate are in this pool, so confidence is held at low" |
+| An unrecognized weight unit (FINDING 8) | `normalize.weight_to_lbs` | `None` for that line item | the item renders with no weight, beside the ones that have one |
+| A NUL byte in an id (FINDING 7) | `broker_repository._unstorable` | `None` / `UnknownBroker` → 404 | the same 404 every other malformed id gets |
+| A last delivery we cannot place (FINDING 14) | `scoring._deadhead`, fed by `unplaceable_deliveries()` | 0.0, unchanged | "Last delivered to Nowheresville, ZZ yesterday, which is not on the map…" |
+
+**Why refusal rather than a default.** Every one of these had a plausible-looking default sitting
+next to it, and each default was worse than the gap: full recency credit means a garbage future
+date buys a carrier the maximum 20 points permanently; pounds for `"tons"` understates a load
+2000-fold, where dropping the item understates it by one line the UI shows as blank; `not miles`
+already refused zero, and a negative distance is *more* impossible than zero, not less.
+
+**Why the sentence is half the decision.** `PriceEstimate` promises that every `None` money field
+is explained by the provenance line, and `CarrierScore` promises that every reason is generated
+from the value it describes. A refusal that is silent keeps the arithmetic honest and breaks the
+explanation, which for this product is the deliverable. So each refusal above ships with the
+wording that names it, and `_provenance`'s no-rung branch gained the words "no dollar estimate"
+so that one phrase covers all four ways the dollars can be absent.
+
+**What deliberately did not change.** The population `lane_stats` is computed from still includes
+$0 loads. Excluding them there would be a second, quieter judgment — the carrier who was paid $0
+would lose their `carrier_stats` row and their `$0.00/mi` rate note, and a rep would see a
+ranking that no longer mentions the zero at all. The percentile is arithmetically correct; it is
+the *label* on it that was lying, so the label is what moved.
+
+**Honest limit.** None of these inputs occurs in the shipped fixture — no NaN, no non-positive
+booked rate, no unknown unit, no future delivery, no unplaceable delivery. Every fix here is
+therefore unexercised by the 132 files and exercised only by the adversarial suite, and no stored
+number, traceability figure or ranking moved.
+
+---
+
+## D24 — A carrier known only from a load id is still a carrier the broker used
+
+**The problem.** `breaker` FINDING 10. A TMS can reference a `carrier_ref` whose `carriers`
+record never arrives. Adapters deliberately invent nothing from a dangling reference (D3's
+failure policy, and `test_a_dangling_tms_c_reference_geo_nulls_instead_of_guessing` asserts it),
+so no `carriers` row exists — but the *loads* do. They count toward `lane_stats.load_count` and
+they produce `carrier_stats` rows, so the ranking was reporting "5 loads back this lane" above a
+list that omitted the only carrier that ran them.
+
+**Decision.** `list_carriers()` — the ranking's candidate pool — is the union of the `carriers`
+table and the distinct `source_carrier_id`s on this broker's loads. A carrier known only by
+reference comes back with its id and every other field NULL, which is exactly what "we have only
+ever seen a reference" looks like; its reasons then describe the loads without claiming a name we
+do not have.
+
+**Why not create a stub `carriers` row at ingest instead.** That is inventing an entity from a
+reference — the thing the adapters refuse to do, and the thing `get_carrier()` must keep
+answering `None` to, because "this carrier exists in our records" is a different claim from "some
+load names this id". The union keeps the two answers separate: the ranking scores them, the
+carrier lookup still says we know nothing about them.
+
+**Effect on the shipped fixture: none.** Every `carrier_ref` in all 132 files resolves to a
+carrier record, so the candidate pool is unchanged and the 192 day-11 ranking rows are unchanged.
 
 ---
 

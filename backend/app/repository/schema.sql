@@ -81,6 +81,20 @@ CREATE TABLE IF NOT EXISTS sync_events (
 CREATE INDEX IF NOT EXISTS sync_events_load_order_idx
     ON sync_events (broker_id, source_load_id, synced_at, event_seq);
 
+-- DECISIONS.md D3's "second dedupe key beneath the file-level one", made real
+-- (D22). A rate line is one immutable money contribution identified by its own
+-- rate_id, so the same rate_id arriving in a second file is the *same* line
+-- restated, not a second $700. The file-level key cannot see that: an
+-- overlapping sync window, or an operator re-pulling a day under a new
+-- filename, is a new file carrying an old line. A legitimate TMS B correction
+-- is a *new* rate_id with a negative amount, which this index does not touch.
+--
+-- Only RATE_LINE rows are covered: a LOAD or CARRIER event is a restatement of
+-- current truth and is *supposed* to arrive many times.
+CREATE UNIQUE INDEX IF NOT EXISTS sync_events_rate_line_identity_idx
+    ON sync_events (broker_id, source_entity_id)
+    WHERE entity_type = 'RATE_LINE';
+
 -- ---------------------------------------------------------------------------
 -- Current truth, rewritten from the newest event
 -- ---------------------------------------------------------------------------

@@ -6,8 +6,10 @@ The shape of one file's work, in order:
    ``UNIQUE (broker_id, sync_file)`` means a second attempt inserts nothing, and
    ingestion stops right there — so re-ingesting is a no-op enforced by the
    database rather than by a check somebody could forget (invariant 4). Nothing
-   below this line runs twice for the same file, which is what stops TMS B's
-   rate line items from being counted twice.
+   below this line runs twice for the same file. That is not on its own enough
+   to stop TMS B's rate line items being counted twice, because a *different*
+   file can restate a line item already delivered; the second key, on the rate
+   line's own id, is what stops that (D22, and :func:`_rebuild_money`).
 2. **Append the events.** One ``sync_events`` row per changed entity, in the
    adapter's order, its index as ``event_seq`` (D3). Append-only is a privilege,
    not a convention: the app role holds no UPDATE or DELETE on this table.
@@ -223,9 +225,17 @@ def _append_events(
     The adapter already ordered them — carriers and customers, then loads, then
     rate lines — so position in ``records`` is the intra-file order, and
     ``(synced_at, event_seq)`` is a total order over the whole log.
+
+    Returns the number of events actually written, which is below
+    ``len(records)`` when a file restates a rate line already in the log: the
+    duplicate is refused by ``sync_events_rate_line_identity_idx`` (D22) and
+    :meth:`~app.repository.BrokerRepository.append_event` reports ``None``. The
+    file itself is still recorded whole in ``sync_files``, so nothing about its
+    arrival is lost.
     """
+    written = 0
     for event_seq, record in enumerate(adapted.records):
-        repo.append_event(
+        event_id = repo.append_event(
             sync_file_id=sync_file_id,
             synced_at=adapted.synced_at,
             entity_type=record.entity_type,
@@ -234,7 +244,8 @@ def _append_events(
             raw_json=record.raw,
             event_seq=event_seq,
         )
-    return len(adapted.records)
+        written += event_id is not None
+    return written
 
 
 def _upsert_entities(repo: BrokerRepository, adapted: AdaptedSync) -> None:
@@ -274,13 +285,25 @@ def _rebuild_money(repo: BrokerRepository, adapter: TmsAdapter, load_id: str) ->
 
     Rate lines that arrive before their load produce no row to update; the sum is
     redone when the load itself turns up, because that file touches the same id.
+
+    **Each rate line counts once, identified by its own ``rate_id``.** The files
+    are re-parsed whole, and a file legitimately restates a line item that an
+    earlier file already delivered — an overlapping sync window, or an operator
+    re-pulling a day. The log refuses the duplicate *event* (D22), but the bytes
+    of the second file still contain the line, so the sum has to dedupe too or a
+    file mixing one old line with one new one double-counts the old one. First
+    occurrence wins, and files arrive in filename order, so the surviving
+    contribution is the one the log recorded. A *correction* is a new ``rate_id``
+    with a negative amount and is unaffected — only a repeat is a duplicate.
     """
     totals: dict[RateSide, float] = {}
+    counted: set[str] = set()
     for sync_file, raw_json in repo.raw_syncs_for_rate_lines(load_id):
-        contributions = adapter.adapt(sync_file, raw_json).rate_contributions()
-        for (contributed_to, side), amount in contributions.items():
-            if contributed_to == load_id:
-                totals[side] = totals.get(side, 0.0) + amount
+        for line in adapter.adapt(sync_file, raw_json).rate_lines:
+            if line.source_load_id != load_id or line.source_rate_id in counted:
+                continue
+            counted.add(line.source_rate_id)
+            totals[line.side] = totals.get(line.side, 0.0) + line.amount_usd
     if not totals:
         return
     repo.set_load_money(

@@ -342,14 +342,28 @@ class LastDelivery:
     ingestion writes to ``carriers.last_delivery_*`` — and ``location`` carries
     the raw city/state/zip for display. Distance is always measured from the
     coordinates, never re-derived from the label.
+
+    **The coordinates are nullable, and that is a third state, not a missing
+    one.** A carrier that has never delivered anything has no ``LastDelivery``
+    at all; a carrier whose only delivery went to a town the geo table has never
+    heard of has one with ``place=None`` and no coordinates. Both score zero
+    proximity credit, but they are different facts and the deadhead reason says
+    which — "no known recent delivery" told to a rep about a truck that unloaded
+    yesterday ten miles from the pickup is the opposite of what they would do
+    with it (D23).
     """
 
     source_carrier_id: str
     source_load_id: str
-    lat: float
-    lon: float
+    lat: float | None
+    lon: float | None
     at: datetime | None
     location: StopLocation
+
+    @property
+    def is_placeable(self) -> bool:
+        """True when this delivery can be measured from. Distance needs both."""
+        return self.lat is not None and self.lon is not None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "at", as_utc(self.at))
