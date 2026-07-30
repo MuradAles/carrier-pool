@@ -9,7 +9,15 @@
  * worst possible bug in this project. So there is no arithmetic in this file.
  */
 
-import type { Equipment, Load, Stop, StopLocation } from "./types";
+import type {
+  Confidence,
+  Equipment,
+  EquipmentFilter,
+  LaneTier,
+  Load,
+  Stop,
+  StopLocation,
+} from "./types";
 
 /** What we print where the API said "unknown". Never "0", never blank. */
 export const UNKNOWN = "—";
@@ -22,13 +30,54 @@ const USD = new Intl.NumberFormat("en-US", {
 
 const DECIMAL = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
+/**
+ * Rates per mile print at their stored precision — four decimals, always.
+ *
+ * `lane_stats.rate_per_mile_p*` is `NUMERIC(10,4)` and DECISIONS.md D18 says an
+ * estimate must be reproducible by hand from its own evidence. Trimming
+ * `1.8050` to `1.81` breaks that: `1.81 × 296.0` is `$535.76`, and the panel
+ * beside it prints `$534.28`. Padding to four places cannot change a value the
+ * API already sent at four places, so this is presentation, not rounding.
+ */
+const RATE = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 4,
+  maximumFractionDigits: 4,
+});
+
+/**
+ * The published score, at the one decimal the API rounded it to.
+ *
+ * PRD section 8 rounds the weighted sum **once**, half-up, server-side, so this
+ * only pads `84` to `84.0` — it never rounds. Recomputing or re-rounding a
+ * score in the browser is the second source of truth D19 exists to prevent.
+ */
+const SCORE = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
+/** `loads.distance_miles` is `NUMERIC(10,2)`; see `miles`. */
+const MILES = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 2,
+});
+
 /** `null` prints as `—`, and `0` prints as `$0.00`. They are different facts. */
 export function money(value: number | null): string {
   return value === null ? UNKNOWN : USD.format(value);
 }
 
+/**
+ * Distance at its stored precision — `loads.distance_miles` is `NUMERIC(10,2)`.
+ *
+ * Whole miles would read more cleanly and would be wrong, because this figure
+ * is a *multiplicand*: 293.4 mi shown as "293 mi" beside a median of
+ * $2.5300/mi invites a rep to compute $741.29 and find the panel claiming
+ * $742.30. Same DECISIONS.md D18 argument as the rate itself, so the two are
+ * displayed at matching precision and one formatter serves every screen.
+ */
 export function miles(value: number | null): string {
-  return value === null ? UNKNOWN : `${DECIMAL.format(value)} mi`;
+  return value === null ? UNKNOWN : `${MILES.format(value)} mi`;
 }
 
 export function pounds(value: number | null): string {
@@ -54,6 +103,20 @@ export function instant(value: string | null): string {
   return `${parsed.toISOString().slice(0, 16).replace("T", " ")} UTC`;
 }
 
+export function ratePerMile(value: number | null): string {
+  return value === null ? UNKNOWN : `$${RATE.format(value)}/mi`;
+}
+
+/** The published 0–100 score, exactly as the API rounded it. */
+export function score(value: number): string {
+  return SCORE.format(value);
+}
+
+/** A plain integer, for load counts. `0 loads` is a fact, not a gap. */
+export function loads(value: number): string {
+  return `${DECIMAL.format(value)} ${value === 1 ? "load" : "loads"}`;
+}
+
 const EQUIPMENT_LABELS: Record<Equipment, string> = {
   DRY_VAN: "Dry van",
   REEFER: "Reefer",
@@ -64,6 +127,39 @@ const EQUIPMENT_LABELS: Record<Equipment, string> = {
 /** `UNKNOWN` is spelled out, not blanked — it is a value the TMS gave us. */
 export function equipment(value: Equipment): string {
   return EQUIPMENT_LABELS[value] ?? value;
+}
+
+/**
+ * The pool an answer was drawn from. `ANY` is spelled out rather than shown as
+ * a bare token, because "we did not filter by equipment" is the caveat a reader
+ * has to notice — it is the D15 case and the reason confidence is capped.
+ */
+export function equipmentFilter(value: EquipmentFilter | null): string {
+  if (value === null) return UNKNOWN;
+  if (value === "ANY") return "All equipment types (no filter)";
+  return EQUIPMENT_LABELS[value] ?? value;
+}
+
+const TIER_LABELS: Record<LaneTier, string> = {
+  ZIP3: "ZIP3 (3-digit zip pair)",
+  METRO: "METRO (metro pair)",
+  REGION: "REGION (region pair)",
+  REGION_ANY: "REGION_ANY (region pair, no equipment filter)",
+};
+
+/** `null` means no rung cleared the minimum — say so, do not print a blank. */
+export function tier(value: LaneTier | null): string {
+  return value === null ? "none accepted" : (TIER_LABELS[value] ?? value);
+}
+
+const CONFIDENCE_LABELS: Record<Confidence, string> = {
+  high: "HIGH CONFIDENCE",
+  medium: "MEDIUM CONFIDENCE",
+  low: "LOW CONFIDENCE",
+};
+
+export function confidence(value: Confidence): string {
+  return CONFIDENCE_LABELS[value] ?? value.toUpperCase();
 }
 
 /**

@@ -1,15 +1,21 @@
 /**
- * The load detail screen — U3's facts, plus the two panels that are still a
- * seam (see `provisional.tsx`). The sync-history panel is U6 and is not here.
+ * The load detail screen: U3's facts and stops, then the price estimate (U4),
+ * the ranked carriers (U5) and the sync history (U6).
  *
- * Every figure on this screen is a field of the load as the API returned it.
- * Nothing is derived: no rate per mile, no margin, no totals.
+ * Every figure on this screen is a field of a response as the API returned it.
+ * Nothing is derived: no rate per mile, no margin, no totals, no re-rounding.
+ *
+ * The three panels below the facts fetch or receive their own data, and each
+ * says so when it is loading or has failed — one panel being unavailable never
+ * blanks the others, and a blank panel is indistinguishable from a bug.
  */
 
 import { getLoad } from "./api";
 import { day, equipment, instant, miles, money, place, pounds, UNKNOWN } from "./format";
-import { PriceEstimatePanel, RankedCarriersPanel } from "./provisional";
-import type { Load, Stop } from "./types";
+import { PriceEstimatePanel } from "./PriceEstimatePanel";
+import { RankedCarriersPanel } from "./RankedCarriersPanel";
+import { SyncHistoryPanel } from "./SyncHistoryPanel";
+import type { LoadDetail as Detail, Stop } from "./types";
 import { useApi } from "./useApi";
 
 interface Props {
@@ -19,7 +25,9 @@ interface Props {
 }
 
 export function LoadDetail({ brokerId, loadId, onBack }: Props) {
-  const load = useApi<Load>(`${brokerId}|${loadId}`, (signal) => getLoad(brokerId, loadId, signal));
+  const load = useApi<Detail>(`${brokerId}|${loadId}`, (signal) =>
+    getLoad(brokerId, loadId, signal),
+  );
 
   return (
     <div>
@@ -38,13 +46,14 @@ export function LoadDetail({ brokerId, loadId, onBack }: Props) {
           <StopsTable stops={load.data.stops} />
           <PriceEstimatePanel brokerId={brokerId} loadId={loadId} />
           <RankedCarriersPanel brokerId={brokerId} loadId={loadId} />
+          <SyncHistoryPanel events={load.data.sync_history} />
         </>
       )}
     </div>
   );
 }
 
-function LoadFacts({ load }: { load: Load }) {
+function LoadFacts({ load }: { load: Detail }) {
   return (
     <section>
       <h2>
@@ -57,13 +66,22 @@ function LoadFacts({ load }: { load: Load }) {
         <Fact label="Source load id" value={load.source_load_id} />
         <Fact label="Equipment" value={equipment(load.equipment)} />
         <Fact label="Weight" value={pounds(load.weight_lbs)} />
+        {/* Full stored precision, not whole miles: this is the figure the price
+            panel multiplies a rate by, and the two must agree to the cent. */}
         <Fact label="Distance" value={miles(load.distance_miles)} />
         <Fact label="Customer rate" value={money(load.customer_rate)} />
         {/* An ACTIVE load has no carrier rate. `—` is the honest rendering of
             that; `$0.00` would be a different claim entirely. */}
         <Fact label="Carrier rate" value={money(load.carrier_rate)} />
-        <Fact label="Carrier" value={load.source_carrier_id ?? UNKNOWN} />
-        <Fact label="Customer" value={load.source_customer_id ?? UNKNOWN} />
+        {/* An unassigned load has no carrier at all, which is a different fact
+            from a carrier whose TMS row carries no name. Both print as `—`
+            here, so the id is shown alongside rather than instead. */}
+        <Fact label="Carrier" value={party(load.carrier?.name ?? null, load.source_carrier_id)} />
+        <Fact label="Carrier phone" value={load.carrier?.phone ?? UNKNOWN} />
+        <Fact
+          label="Customer"
+          value={party(load.customer?.name ?? null, load.source_customer_id)}
+        />
         <Fact label="Created" value={instant(load.created_at)} />
         <Fact label="Last modified" value={instant(load.last_modified_at)} />
       </dl>
@@ -79,6 +97,12 @@ function LoadFacts({ load }: { load: Load }) {
       )}
     </section>
   );
+}
+
+/** `Name (id)`, or the bare id, or `—` when the load names nobody. */
+function party(name: string | null, sourceId: string | null): string {
+  if (sourceId === null) return UNKNOWN;
+  return name === null ? sourceId : `${name} (${sourceId})`;
 }
 
 function Fact({ label, value }: { label: string; value: string }) {
@@ -106,6 +130,7 @@ function StopsTable({ stops }: { stops: Stop[] }) {
             <th>Kind</th>
             <th>Location</th>
             <th>Scheduled</th>
+            <th>Window</th>
             <th>Arrived</th>
             <th>Departed</th>
           </tr>
@@ -117,16 +142,28 @@ function StopsTable({ stops }: { stops: Stop[] }) {
               <td>{stopKind(stop)}</td>
               <td>
                 {stop.location.name && <span className="muted">{stop.location.name} · </span>}
+                {/* Always the raw city/state/zip, resolved or not. A geo-null
+                    stop is excluded from lane statistics, which is not the same
+                    as hidden — but it must not read like a resolved one, so the
+                    flag rides next to the value rather than in a footnote. */}
                 {place(stop.location)}
                 {stop.location.place === null ? (
-                  <span className="flag" title="Not matched in the geo table">
-                    no geo match
+                  <span
+                    className="flag"
+                    title="No row in the offline geo table for this city/state/zip"
+                  >
+                    not on the map — excluded from lane statistics
                   </span>
                 ) : (
                   <span className="muted"> ({stop.location.place.metro})</span>
                 )}
               </td>
               <td>{day(stop.scheduled_date)}</td>
+              <td>
+                {stop.window_start === null && stop.window_end === null
+                  ? UNKNOWN
+                  : `${instant(stop.window_start)} – ${instant(stop.window_end)}`}
+              </td>
               <td>{instant(stop.actual_arrival)}</td>
               <td>{instant(stop.actual_departure)}</td>
             </tr>

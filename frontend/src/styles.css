@@ -76,6 +76,152 @@ th {
   color: #666;
 }
 
+/* --- Price estimate (U4) ------------------------------------------------- */
+
+.headline {
+  margin: 0.4rem 0 0.2rem;
+}
+
+.point {
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.range {
+  margin: 0 0 0.4rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Confidence is a label, not a shade: a low-confidence estimate has to be
+   unmistakable next to a high-confidence one, so it gets its own border and
+   word rather than a lighter grey. */
+.confidence {
+  margin-left: 0.6rem;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: 2px solid;
+  vertical-align: middle;
+}
+
+.confidence-high {
+  border-color: #1b7f3b;
+  color: #1b7f3b;
+}
+
+.confidence-medium {
+  border-color: #b58900;
+  color: #7a5c00;
+}
+
+.confidence-low {
+  border-color: #b00020;
+  color: #b00020;
+  background: #ffe9ec;
+}
+
+/* The sentence the backend generated. It is the answer's evidence, so it sits
+   with the number rather than under a fold. */
+.provenance {
+  margin: 0.3rem 0 0.8rem;
+  padding-left: 0.6rem;
+  border-left: 3px solid #999;
+}
+
+/* A caveat that qualifies the whole answer, not one value. */
+.warn {
+  border: 1px solid #b58900;
+  background: #fffbe6;
+  padding: 0.4rem 0.6rem;
+  margin: 0.6rem 0;
+}
+
+.warn ul {
+  margin: 0.3rem 0 0;
+}
+
+/* --- Tier walk (invariant 6) --------------------------------------------- */
+
+.walk {
+  margin: 1rem 0;
+}
+
+.walk h4 {
+  margin: 0 0 0.2rem;
+}
+
+.walk table {
+  max-width: 60rem;
+}
+
+.accepted-rung {
+  background: #eaf7ee;
+  font-weight: 600;
+}
+
+/* --- Ranked carriers (U5) ------------------------------------------------ */
+
+.carrier {
+  border-top: 1px solid #ddd;
+  padding: 0.5rem 0;
+}
+
+.carrier h4 {
+  margin: 0;
+}
+
+.rank {
+  color: #666;
+  font-variant-numeric: tabular-nums;
+}
+
+.score {
+  float: right;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.15rem;
+}
+
+.contact,
+.evidence {
+  margin: 0.15rem 0;
+  font-size: 0.85rem;
+}
+
+.reasons {
+  margin: 0.3rem 0;
+}
+
+/* --- Sync history (U6) --------------------------------------------------- */
+
+.sync-file {
+  margin: 0.8rem 0 0.2rem;
+  font-size: 0.95rem;
+}
+
+.sync-event {
+  margin-left: 1rem;
+}
+
+.sync-event summary {
+  cursor: pointer;
+}
+
+.entity {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.sync-event pre {
+  margin: 0.2rem 0 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: #f6f6f6;
+  border-left: 3px solid #ccc;
+  font-size: 0.8rem;
+  overflow-x: auto;
+}
+
 .note {
   color: #444;
 }

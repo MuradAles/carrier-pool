@@ -2,10 +2,9 @@
  * The only place in the frontend that talks to the network.
  *
  * Everything goes through `getJson`, so every failure mode — unreachable dev
- * proxy, 404, the 501s the unfinished endpoints still return, a body that isn't
- * JSON — arrives at the UI as one `ApiError` with a message a person can read.
- * A panel that renders nothing is indistinguishable from a bug, and while the
- * backend is half-built that distinction is the most useful thing this UI has.
+ * proxy, 404, an unknown broker, a body that isn't JSON — arrives at the UI as
+ * one `ApiError` with a message a person can read. A panel that renders nothing
+ * is indistinguishable from a bug.
  *
  * ## broker_id on load routes
  *
@@ -13,18 +12,18 @@
  * the path. But `source_load_id` is only unique *within* a broker
  * (`UNIQUE (broker_id, source_load_id)`), and the repository refuses to run any
  * tenant query without a broker binding — `current_broker()` raises when
- * `app.broker_id` is unset. So the broker has to reach the server somehow, and
- * this client sends it as a `broker_id` query parameter on every load route.
+ * `app.broker_id` is unset. So the broker has to reach the server somehow.
  *
- * That is an assumption, not a settled contract: Phase 7 (`P1`) writes these
- * routes. If it puts the broker somewhere else — a header, a path prefix — the
- * fix is the three URL builders below and nothing else.
+ * `backend/app/api/deps.py` binds it as a required `broker_id` **query
+ * parameter** on every route except `/api/brokers` and `/api/health`, which is
+ * what the four URL builders below send.
  */
 
 import type {
   Broker,
   Health,
   Load,
+  LoadDetail,
   LoadStatus,
   PriceEstimate,
   Recommendations,
@@ -114,13 +113,14 @@ export function listLoads(
   return getJson<Load[]>(`/api/loads?${query}`, signal);
 }
 
-export function getLoad(brokerId: string, loadId: string, signal: AbortSignal): Promise<Load> {
+/**
+ * The detail route returns more than the list route: `LoadDetail` adds the
+ * carrier, the customer and the full sync history (U6) to the same `Load`.
+ */
+export function getLoad(brokerId: string, loadId: string, signal: AbortSignal): Promise<LoadDetail> {
   const path = `/api/loads/${encodeURIComponent(loadId)}?${loadQuery(brokerId)}`;
-  return getJson<Load>(path, signal);
+  return getJson<LoadDetail>(path, signal);
 }
-
-// The two below are wired to endpoints that still return 501. They exist so the
-// provisional panels have one named call site each; see `provisional.tsx`.
 
 export function getPriceEstimate(
   brokerId: string,
