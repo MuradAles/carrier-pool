@@ -34,6 +34,22 @@ score      = 100 * (0.35*exp + 0.20*rec + 0.15*equip + 0.20*deadhead + 0.10*on_t
 percentiles = PostgreSQL percentile_cont (linear interpolation)
 ```
 
+**Precision, and why it is part of the model** (DECISIONS D18). Every number below
+is rounded to the precision it is *printed* at before anything is multiplied by it:
+signals and the shrinkage lane average to 3 dp, equipment to 2 dp, each weighted
+term to 4 dp, the score to 1 dp, and $/mi percentiles to 4 dp — which is also what
+`lane_stats.rate_per_mile_p*` stores (`NUMERIC(10,4)`). So `2.0200 × 187.2` is
+written as `$378.14`, the cent a calculator returns, not the `$378.15` an
+unrounded rate would give. Rounding is half-up throughout. The cost is at most
+0.05 of a score point against an infinite-precision model; the benefit is that
+every line here can be re-derived from the line above it.
+
+That rounding is this document's convention, not a demand on the implementation:
+the **price** figures are exact — the system stores the same 4-dp rate and reaches
+the same cent — while a **score** computed from unrounded signals may sit up to
+0.05 away from the one printed here. Ranks are unaffected (no margin below is
+under 4 points), which is why the assertions are on rank and not on score.
+
 If the implementation picks a different recency shape, the **ranking** assertions
 still hold — every scenario below is built with a margin — but the absolute scores
 will move. Assert on rank, tier, counts and price; treat scores as indicative.
@@ -144,7 +160,7 @@ Sorted $/mi (12 values): 1.720, 1.720, 1.750, 1.750, 1.750, 1.780, 1.780, 1.800,
 | # | carrier | lane loads n | exp n/(n+5) | days since | recency | equip | last delivery | deadhead mi | deadhead | on-time | **score** |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | IBRAHIM TRANSPORT INC (`V1`) | 8 | 0.615 | 3 | 0.905 | 1.00 | Irving 07-15 | 11.6 | 1.000 | 0.968 | **84.3** |
-| 2 | LONE STAR COLD LINES LLC (`V2`) | 2 | 0.286 | 8 | 0.766 | 1.00 | Arlington 07-15 | 17.4 | 1.000 | 0.940 | **69.7** |
+| 2 | LONE STAR COLD LINES LLC (`V2`) | 2 | 0.286 | 8 | 0.766 | 1.00 | Arlington 07-15 | 17.4 | 1.000 | 0.941 | **69.7** |
 | 3 | SILVERADO EXPRESS LLC (`C2`) | 1 | 0.167 | 7 | 0.792 | 1.00 | Waco 07-13 | 121.1 | 0.645 | 0.764 | **57.2** |
 | 4 | COMANCHE PEAK TRUCKING (`C1`) | 1 | 0.167 | 10 | 0.717 | 1.00 | Cypress 07-06 | 263.1 | 0.000 | 0.931 | **44.5** |
 | 5 | BLUEBONNET FREIGHT SYSTEMS (`FAR`) | 0 | 0.000 | — | 0.000 | 1.00 | Denton 07-14 | 23.8 | 1.000 | 0.917 | **44.2** |
@@ -160,8 +176,8 @@ Sorted $/mi (12 values): 1.720, 1.720, 1.750, 1.750, 1.750, 1.780, 1.780, 1.800,
 
 Arithmetic for the top two, term by term:
 
-- **IBRAHIM TRANSPORT INC** — 0.35×0.615 = 0.2154; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.968 = 0.0968 → ×100 = **84.3**
-- **LONE STAR COLD LINES LLC** — 0.35×0.286 = 0.1000; 0.20×0.766 = 0.1532; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.940 = 0.0940 → ×100 = **69.7**
+- **IBRAHIM TRANSPORT INC** — 0.35×0.615 = 0.2153; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.968 = 0.0968; sum = 0.8431 → ×100 = **84.3**
+- **LONE STAR COLD LINES LLC** — 0.35×0.286 = 0.1001; 0.20×0.766 = 0.1532; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.941 = 0.0941; sum = 0.6974 → ×100 = **69.7**
 
   (`V1` lane experience 8/(8+5) = 0.615; on-time shrunk toward the lane average 0.917 with k=5: (8 + 0.917×5)/(8+5) = 0.968)
 
@@ -207,10 +223,10 @@ Arithmetic for the top two, term by term:
 Sorted $/mi (8 values): 2.000, 2.000, 2.060, 2.080, 2.080, 2.080, 2.080, 2.130
 
 - p25 = 2.0450 $/mi → 2.0450 × 284.2 = **$581.19**
-- **median = 2.0800 $/mi → 2.0800 × 284.2 = $591.13**  ← point estimate
+- **median = 2.0800 $/mi → 2.0800 × 284.2 = $591.14**  ← point estimate
 - p75 = 2.0800 $/mi → 2.0800 × 284.2 = **$591.14**
 - Provenance line: *median of 8 loads on `DFW→HOU`, REEFER, 2026-07-06 to 2026-07-15* — confidence **medium**
-- Margin check: customer quote $697.54 vs expected buy $591.13 → 15.3% gross
+- Margin check: customer quote $697.54 vs expected buy $591.14 → 15.3% gross
 
 ### Carrier ranking
 
@@ -229,12 +245,12 @@ Sorted $/mi (8 values): 2.000, 2.000, 2.060, 2.080, 2.080, 2.080, 2.080, 2.130
 | 11 | TRINITY RIVER LOGISTICS INC (`M1`) | 0 | 0.000 | — | 0.000 | 0.00 | Houston 07-15 | 289.0 | 0.000 | 1.000 | **10.0** |
 | 12 | PINEY WOODS CARTAGE LLC (`NEAR`) | 0 | 0.000 | — | 0.000 | 0.00 | The Woodlands 07-15 | 257.4 | 0.000 | 1.000 | **10.0** |
 
-**Expected top carrier: LONE STAR COLD LINES LLC (`V2`), score 81.8, 14.1 ahead of IBRAHIM TRANSPORT INC (`V1`).**
+**Expected top carrier: LONE STAR COLD LINES LLC (`V2`), score 81.8, 14.0 ahead of IBRAHIM TRANSPORT INC (`V1`).**
 
 Arithmetic for the top two, term by term:
 
-- **LONE STAR COLD LINES LLC** — 0.35×0.500 = 0.1750; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×1.000 = 0.1000 → ×100 = **81.8**
-- **IBRAHIM TRANSPORT INC** — 0.35×0.167 = 0.0583; 0.20×0.846 = 0.1693; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×1.000 = 0.1000 → ×100 = **67.8**
+- **LONE STAR COLD LINES LLC** — 0.35×0.500 = 0.1750; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×1.000 = 0.1000; sum = 0.8184 → ×100 = **81.8**
+- **IBRAHIM TRANSPORT INC** — 0.35×0.167 = 0.0585; 0.20×0.846 = 0.1692; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×1.000 = 0.1000; sum = 0.6777 → ×100 = **67.8**
 
   (`V2` lane experience 5/(5+5) = 0.500; on-time shrunk toward the lane average 1.000 with k=5: (5 + 1.000×5)/(5+5) = 1.000)
 
@@ -293,7 +309,7 @@ Sorted $/mi (70 values): 1.720, 1.720, 1.720, 1.720, 1.750, 1.750, 1.750, 1.750,
 
 - p25 = 1.7850 $/mi → 1.7850 × 187.2 = **$334.15**
 - **median = 1.8800 $/mi → 1.8800 × 187.2 = $351.94**  ← point estimate
-- p75 = 2.0200 $/mi → 2.0200 × 187.2 = **$378.15**
+- p75 = 2.0200 $/mi → 2.0200 × 187.2 = **$378.14**
 - Provenance line: *median of 70 loads on `TX_TRIANGLE`, DRY_VAN, 2026-07-05 to 2026-07-15* — confidence **low**
 - Margin check: customer quote $435.17 vs expected buy $351.94 → 19.1% gross
 
@@ -303,23 +319,23 @@ Sorted $/mi (70 values): 1.720, 1.720, 1.720, 1.720, 1.750, 1.750, 1.750, 1.750,
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | RIO GRANDE HAULING CO (`V3`) | 10 | 0.667 | 1 | 0.967 | 1.00 | Schertz 07-15 | 10.5 | 1.000 | 0.824 | **85.9** |
 | 2 | IBRAHIM TRANSPORT INC (`V1`) | 20 | 0.800 | 1 | 0.967 | 1.00 | Irving 07-15 | 287.4 | 0.000 | 0.974 | **72.1** |
-| 3 | TRINITY RIVER LOGISTICS INC (`M1`) | 11 | 0.688 | 1 | 0.967 | 1.00 | Houston 07-15 | 219.9 | 0.150 | 0.960 | **71.0** |
+| 3 | TRINITY RIVER LOGISTICS INC (`M1`) | 11 | 0.688 | 1 | 0.967 | 1.00 | Houston 07-15 | 219.9 | 0.151 | 0.960 | **71.0** |
 | 4 | GULF COAST DRAYAGE LLC (`M2`) | 7 | 0.583 | 1 | 0.967 | 1.00 | Pasadena 07-15 | 231.7 | 0.092 | 0.946 | **66.1** |
-| 5 | PINEY WOODS CARTAGE LLC (`NEAR`) | 6 | 0.545 | 1 | 0.967 | 1.00 | The Woodlands 07-15 | 217.2 | 0.164 | 0.851 | **65.2** |
+| 5 | PINEY WOODS CARTAGE LLC (`NEAR`) | 6 | 0.545 | 1 | 0.967 | 1.00 | The Woodlands 07-15 | 217.2 | 0.164 | 0.850 | **65.2** |
 | 6 | IRON HORSE FLATBED CO (`C5`) | 1 | 0.167 | 6 | 0.819 | 1.00 | San Antonio 07-13 | 7.1 | 1.000 | 0.726 | **64.5** |
 | 7 | BLUEBONNET FREIGHT SYSTEMS (`FAR`) | 7 | 0.583 | 2 | 0.936 | 1.00 | Denton 07-14 | 314.5 | 0.000 | 0.696 | **61.1** |
-| 8 | SILVERADO EXPRESS LLC (`C2`) | 2 | 0.286 | 3 | 0.905 | 1.00 | Waco 07-13 | 180.3 | 0.348 | 0.622 | **56.3** |
-| 9 | LONE STAR COLD LINES LLC (`V2`) | 4 | 0.444 | 7 | 0.792 | 1.00 | Arlington 07-15 | 279.8 | 0.000 | 0.929 | **55.7** |
+| 8 | SILVERADO EXPRESS LLC (`C2`) | 2 | 0.286 | 3 | 0.905 | 1.00 | Waco 07-13 | 180.3 | 0.349 | 0.622 | **56.3** |
+| 9 | LONE STAR COLD LINES LLC (`V2`) | 4 | 0.444 | 7 | 0.792 | 1.00 | Arlington 07-15 | 279.8 | 0.000 | 0.928 | **55.7** |
 | 10 | COMANCHE PEAK TRUCKING (`C1`) | 1 | 0.167 | 10 | 0.717 | 1.00 | Cypress 07-06 | 200.2 | 0.249 | 0.893 | **49.1** |
-| 11 | BRAZOS VALLEY CARRIERS (`C4`) | 1 | 0.167 | 9 | 0.741 | 1.00 | Houston 07-07 | 206.3 | 0.218 | 0.893 | **48.9** |
-| 12 | ALAMO CHILL TRANSPORT (`C3`) | 0 | 0.000 | — | 0.000 | 0.00 | Pearland 07-07 | 218.9 | 0.155 | 0.871 | **11.8** |
+| 11 | BRAZOS VALLEY CARRIERS (`C4`) | 1 | 0.167 | 9 | 0.741 | 1.00 | Houston 07-07 | 206.3 | 0.219 | 0.893 | **49.0** |
+| 12 | ALAMO CHILL TRANSPORT (`C3`) | 0 | 0.000 | — | 0.000 | 0.00 | Pearland 07-07 | 218.9 | 0.156 | 0.871 | **11.8** |
 
 **Expected top carrier: RIO GRANDE HAULING CO (`V3`), score 85.9, 13.8 ahead of IBRAHIM TRANSPORT INC (`V1`).**
 
 Arithmetic for the top two, term by term:
 
-- **RIO GRANDE HAULING CO** — 0.35×0.667 = 0.2333; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.824 = 0.0824 → ×100 = **85.9**
-- **IBRAHIM TRANSPORT INC** — 0.35×0.800 = 0.2800; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.974 = 0.0974 → ×100 = **72.1**
+- **RIO GRANDE HAULING CO** — 0.35×0.667 = 0.2335; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.824 = 0.0824; sum = 0.8593 → ×100 = **85.9**
+- **IBRAHIM TRANSPORT INC** — 0.35×0.800 = 0.2800; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.974 = 0.0974; sum = 0.7208 → ×100 = **72.1**
 
   (`V3` lane experience 10/(10+5) = 0.667; on-time shrunk toward the lane average 0.871 with k=5: (8 + 0.871×5)/(10+5) = 0.824)
 
@@ -372,19 +388,19 @@ Sorted $/mi (6 values): 2.180, 2.180, 2.250, 2.250, 2.280, 2.310
 | 4 | BRAZOS VALLEY CARRIERS (`C4`) | 0 | 0.000 | — | 0.000 | 1.00 | Houston 07-07 | 39.0 | 1.000 | 0.500 | **40.0** |
 | 5 | TRINITY RIVER LOGISTICS INC (`M1`) | 0 | 0.000 | — | 0.000 | 1.00 | Houston 07-15 | 49.1 | 1.000 | 0.500 | **40.0** |
 | 6 | GULF COAST DRAYAGE LLC (`M2`) | 0 | 0.000 | — | 0.000 | 1.00 | Pasadena 07-15 | 58.0 | 0.960 | 0.500 | **39.2** |
-| 7 | SILVERADO EXPRESS LLC (`C2`) | 0 | 0.000 | — | 0.000 | 1.00 | Waco 07-13 | 156.9 | 0.465 | 0.500 | **29.3** |
+| 7 | SILVERADO EXPRESS LLC (`C2`) | 0 | 0.000 | — | 0.000 | 1.00 | Waco 07-13 | 156.9 | 0.466 | 0.500 | **29.3** |
 | 8 | RIO GRANDE HAULING CO (`V3`) | 0 | 0.000 | — | 0.000 | 1.00 | Schertz 07-15 | 208.6 | 0.207 | 0.500 | **24.1** |
 | 9 | ALAMO CHILL TRANSPORT (`C3`) | 0 | 0.000 | — | 0.000 | 0.00 | Pearland 07-07 | 66.0 | 0.920 | 0.500 | **23.4** |
 | 10 | IRON HORSE FLATBED CO (`C5`) | 0 | 0.000 | — | 0.000 | 1.00 | San Antonio 07-13 | 224.2 | 0.129 | 0.500 | **22.6** |
-| 11 | LONE STAR COLD LINES LLC (`V2`) | 0 | 0.000 | — | 0.000 | 1.00 | Arlington 07-15 | 229.5 | 0.102 | 0.500 | **22.0** |
+| 11 | LONE STAR COLD LINES LLC (`V2`) | 0 | 0.000 | — | 0.000 | 1.00 | Arlington 07-15 | 229.5 | 0.103 | 0.500 | **22.1** |
 | 12 | IBRAHIM TRANSPORT INC (`V1`) | 0 | 0.000 | — | 0.000 | 1.00 | Irving 07-15 | 229.8 | 0.101 | 0.500 | **22.0** |
 
-**Expected top carrier: PINEY WOODS CARTAGE LLC (`NEAR`), score 68.4, 15.8 ahead of BLUEBONNET FREIGHT SYSTEMS (`FAR`).**
+**Expected top carrier: PINEY WOODS CARTAGE LLC (`NEAR`), score 68.4, 15.9 ahead of BLUEBONNET FREIGHT SYSTEMS (`FAR`).**
 
 Arithmetic for the top two, term by term:
 
-- **PINEY WOODS CARTAGE LLC** — 0.35×0.286 = 0.1000; 0.20×0.846 = 0.1693; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.643 = 0.0643 → ×100 = **68.4**
-- **BLUEBONNET FREIGHT SYSTEMS** — 0.35×0.444 = 0.1556; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.389 = 0.0389 → ×100 = **52.5**
+- **PINEY WOODS CARTAGE LLC** — 0.35×0.286 = 0.1001; 0.20×0.846 = 0.1692; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.643 = 0.0643; sum = 0.6836 → ×100 = **68.4**
+- **BLUEBONNET FREIGHT SYSTEMS** — 0.35×0.444 = 0.1554; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.389 = 0.0389; sum = 0.5253 → ×100 = **52.5**
 
   (`NEAR` lane experience 2/(2+5) = 0.286; on-time shrunk toward the lane average 0.500 with k=5: (2 + 0.500×5)/(2+5) = 0.643)
 
@@ -425,21 +441,21 @@ Arithmetic for the top two, term by term:
 Sorted $/mi (7 values): 1.890, 1.990, 2.160, 2.190, 2.190, 2.220, 2.380
 
 - p25 = 2.0750 $/mi → 2.0750 × 217.3 = **$450.90**
-- **median = 2.1900 $/mi → 2.1900 × 217.3 = $475.88**  ← point estimate
+- **median = 2.1900 $/mi → 2.1900 × 217.3 = $475.89**  ← point estimate
 - p75 = 2.2050 $/mi → 2.2050 × 217.3 = **$479.15**
 - Provenance line: *median of 7 loads on `TX_TRIANGLE`, FLATBED, 2026-07-06 to 2026-07-13* — confidence **low**
-- Margin check: customer quote $548.73 vs expected buy $475.88 → 13.3% gross
+- Margin check: customer quote $548.73 vs expected buy $475.89 → 13.3% gross
 
 ### Carrier ranking
 
 | # | carrier | lane loads n | exp n/(n+5) | days since | recency | equip | last delivery | deadhead mi | deadhead | on-time | **score** |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | RIO GRANDE HAULING CO (`V3`) | 4 | 0.444 | 3 | 0.905 | 1.00 | Schertz 07-15 | 279.4 | 0.000 | 1.000 | **58.7** |
+| 1 | RIO GRANDE HAULING CO (`V3`) | 4 | 0.444 | 3 | 0.905 | 1.00 | Schertz 07-15 | 279.4 | 0.000 | 1.000 | **58.6** |
 | 2 | IRON HORSE FLATBED CO (`C5`) | 2 | 0.286 | 3 | 0.905 | 1.00 | San Antonio 07-13 | 287.4 | 0.000 | 1.000 | **53.1** |
 | 3 | GULF COAST DRAYAGE LLC (`M2`) | 1 | 0.167 | 8 | 0.766 | 1.00 | Pasadena 07-15 | 271.3 | 0.000 | 1.000 | **46.2** |
 | 4 | IBRAHIM TRANSPORT INC (`V1`) | 0 | 0.000 | — | 0.000 | 0.00 | Irving 07-15 | 17.5 | 1.000 | 1.000 | **30.0** |
 | 5 | LONE STAR COLD LINES LLC (`V2`) | 0 | 0.000 | — | 0.000 | 0.00 | Arlington 07-15 | 22.4 | 1.000 | 1.000 | **30.0** |
-| 6 | BLUEBONNET FREIGHT SYSTEMS (`FAR`) | 0 | 0.000 | — | 0.000 | 0.00 | Denton 07-14 | 51.5 | 0.993 | 1.000 | **29.8** |
+| 6 | BLUEBONNET FREIGHT SYSTEMS (`FAR`) | 0 | 0.000 | — | 0.000 | 0.00 | Denton 07-14 | 51.5 | 0.993 | 1.000 | **29.9** |
 | 7 | SILVERADO EXPRESS LLC (`C2`) | 0 | 0.000 | — | 0.000 | 0.00 | Waco 07-13 | 101.6 | 0.742 | 1.000 | **24.8** |
 | 8 | PINEY WOODS CARTAGE LLC (`NEAR`) | 0 | 0.000 | — | 0.000 | 0.00 | The Woodlands 07-15 | 229.4 | 0.103 | 1.000 | **12.1** |
 | 9 | COMANCHE PEAK TRUCKING (`C1`) | 0 | 0.000 | — | 0.000 | 0.00 | Cypress 07-06 | 235.8 | 0.071 | 1.000 | **11.4** |
@@ -447,12 +463,12 @@ Sorted $/mi (7 values): 1.890, 1.990, 2.160, 2.190, 2.190, 2.220, 2.380
 | 11 | ALAMO CHILL TRANSPORT (`C3`) | 0 | 0.000 | — | 0.000 | 0.00 | Pearland 07-07 | 277.4 | 0.000 | 1.000 | **10.0** |
 | 12 | TRINITY RIVER LOGISTICS INC (`M1`) | 0 | 0.000 | — | 0.000 | 0.00 | Houston 07-15 | 261.5 | 0.000 | 1.000 | **10.0** |
 
-**Expected top carrier: RIO GRANDE HAULING CO (`V3`), score 58.7, 5.6 ahead of IRON HORSE FLATBED CO (`C5`).**
+**Expected top carrier: RIO GRANDE HAULING CO (`V3`), score 58.6, 5.5 ahead of IRON HORSE FLATBED CO (`C5`).**
 
 Arithmetic for the top two, term by term:
 
-- **RIO GRANDE HAULING CO** — 0.35×0.444 = 0.1556; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×1.000 = 0.1000 → ×100 = **58.7**
-- **IRON HORSE FLATBED CO** — 0.35×0.286 = 0.1000; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×1.000 = 0.1000 → ×100 = **53.1**
+- **RIO GRANDE HAULING CO** — 0.35×0.444 = 0.1554; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×1.000 = 0.1000; sum = 0.5864 → ×100 = **58.6**
+- **IRON HORSE FLATBED CO** — 0.35×0.286 = 0.1001; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×1.000 = 0.1000; sum = 0.5311 → ×100 = **53.1**
 
   (`V3` lane experience 4/(4+5) = 0.444; on-time shrunk toward the lane average 1.000 with k=5: (4 + 1.000×5)/(4+5) = 1.000)
 
@@ -578,12 +594,12 @@ Sorted $/mi (12 values): 2.070, 2.070, 2.070, 2.100, 2.150, 2.150, 2.170, 2.170,
 | 11 | MISSION VALLEY TRUCKING LLC (`V3`) | 0 | 0.000 | — | 0.000 | 1.00 | Schertz 07-15 | 315.4 | 0.000 | 1.000 | **25.0** |
 | 12 | FROSTLINE CARRIERS INC (`C3`) | 0 | 0.000 | — | 0.000 | 0.00 | Richmond 07-12 | 307.2 | 0.000 | 1.000 | **10.0** |
 
-**Expected top carrier: NORTH TEXAS LINE HAUL INC (`V1`), score 84.6, 13.3 ahead of DELTA PRIME LLC (`V2`).**
+**Expected top carrier: NORTH TEXAS LINE HAUL INC (`V1`), score 84.6, 13.2 ahead of DELTA PRIME LLC (`V2`).**
 
 Arithmetic for the top two, term by term:
 
-- **NORTH TEXAS LINE HAUL INC** — 0.35×0.615 = 0.2154; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×1.000 = 0.1000 → ×100 = **84.6**
-- **DELTA PRIME LLC** — 0.35×0.286 = 0.1000; 0.20×0.819 = 0.1637; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×1.000 = 0.1000 → ×100 = **71.4**
+- **NORTH TEXAS LINE HAUL INC** — 0.35×0.615 = 0.2153; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×1.000 = 0.1000; sum = 0.8463 → ×100 = **84.6**
+- **DELTA PRIME LLC** — 0.35×0.286 = 0.1001; 0.20×0.819 = 0.1638; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×1.000 = 0.1000; sum = 0.7139 → ×100 = **71.4**
 
   (`V1` lane experience 8/(8+5) = 0.615; on-time shrunk toward the lane average 1.000 with k=5: (8 + 1.000×5)/(8+5) = 1.000)
 
@@ -639,7 +655,7 @@ Sorted $/mi (8 values): 2.350, 2.380, 2.380, 2.430, 2.450, 2.450, 2.450, 2.510
 | # | carrier | lane loads n | exp n/(n+5) | days since | recency | equip | last delivery | deadhead mi | deadhead | on-time | **score** |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | DELTA PRIME LLC (`V2`) | 5 | 0.500 | 5 | 0.846 | 1.00 | Arlington 07-15 | 12.9 | 1.000 | 0.675 | **76.2** |
-| 2 | NORTH TEXAS LINE HAUL INC (`V1`) | 1 | 0.167 | 3 | 0.905 | 1.00 | Irving 07-15 | 18.7 | 1.000 | 0.792 | **66.8** |
+| 2 | NORTH TEXAS LINE HAUL INC (`V1`) | 1 | 0.167 | 3 | 0.905 | 1.00 | Irving 07-15 | 18.7 | 1.000 | 0.792 | **66.9** |
 | 3 | FROSTLINE CARRIERS INC (`C3`) | 2 | 0.286 | 4 | 0.875 | 1.00 | Richmond 07-12 | 292.9 | 0.000 | 0.821 | **50.7** |
 | 4 | HILL COUNTRY EXPRESS CO (`FAR`) | 0 | 0.000 | — | 0.000 | 1.00 | Denton 07-14 | 30.0 | 1.000 | 0.750 | **42.5** |
 | 5 | BAYOU CITY TRANSPORT LLC (`M2`) | 0 | 0.000 | — | 0.000 | 1.00 | Pasadena 07-15 | 299.4 | 0.000 | 0.750 | **22.5** |
@@ -655,8 +671,8 @@ Sorted $/mi (8 values): 2.350, 2.380, 2.380, 2.430, 2.450, 2.450, 2.450, 2.510
 
 Arithmetic for the top two, term by term:
 
-- **DELTA PRIME LLC** — 0.35×0.500 = 0.1750; 0.20×0.846 = 0.1693; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.675 = 0.0675 → ×100 = **76.2**
-- **NORTH TEXAS LINE HAUL INC** — 0.35×0.167 = 0.0583; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.792 = 0.0792 → ×100 = **66.8**
+- **DELTA PRIME LLC** — 0.35×0.500 = 0.1750; 0.20×0.846 = 0.1692; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.675 = 0.0675; sum = 0.7617 → ×100 = **76.2**
+- **NORTH TEXAS LINE HAUL INC** — 0.35×0.167 = 0.0585; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.792 = 0.0792; sum = 0.6687 → ×100 = **66.9**
 
   (`V2` lane experience 5/(5+5) = 0.500; on-time shrunk toward the lane average 0.750 with k=5: (3 + 0.750×5)/(5+5) = 0.675)
 
@@ -723,27 +739,27 @@ Sorted $/mi (71 values): 2.070, 2.070, 2.070, 2.070, 2.070, 2.070, 2.100, 2.100,
 
 | # | carrier | lane loads n | exp n/(n+5) | days since | recency | equip | last delivery | deadhead mi | deadhead | on-time | **score** |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | MISSION VALLEY TRUCKING LLC (`V3`) | 12 | 0.706 | 1 | 0.967 | 1.00 | Schertz 07-15 | 20.3 | 1.000 | 0.983 | **88.9** |
+| 1 | MISSION VALLEY TRUCKING LLC (`V3`) | 12 | 0.706 | 1 | 0.967 | 1.00 | Schertz 07-15 | 20.3 | 1.000 | 0.984 | **88.9** |
 | 2 | NORTH TEXAS LINE HAUL INC (`V1`) | 20 | 0.800 | 1 | 0.967 | 1.00 | Irving 07-15 | 299.5 | 0.000 | 0.989 | **72.2** |
-| 3 | CROSSROADS FREIGHTWAYS INC (`M1`) | 11 | 0.688 | 1 | 0.967 | 1.00 | Houston 07-15 | 229.6 | 0.102 | 0.982 | **70.3** |
+| 3 | CROSSROADS FREIGHTWAYS INC (`M1`) | 11 | 0.688 | 1 | 0.967 | 1.00 | Houston 07-15 | 229.6 | 0.102 | 0.983 | **70.3** |
 | 4 | STEEL PLAINS FLATBED LLC (`C5`) | 1 | 0.167 | 8 | 0.766 | 1.00 | San Antonio 07-10 | 4.1 | 1.000 | 0.953 | **65.7** |
-| 5 | WOODLANDS REGIONAL CARRIERS (`NEAR`) | 6 | 0.545 | 1 | 0.967 | 1.00 | The Woodlands 07-15 | 228.1 | 0.110 | 0.883 | **64.5** |
-| 6 | BAYOU CITY TRANSPORT LLC (`M2`) | 6 | 0.545 | 1 | 0.967 | 1.00 | Pasadena 07-15 | 241.2 | 0.044 | 0.883 | **63.2** |
+| 5 | WOODLANDS REGIONAL CARRIERS (`NEAR`) | 6 | 0.545 | 1 | 0.967 | 1.00 | The Woodlands 07-15 | 228.1 | 0.110 | 0.884 | **64.5** |
+| 6 | BAYOU CITY TRANSPORT LLC (`M2`) | 6 | 0.545 | 1 | 0.967 | 1.00 | Pasadena 07-15 | 241.2 | 0.044 | 0.884 | **63.1** |
 | 7 | HILL COUNTRY EXPRESS CO (`FAR`) | 7 | 0.583 | 2 | 0.936 | 1.00 | Denton 07-14 | 326.2 | 0.000 | 0.810 | **62.2** |
 | 8 | DELTA PRIME LLC (`V2`) | 4 | 0.444 | 5 | 0.846 | 1.00 | Arlington 07-15 | 291.7 | 0.000 | 0.969 | **57.2** |
-| 9 | TWIN OAKS TRUCKING LLC (`C2`) | 2 | 0.286 | 7 | 0.792 | 1.00 | Cypress 07-09 | 205.0 | 0.225 | 0.960 | **54.9** |
-| 10 | SAN MARCOS SHIPPING CO (`C4`) | 1 | 0.167 | 2 | 0.936 | 1.00 | Houston 07-14 | 242.9 | 0.035 | 0.953 | **49.8** |
-| 11 | PECAN CREEK HAULING (`C1`) | 1 | 0.167 | 7 | 0.792 | 1.00 | Stafford 07-09 | 214.3 | 0.178 | 0.953 | **49.8** |
+| 9 | TWIN OAKS TRUCKING LLC (`C2`) | 2 | 0.286 | 7 | 0.792 | 1.00 | Cypress 07-09 | 205.0 | 0.225 | 0.960 | **55.0** |
+| 10 | PECAN CREEK HAULING (`C1`) | 1 | 0.167 | 7 | 0.792 | 1.00 | Stafford 07-09 | 214.3 | 0.179 | 0.953 | **49.8** |
+| 11 | SAN MARCOS SHIPPING CO (`C4`) | 1 | 0.167 | 2 | 0.936 | 1.00 | Houston 07-14 | 242.9 | 0.036 | 0.953 | **49.8** |
 | 12 | FROSTLINE CARRIERS INC (`C3`) | 0 | 0.000 | — | 0.000 | 0.00 | Richmond 07-12 | 202.4 | 0.238 | 0.944 | **14.2** |
 
 **Expected top carrier: MISSION VALLEY TRUCKING LLC (`V3`), score 88.9, 16.7 ahead of NORTH TEXAS LINE HAUL INC (`V1`).**
 
 Arithmetic for the top two, term by term:
 
-- **MISSION VALLEY TRUCKING LLC** — 0.35×0.706 = 0.2471; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.983 = 0.0983 → ×100 = **88.9**
-- **NORTH TEXAS LINE HAUL INC** — 0.35×0.800 = 0.2800; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.989 = 0.0989 → ×100 = **72.2**
+- **MISSION VALLEY TRUCKING LLC** — 0.35×0.706 = 0.2471; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.984 = 0.0984; sum = 0.8889 → ×100 = **88.9**
+- **NORTH TEXAS LINE HAUL INC** — 0.35×0.800 = 0.2800; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.989 = 0.0989; sum = 0.7223 → ×100 = **72.2**
 
-  (`V3` lane experience 12/(12+5) = 0.706; on-time shrunk toward the lane average 0.944 with k=5: (12 + 0.944×5)/(12+5) = 0.983)
+  (`V3` lane experience 12/(12+5) = 0.706; on-time shrunk toward the lane average 0.944 with k=5: (12 + 0.944×5)/(12+5) = 0.984)
 
 **Why this is the right answer:** at REGION the veteran with the deepest dry-van history leads on experience, and the deadhead term separates the ones whose trucks are actually near San Antonio from the ones sitting in DFW.
 
@@ -780,7 +796,7 @@ Sorted $/mi (6 values): 2.370, 2.530, 2.560, 2.580, 2.580, 2.630
 
 - p25 = 2.5375 $/mi → 2.5375 × 160.2 = **$406.51**
 - **median = 2.5700 $/mi → 2.5700 × 160.2 = $411.71**  ← point estimate
-- p75 = 2.5800 $/mi → 2.5800 × 160.2 = **$413.31**
+- p75 = 2.5800 $/mi → 2.5800 × 160.2 = **$413.32**
 - Provenance line: *median of 6 loads on `773→787`, DRY_VAN, 2026-07-06 to 2026-07-13* — confidence **medium**
 - Margin check: customer quote $487.71 vs expected buy $411.71 → 15.6% gross
 
@@ -788,25 +804,25 @@ Sorted $/mi (6 values): 2.370, 2.530, 2.560, 2.580, 2.580, 2.630
 
 | # | carrier | lane loads n | exp n/(n+5) | days since | recency | equip | last delivery | deadhead mi | deadhead | on-time | **score** |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | WOODLANDS REGIONAL CARRIERS (`NEAR`) | 2 | 0.286 | 5 | 0.846 | 1.00 | The Woodlands 07-15 | 16.4 | 1.000 | 0.762 | **69.5** |
+| 1 | WOODLANDS REGIONAL CARRIERS (`NEAR`) | 2 | 0.286 | 5 | 0.846 | 1.00 | The Woodlands 07-15 | 16.4 | 1.000 | 0.762 | **69.6** |
 | 2 | HILL COUNTRY EXPRESS CO (`FAR`) | 4 | 0.444 | 3 | 0.905 | 1.00 | Denton 07-14 | 264.8 | 0.000 | 0.593 | **54.6** |
 | 3 | TWIN OAKS TRUCKING LLC (`C2`) | 0 | 0.000 | — | 0.000 | 1.00 | Cypress 07-09 | 38.0 | 1.000 | 0.667 | **41.7** |
 | 4 | CROSSROADS FREIGHTWAYS INC (`M1`) | 0 | 0.000 | — | 0.000 | 1.00 | Houston 07-15 | 49.1 | 1.000 | 0.667 | **41.7** |
 | 5 | SAN MARCOS SHIPPING CO (`C4`) | 0 | 0.000 | — | 0.000 | 1.00 | Houston 07-14 | 51.5 | 0.993 | 0.667 | **41.5** |
 | 6 | BAYOU CITY TRANSPORT LLC (`M2`) | 0 | 0.000 | — | 0.000 | 1.00 | Pasadena 07-15 | 58.0 | 0.960 | 0.667 | **40.9** |
-| 7 | PECAN CREEK HAULING (`C1`) | 0 | 0.000 | — | 0.000 | 1.00 | Stafford 07-09 | 59.2 | 0.954 | 0.667 | **40.7** |
+| 7 | PECAN CREEK HAULING (`C1`) | 0 | 0.000 | — | 0.000 | 1.00 | Stafford 07-09 | 59.2 | 0.954 | 0.667 | **40.8** |
 | 8 | MISSION VALLEY TRUCKING LLC (`V3`) | 0 | 0.000 | — | 0.000 | 1.00 | Schertz 07-15 | 208.6 | 0.207 | 0.667 | **25.8** |
 | 9 | FROSTLINE CARRIERS INC (`C3`) | 0 | 0.000 | — | 0.000 | 0.00 | Richmond 07-12 | 65.8 | 0.921 | 0.667 | **25.1** |
-| 10 | DELTA PRIME LLC (`V2`) | 0 | 0.000 | — | 0.000 | 1.00 | Arlington 07-15 | 229.5 | 0.102 | 0.667 | **23.7** |
-| 11 | NORTH TEXAS LINE HAUL INC (`V1`) | 0 | 0.000 | — | 0.000 | 1.00 | Irving 07-15 | 229.8 | 0.101 | 0.667 | **23.7** |
+| 10 | NORTH TEXAS LINE HAUL INC (`V1`) | 0 | 0.000 | — | 0.000 | 1.00 | Irving 07-15 | 229.8 | 0.101 | 0.667 | **23.7** |
+| 11 | DELTA PRIME LLC (`V2`) | 0 | 0.000 | — | 0.000 | 1.00 | Arlington 07-15 | 229.5 | 0.103 | 0.667 | **23.7** |
 | 12 | STEEL PLAINS FLATBED LLC (`C5`) | 0 | 0.000 | — | 0.000 | 1.00 | San Antonio 07-10 | 230.6 | 0.097 | 0.667 | **23.6** |
 
-**Expected top carrier: WOODLANDS REGIONAL CARRIERS (`NEAR`), score 69.5, 15.0 ahead of HILL COUNTRY EXPRESS CO (`FAR`).**
+**Expected top carrier: WOODLANDS REGIONAL CARRIERS (`NEAR`), score 69.6, 15.0 ahead of HILL COUNTRY EXPRESS CO (`FAR`).**
 
 Arithmetic for the top two, term by term:
 
-- **WOODLANDS REGIONAL CARRIERS** — 0.35×0.286 = 0.1000; 0.20×0.846 = 0.1693; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.762 = 0.0762 → ×100 = **69.5**
-- **HILL COUNTRY EXPRESS CO** — 0.35×0.444 = 0.1556; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.593 = 0.0593 → ×100 = **54.6**
+- **WOODLANDS REGIONAL CARRIERS** — 0.35×0.286 = 0.1001; 0.20×0.846 = 0.1692; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.762 = 0.0762; sum = 0.6955 → ×100 = **69.6**
+- **HILL COUNTRY EXPRESS CO** — 0.35×0.444 = 0.1554; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.593 = 0.0593; sum = 0.5457 → ×100 = **54.6**
 
   (`NEAR` lane experience 2/(2+5) = 0.286; on-time shrunk toward the lane average 0.667 with k=5: (2 + 0.667×5)/(2+5) = 0.762)
 
@@ -870,10 +886,10 @@ Because the equipment filter is off, the pool is **heterogeneous**: DRY_VAN 71, 
 Sorted $/mi (93 values): 2.070, 2.070, 2.070, 2.070, 2.070, 2.070, 2.100, 2.100, 2.100, 2.100, 2.100, 2.100, 2.100, 2.100, 2.100, 2.130, 2.130, 2.130, 2.130, 2.150, 2.150, 2.150, 2.150, 2.150, 2.170, 2.170, 2.170, 2.170, 2.170, 2.170, 2.200, 2.200, 2.200, 2.200, 2.200, 2.200, 2.230, 2.230, 2.230, 2.270, 2.270, 2.300, 2.300, 2.300, 2.320, 2.320, 2.320, 2.320, 2.340, 2.340, 2.340, 2.350, 2.370, 2.370, 2.370, 2.380, 2.380, 2.380, 2.400, 2.400, 2.400, 2.410, 2.410, 2.430, 2.430, 2.450, 2.450, 2.450, 2.470, 2.510, 2.510, 2.530, 2.530, 2.560, 2.560, 2.580, 2.580, 2.580, 2.580, 2.580, 2.600, 2.600, 2.630, 2.660, 2.690, 2.720, 2.720, 2.740, 2.780, 2.810, 2.820, 2.940, 3.020
 
 - p25 = 2.1500 $/mi → 2.1500 × 216.4 = **$465.26**
-- **median = 2.3200 $/mi → 2.3200 × 216.4 = $502.04**  ← point estimate
+- **median = 2.3200 $/mi → 2.3200 × 216.4 = $502.05**  ← point estimate
 - p75 = 2.5100 $/mi → 2.5100 × 216.4 = **$543.16**
 - Provenance line: *median of 93 loads on `TX_TRIANGLE (any equipment)`, FLATBED, 2026-07-05 to 2026-07-15* — confidence **low**
-- Margin check: customer quote $635.83 vs expected buy $502.04 → 21.0% gross
+- Margin check: customer quote $635.83 vs expected buy $502.05 → 21.0% gross
 
 ### Carrier ranking
 
@@ -884,20 +900,20 @@ Sorted $/mi (93 values): 2.070, 2.070, 2.070, 2.070, 2.070, 2.070, 2.100, 2.100,
 | 3 | MISSION VALLEY TRUCKING LLC (`V3`) | 16 | 0.762 | 1 | 0.967 | 1.00 | Schertz 07-15 | 279.4 | 0.000 | 0.982 | **70.8** |
 | 4 | HILL COUNTRY EXPRESS CO (`FAR`) | 8 | 0.615 | 2 | 0.936 | 0.00 | Denton 07-14 | 51.5 | 0.993 | 0.817 | **68.3** |
 | 5 | BAYOU CITY TRANSPORT LLC (`M2`) | 9 | 0.643 | 1 | 0.967 | 1.00 | Pasadena 07-15 | 271.3 | 0.000 | 0.902 | **65.9** |
-| 6 | CROSSROADS FREIGHTWAYS INC (`M1`) | 11 | 0.688 | 1 | 0.967 | 0.00 | Houston 07-15 | 261.5 | 0.000 | 0.976 | **53.2** |
+| 6 | CROSSROADS FREIGHTWAYS INC (`M1`) | 11 | 0.688 | 1 | 0.967 | 0.00 | Houston 07-15 | 261.5 | 0.000 | 0.977 | **53.2** |
 | 7 | STEEL PLAINS FLATBED LLC (`C5`) | 3 | 0.375 | 6 | 0.819 | 1.00 | San Antonio 07-10 | 291.9 | 0.000 | 0.828 | **52.8** |
 | 8 | WOODLANDS REGIONAL CARRIERS (`NEAR`) | 6 | 0.545 | 1 | 0.967 | 0.00 | The Woodlands 07-15 | 229.4 | 0.103 | 0.875 | **49.2** |
 | 9 | FROSTLINE CARRIERS INC (`C3`) | 2 | 0.286 | 4 | 0.875 | 0.00 | Richmond 07-12 | 268.0 | 0.000 | 0.946 | **37.0** |
-| 10 | TWIN OAKS TRUCKING LLC (`C2`) | 2 | 0.286 | 7 | 0.792 | 0.00 | Cypress 07-09 | 239.7 | 0.052 | 0.946 | **36.3** |
-| 11 | SAN MARCOS SHIPPING CO (`C4`) | 1 | 0.167 | 2 | 0.936 | 0.00 | Houston 07-14 | 264.8 | 0.000 | 0.937 | **33.9** |
-| 12 | PECAN CREEK HAULING (`C1`) | 1 | 0.167 | 7 | 0.792 | 0.00 | Stafford 07-09 | 266.8 | 0.000 | 0.937 | **31.0** |
+| 10 | TWIN OAKS TRUCKING LLC (`C2`) | 2 | 0.286 | 7 | 0.792 | 0.00 | Cypress 07-09 | 239.7 | 0.052 | 0.946 | **36.4** |
+| 11 | SAN MARCOS SHIPPING CO (`C4`) | 1 | 0.167 | 2 | 0.936 | 0.00 | Houston 07-14 | 264.8 | 0.000 | 0.938 | **34.0** |
+| 12 | PECAN CREEK HAULING (`C1`) | 1 | 0.167 | 7 | 0.792 | 0.00 | Stafford 07-09 | 266.8 | 0.000 | 0.938 | **31.1** |
 
-**Expected top carrier: NORTH TEXAS LINE HAUL INC (`V1`), score 77.7, 5.1 ahead of DELTA PRIME LLC (`V2`).**
+**Expected top carrier: NORTH TEXAS LINE HAUL INC (`V1`), score 77.7, 5.0 ahead of DELTA PRIME LLC (`V2`).**
 
 Arithmetic for the top two, term by term:
 
-- **NORTH TEXAS LINE HAUL INC** — 0.35×0.815 = 0.2852; 0.20×0.967 = 0.1934; 0.15×0.00 = 0.0000; 0.20×1.000 = 0.2000; 0.10×0.986 = 0.0986 → ×100 = **77.7**
-- **DELTA PRIME LLC** — 0.35×0.706 = 0.2471; 0.20×0.967 = 0.1934; 0.15×0.00 = 0.0000; 0.20×1.000 = 0.2000; 0.10×0.860 = 0.0860 → ×100 = **72.7**
+- **NORTH TEXAS LINE HAUL INC** — 0.35×0.815 = 0.2853; 0.20×0.967 = 0.1934; 0.15×0.00 = 0.0000; 0.20×1.000 = 0.2000; 0.10×0.986 = 0.0986; sum = 0.7773 → ×100 = **77.7**
+- **DELTA PRIME LLC** — 0.35×0.706 = 0.2471; 0.20×0.967 = 0.1934; 0.15×0.00 = 0.0000; 0.20×1.000 = 0.2000; 0.10×0.860 = 0.0860; sum = 0.7265 → ×100 = **72.7**
 
   (`V1` lane experience 22/(22+5) = 0.815; on-time shrunk toward the lane average 0.925 with k=5: (22 + 0.925×5)/(22+5) = 0.986)
 
@@ -1013,7 +1029,7 @@ Sorted $/mi (12 values): 2.450, 2.450, 2.480, 2.480, 2.480, 2.510, 2.510, 2.510,
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | Metroplex Ridge Logistics, Inc. (`V1`) | 8 | 0.615 | 5 | 0.846 | 1.00 | Irving 07-15 | 29.1 | 1.000 | 0.968 | **83.1** |
 | 2 | Bay Area Cold Carriers, LLC (`V2`) | 2 | 0.286 | 2 | 0.936 | 1.00 | Arlington 07-15 | 37.1 | 1.000 | 0.798 | **71.7** |
-| 3 | Hillsboro Freight Partners LLC (`C1`) | 1 | 0.167 | 3 | 0.905 | 1.00 | Katy 07-13 | 292.0 | 0.000 | 0.931 | **48.2** |
+| 3 | Hillsboro Freight Partners LLC (`C1`) | 1 | 0.167 | 3 | 0.905 | 1.00 | Katy 07-13 | 292.0 | 0.000 | 0.931 | **48.3** |
 | 4 | Ibrahim Transport, Inc. (`C2`) | 1 | 0.167 | 6 | 0.819 | 1.00 | Sugar Land 07-10 | 304.6 | 0.000 | 0.931 | **46.5** |
 | 5 | Guadalupe Valley Freight, LLC (`FAR`) | 0 | 0.000 | — | 0.000 | 1.00 | Denton 07-14 | 22.1 | 1.000 | 0.917 | **44.2** |
 | 6 | Brazos Bend Carriers, Inc. (`C4`) | 0 | 0.000 | — | 0.000 | 1.00 | Houston 07-08 | 302.4 | 0.000 | 0.917 | **24.2** |
@@ -1024,12 +1040,12 @@ Sorted $/mi (12 values): 2.450, 2.450, 2.480, 2.480, 2.480, 2.510, 2.510, 2.510,
 | 11 | Espinoza Brothers Trucking Co. (`V3`) | 0 | 0.000 | — | 0.000 | 1.00 | Schertz 07-15 | 315.4 | 0.000 | 0.917 | **24.2** |
 | 12 | Frio Line Refrigerated LLC (`C3`) | 0 | 0.000 | — | 0.000 | 0.00 | Pasadena 07-14 | 313.6 | 0.000 | 0.917 | **9.2** |
 
-**Expected top carrier: Metroplex Ridge Logistics, Inc. (`V1`), score 83.1, 11.5 ahead of Bay Area Cold Carriers, LLC (`V2`).**
+**Expected top carrier: Metroplex Ridge Logistics, Inc. (`V1`), score 83.1, 11.4 ahead of Bay Area Cold Carriers, LLC (`V2`).**
 
 Arithmetic for the top two, term by term:
 
-- **Metroplex Ridge Logistics, Inc.** — 0.35×0.615 = 0.2154; 0.20×0.846 = 0.1693; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.968 = 0.0968 → ×100 = **83.1**
-- **Bay Area Cold Carriers, LLC** — 0.35×0.286 = 0.1000; 0.20×0.936 = 0.1871; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.798 = 0.0798 → ×100 = **71.7**
+- **Metroplex Ridge Logistics, Inc.** — 0.35×0.615 = 0.2153; 0.20×0.846 = 0.1692; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.968 = 0.0968; sum = 0.8313 → ×100 = **83.1**
+- **Bay Area Cold Carriers, LLC** — 0.35×0.286 = 0.1001; 0.20×0.936 = 0.1872; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.798 = 0.0798; sum = 0.7171 → ×100 = **71.7**
 
   (`V1` lane experience 8/(8+5) = 0.615; on-time shrunk toward the lane average 0.917 with k=5: (8 + 0.917×5)/(8+5) = 0.968)
 
@@ -1101,8 +1117,8 @@ Sorted $/mi (8 values): 2.760, 2.810, 2.810, 2.830, 2.860, 2.890, 2.890, 3.000
 
 Arithmetic for the top two, term by term:
 
-- **Bay Area Cold Carriers, LLC** — 0.35×0.500 = 0.1750; 0.20×0.846 = 0.1693; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.675 = 0.0675 → ×100 = **76.2**
-- **Metroplex Ridge Logistics, Inc.** — 0.35×0.167 = 0.0583; 0.20×0.846 = 0.1693; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.792 = 0.0792 → ×100 = **65.7**
+- **Bay Area Cold Carriers, LLC** — 0.35×0.500 = 0.1750; 0.20×0.846 = 0.1692; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.675 = 0.0675; sum = 0.7617 → ×100 = **76.2**
+- **Metroplex Ridge Logistics, Inc.** — 0.35×0.167 = 0.0585; 0.20×0.846 = 0.1692; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.792 = 0.0792; sum = 0.6569 → ×100 = **65.7**
 
   (`V2` lane experience 5/(5+5) = 0.500; on-time shrunk toward the lane average 0.750 with k=5: (3 + 0.750×5)/(5+5) = 0.675)
 
@@ -1161,7 +1177,7 @@ Sorted $/mi (68 values): 2.450, 2.450, 2.450, 2.450, 2.450, 2.450, 2.480, 2.480,
 
 - p25 = 2.5250 $/mi → 2.5250 × 187.2 = **$472.68**
 - **median = 2.6100 $/mi → 2.6100 × 187.2 = $488.59**  ← point estimate
-- p75 = 2.8050 $/mi → 2.8050 × 187.2 = **$525.09**
+- p75 = 2.8050 $/mi → 2.8050 × 187.2 = **$525.10**
 - Provenance line: *median of 68 loads on `TX_TRIANGLE`, DRY_VAN, 2026-07-05 to 2026-07-15* — confidence **low**
 - Margin check: customer quote $596.42 vs expected buy $488.59 → 18.1% gross
 
@@ -1169,27 +1185,27 @@ Sorted $/mi (68 values): 2.450, 2.450, 2.450, 2.450, 2.450, 2.450, 2.480, 2.480,
 
 | # | carrier | lane loads n | exp n/(n+5) | days since | recency | equip | last delivery | deadhead mi | deadhead | on-time | **score** |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | Espinoza Brothers Trucking Co. (`V3`) | 9 | 0.643 | 1 | 0.967 | 1.00 | Schertz 07-15 | 6.7 | 1.000 | 0.717 | **84.0** |
+| 1 | Espinoza Brothers Trucking Co. (`V3`) | 9 | 0.643 | 1 | 0.967 | 1.00 | Schertz 07-15 | 6.7 | 1.000 | 0.718 | **84.0** |
 | 2 | Metroplex Ridge Logistics, Inc. (`V1`) | 20 | 0.800 | 1 | 0.967 | 1.00 | Irving 07-15 | 288.1 | 0.000 | 0.922 | **71.6** |
 | 3 | Delta Prime, L.L.C. (`M1`) | 11 | 0.688 | 1 | 0.967 | 1.00 | Houston 07-15 | 216.6 | 0.167 | 0.878 | **70.5** |
 | 4 | Ironclad Flatbed Services LLC (`C5`) | 1 | 0.167 | 4 | 0.875 | 1.00 | San Antonio 07-12 | 17.4 | 1.000 | 0.674 | **65.1** |
 | 5 | Montgomery County Haulers Inc (`NEAR`) | 6 | 0.545 | 1 | 0.967 | 1.00 | The Woodlands 07-15 | 214.2 | 0.179 | 0.640 | **63.4** |
-| 6 | Trinity Bay Transport Co. (`M2`) | 5 | 0.500 | 1 | 0.967 | 1.00 | Pasadena 07-15 | 228.3 | 0.108 | 0.904 | **63.1** |
+| 6 | Trinity Bay Transport Co. (`M2`) | 5 | 0.500 | 1 | 0.967 | 1.00 | Pasadena 07-15 | 228.3 | 0.109 | 0.905 | **63.1** |
 | 7 | Guadalupe Valley Freight, LLC (`FAR`) | 7 | 0.583 | 2 | 0.936 | 1.00 | Denton 07-14 | 315.4 | 0.000 | 0.837 | **62.5** |
-| 8 | Bay Area Cold Carriers, LLC (`V2`) | 5 | 0.500 | 2 | 0.936 | 1.00 | Arlington 07-15 | 280.5 | 0.000 | 0.704 | **58.3** |
-| 9 | Ibrahim Transport, Inc. (`C2`) | 2 | 0.286 | 6 | 0.819 | 1.00 | Sugar Land 07-10 | 197.9 | 0.260 | 0.721 | **53.8** |
-| 10 | Hillsboro Freight Partners LLC (`C1`) | 1 | 0.167 | 3 | 0.905 | 1.00 | Katy 07-13 | 189.5 | 0.302 | 0.841 | **53.4** |
-| 11 | Brazos Bend Carriers, Inc. (`C4`) | 1 | 0.167 | 8 | 0.766 | 1.00 | Houston 07-08 | 229.9 | 0.100 | 0.841 | **46.6** |
-| 12 | Frio Line Refrigerated LLC (`C3`) | 0 | 0.000 | — | 0.000 | 0.00 | Pasadena 07-14 | 231.5 | 0.092 | 0.809 | **9.9** |
+| 8 | Bay Area Cold Carriers, LLC (`V2`) | 5 | 0.500 | 2 | 0.936 | 1.00 | Arlington 07-15 | 280.5 | 0.000 | 0.705 | **58.3** |
+| 9 | Ibrahim Transport, Inc. (`C2`) | 2 | 0.286 | 6 | 0.819 | 1.00 | Sugar Land 07-10 | 197.9 | 0.261 | 0.721 | **53.8** |
+| 10 | Hillsboro Freight Partners LLC (`C1`) | 1 | 0.167 | 3 | 0.905 | 1.00 | Katy 07-13 | 189.5 | 0.303 | 0.841 | **53.4** |
+| 11 | Brazos Bend Carriers, Inc. (`C4`) | 1 | 0.167 | 8 | 0.766 | 1.00 | Houston 07-08 | 229.9 | 0.101 | 0.841 | **46.6** |
+| 12 | Frio Line Refrigerated LLC (`C3`) | 0 | 0.000 | — | 0.000 | 0.00 | Pasadena 07-14 | 231.5 | 0.093 | 0.809 | **10.0** |
 
-**Expected top carrier: Espinoza Brothers Trucking Co. (`V3`), score 84.0, 12.5 ahead of Metroplex Ridge Logistics, Inc. (`V1`).**
+**Expected top carrier: Espinoza Brothers Trucking Co. (`V3`), score 84.0, 12.4 ahead of Metroplex Ridge Logistics, Inc. (`V1`).**
 
 Arithmetic for the top two, term by term:
 
-- **Espinoza Brothers Trucking Co.** — 0.35×0.643 = 0.2250; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.717 = 0.0717 → ×100 = **84.0**
-- **Metroplex Ridge Logistics, Inc.** — 0.35×0.800 = 0.2800; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.922 = 0.0922 → ×100 = **71.6**
+- **Espinoza Brothers Trucking Co.** — 0.35×0.643 = 0.2251; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.718 = 0.0718; sum = 0.8403 → ×100 = **84.0**
+- **Metroplex Ridge Logistics, Inc.** — 0.35×0.800 = 0.2800; 0.20×0.967 = 0.1934; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.922 = 0.0922; sum = 0.7156 → ×100 = **71.6**
 
-  (`V3` lane experience 9/(9+5) = 0.643; on-time shrunk toward the lane average 0.809 with k=5: (6 + 0.809×5)/(9+5) = 0.717)
+  (`V3` lane experience 9/(9+5) = 0.643; on-time shrunk toward the lane average 0.809 with k=5: (6 + 0.809×5)/(9+5) = 0.718)
 
 **Why this is the right answer:** at REGION the veteran with the deepest dry-van history leads on experience, and the deadhead term separates the ones whose trucks are actually near San Antonio from the ones sitting in DFW.
 
@@ -1237,22 +1253,22 @@ Sorted $/mi (6 values): 2.880, 2.940, 2.960, 2.980, 2.980, 3.040
 | 1 | Montgomery County Haulers Inc (`NEAR`) | 2 | 0.286 | 5 | 0.846 | 1.00 | The Woodlands 07-15 | 16.4 | 1.000 | 0.619 | **68.1** |
 | 2 | Guadalupe Valley Freight, LLC (`FAR`) | 4 | 0.444 | 3 | 0.905 | 1.00 | Denton 07-14 | 264.8 | 0.000 | 0.704 | **55.7** |
 | 3 | Delta Prime, L.L.C. (`M1`) | 0 | 0.000 | — | 0.000 | 1.00 | Houston 07-15 | 49.1 | 1.000 | 0.667 | **41.7** |
-| 4 | Hillsboro Freight Partners LLC (`C1`) | 0 | 0.000 | — | 0.000 | 1.00 | Katy 07-13 | 51.2 | 0.994 | 0.667 | **41.5** |
+| 4 | Hillsboro Freight Partners LLC (`C1`) | 0 | 0.000 | — | 0.000 | 1.00 | Katy 07-13 | 51.2 | 0.994 | 0.667 | **41.6** |
 | 5 | Brazos Bend Carriers, Inc. (`C4`) | 0 | 0.000 | — | 0.000 | 1.00 | Houston 07-08 | 51.5 | 0.993 | 0.667 | **41.5** |
 | 6 | Trinity Bay Transport Co. (`M2`) | 0 | 0.000 | — | 0.000 | 1.00 | Pasadena 07-15 | 58.0 | 0.960 | 0.667 | **40.9** |
 | 7 | Ibrahim Transport, Inc. (`C2`) | 0 | 0.000 | — | 0.000 | 1.00 | Sugar Land 07-10 | 59.5 | 0.953 | 0.667 | **40.7** |
 | 8 | Espinoza Brothers Trucking Co. (`V3`) | 0 | 0.000 | — | 0.000 | 1.00 | Schertz 07-15 | 208.6 | 0.207 | 0.667 | **25.8** |
 | 9 | Frio Line Refrigerated LLC (`C3`) | 0 | 0.000 | — | 0.000 | 0.00 | Pasadena 07-14 | 62.6 | 0.937 | 0.667 | **25.4** |
-| 10 | Bay Area Cold Carriers, LLC (`V2`) | 0 | 0.000 | — | 0.000 | 1.00 | Arlington 07-15 | 229.5 | 0.102 | 0.667 | **23.7** |
-| 11 | Metroplex Ridge Logistics, Inc. (`V1`) | 0 | 0.000 | — | 0.000 | 1.00 | Irving 07-15 | 229.8 | 0.101 | 0.667 | **23.7** |
+| 10 | Metroplex Ridge Logistics, Inc. (`V1`) | 0 | 0.000 | — | 0.000 | 1.00 | Irving 07-15 | 229.8 | 0.101 | 0.667 | **23.7** |
+| 11 | Bay Area Cold Carriers, LLC (`V2`) | 0 | 0.000 | — | 0.000 | 1.00 | Arlington 07-15 | 229.5 | 0.103 | 0.667 | **23.7** |
 | 12 | Ironclad Flatbed Services LLC (`C5`) | 0 | 0.000 | — | 0.000 | 1.00 | San Antonio 07-12 | 232.0 | 0.090 | 0.667 | **23.5** |
 
 **Expected top carrier: Montgomery County Haulers Inc (`NEAR`), score 68.1, 12.4 ahead of Guadalupe Valley Freight, LLC (`FAR`).**
 
 Arithmetic for the top two, term by term:
 
-- **Montgomery County Haulers Inc** — 0.35×0.286 = 0.1000; 0.20×0.846 = 0.1693; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.619 = 0.0619 → ×100 = **68.1**
-- **Guadalupe Valley Freight, LLC** — 0.35×0.444 = 0.1556; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.704 = 0.0704 → ×100 = **55.7**
+- **Montgomery County Haulers Inc** — 0.35×0.286 = 0.1001; 0.20×0.846 = 0.1692; 0.15×1.00 = 0.1500; 0.20×1.000 = 0.2000; 0.10×0.619 = 0.0619; sum = 0.6812 → ×100 = **68.1**
+- **Guadalupe Valley Freight, LLC** — 0.35×0.444 = 0.1554; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.704 = 0.0704; sum = 0.5568 → ×100 = **55.7**
 
   (`NEAR` lane experience 2/(2+5) = 0.286; on-time shrunk toward the lane average 0.667 with k=5: (1 + 0.667×5)/(2+5) = 0.619)
 
@@ -1302,7 +1318,7 @@ Sorted $/mi (7 values): 2.750, 2.750, 2.750, 2.850, 2.850, 2.870, 3.150
 
 | # | carrier | lane loads n | exp n/(n+5) | days since | recency | equip | last delivery | deadhead mi | deadhead | on-time | **score** |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | Espinoza Brothers Trucking Co. (`V3`) | 4 | 0.444 | 3 | 0.905 | 1.00 | Schertz 07-15 | 289.9 | 0.000 | 0.540 | **54.0** |
+| 1 | Espinoza Brothers Trucking Co. (`V3`) | 4 | 0.444 | 3 | 0.905 | 1.00 | Schertz 07-15 | 289.9 | 0.000 | 0.539 | **54.0** |
 | 2 | Ironclad Flatbed Services LLC (`C5`) | 2 | 0.286 | 5 | 0.846 | 1.00 | San Antonio 07-12 | 301.3 | 0.000 | 0.551 | **47.4** |
 | 3 | Trinity Bay Transport Co. (`M2`) | 1 | 0.167 | 4 | 0.875 | 1.00 | Pasadena 07-15 | 285.0 | 0.000 | 0.643 | **44.8** |
 | 4 | Guadalupe Valley Freight, LLC (`FAR`) | 0 | 0.000 | — | 0.000 | 0.00 | Denton 07-14 | 38.0 | 1.000 | 0.571 | **25.7** |
@@ -1319,10 +1335,10 @@ Sorted $/mi (7 values): 2.750, 2.750, 2.750, 2.850, 2.850, 2.870, 3.150
 
 Arithmetic for the top two, term by term:
 
-- **Espinoza Brothers Trucking Co.** — 0.35×0.444 = 0.1556; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.540 = 0.0540 → ×100 = **54.0**
-- **Ironclad Flatbed Services LLC** — 0.35×0.286 = 0.1000; 0.20×0.846 = 0.1693; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.551 = 0.0551 → ×100 = **47.4**
+- **Espinoza Brothers Trucking Co.** — 0.35×0.444 = 0.1554; 0.20×0.905 = 0.1810; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.539 = 0.0539; sum = 0.5403 → ×100 = **54.0**
+- **Ironclad Flatbed Services LLC** — 0.35×0.286 = 0.1001; 0.20×0.846 = 0.1692; 0.15×1.00 = 0.1500; 0.20×0.000 = 0.0000; 0.10×0.551 = 0.0551; sum = 0.4744 → ×100 = **47.4**
 
-  (`V3` lane experience 4/(4+5) = 0.444; on-time shrunk toward the lane average 0.571 with k=5: (2 + 0.571×5)/(4+5) = 0.540)
+  (`V3` lane experience 4/(4+5) = 0.444; on-time shrunk toward the lane average 0.571 with k=5: (2 + 0.571×5)/(4+5) = 0.539)
 
 **Why this is the right answer:** with only 7 flatbed loads region-wide, nobody is a specialist. n/(n+5) keeps the 2-load carrier visible (0.286) without letting it pass the 4-load carrier (0.444).
 
@@ -1397,12 +1413,12 @@ Sorted $/mi (31 values): 2.450, 2.450, 2.450, 2.450, 2.480, 2.480, 2.480, 2.480,
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | Metroplex Ridge Logistics, Inc. (`V1`) | 13 | 0.722 | 3 | 0.905 | 0.50 | Irving 07-15 | 0.0 | 1.000 | 0.973 | **80.6** |
 | 2 | Bay Area Cold Carriers, LLC (`V2`) | 7 | 0.583 | 2 | 0.936 | 0.50 | Arlington 07-15 | 10.0 | 1.000 | 0.710 | **73.7** |
-| 3 | Delta Prime, L.L.C. (`M1`) | 4 | 0.444 | 1 | 0.967 | 0.50 | Houston 07-15 | 277.7 | 0.000 | 0.946 | **51.9** |
+| 3 | Delta Prime, L.L.C. (`M1`) | 4 | 0.444 | 1 | 0.967 | 0.50 | Houston 07-15 | 277.7 | 0.000 | 0.946 | **51.8** |
 | 4 | Frio Line Refrigerated LLC (`C3`) | 2 | 0.286 | 2 | 0.936 | 0.50 | Pasadena 07-14 | 292.3 | 0.000 | 0.931 | **45.5** |
 | 5 | Trinity Bay Transport Co. (`M2`) | 2 | 0.286 | 8 | 0.766 | 0.50 | Pasadena 07-15 | 287.7 | 0.000 | 0.931 | **42.1** |
 | 6 | Hillsboro Freight Partners LLC (`C1`) | 1 | 0.167 | 3 | 0.905 | 0.50 | Katy 07-13 | 268.4 | 0.000 | 0.919 | **40.6** |
 | 7 | Ibrahim Transport, Inc. (`C2`) | 1 | 0.167 | 6 | 0.819 | 0.50 | Sugar Land 07-10 | 281.3 | 0.000 | 0.919 | **38.9** |
-| 8 | Brazos Bend Carriers, Inc. (`C4`) | 1 | 0.167 | 8 | 0.766 | 0.50 | Houston 07-08 | 281.3 | 0.000 | 0.919 | **37.8** |
+| 8 | Brazos Bend Carriers, Inc. (`C4`) | 1 | 0.167 | 8 | 0.766 | 0.50 | Houston 07-08 | 281.3 | 0.000 | 0.919 | **37.9** |
 | 9 | Guadalupe Valley Freight, LLC (`FAR`) | 0 | 0.000 | — | 0.000 | 0.50 | Denton 07-14 | 35.2 | 1.000 | 0.903 | **36.5** |
 | 10 | Montgomery County Haulers Inc (`NEAR`) | 0 | 0.000 | — | 0.000 | 0.50 | The Woodlands 07-15 | 245.8 | 0.021 | 0.903 | **17.0** |
 | 11 | Ironclad Flatbed Services LLC (`C5`) | 0 | 0.000 | — | 0.000 | 0.50 | San Antonio 07-12 | 297.2 | 0.000 | 0.903 | **16.5** |
@@ -1412,8 +1428,8 @@ Sorted $/mi (31 values): 2.450, 2.450, 2.450, 2.450, 2.480, 2.480, 2.480, 2.480,
 
 Arithmetic for the top two, term by term:
 
-- **Metroplex Ridge Logistics, Inc.** — 0.35×0.722 = 0.2528; 0.20×0.905 = 0.1810; 0.15×0.50 = 0.0750; 0.20×1.000 = 0.2000; 0.10×0.973 = 0.0973 → ×100 = **80.6**
-- **Bay Area Cold Carriers, LLC** — 0.35×0.583 = 0.2042; 0.20×0.936 = 0.1871; 0.15×0.50 = 0.0750; 0.20×1.000 = 0.2000; 0.10×0.710 = 0.0710 → ×100 = **73.7**
+- **Metroplex Ridge Logistics, Inc.** — 0.35×0.722 = 0.2527; 0.20×0.905 = 0.1810; 0.15×0.50 = 0.0750; 0.20×1.000 = 0.2000; 0.10×0.973 = 0.0973; sum = 0.8060 → ×100 = **80.6**
+- **Bay Area Cold Carriers, LLC** — 0.35×0.583 = 0.2041; 0.20×0.936 = 0.1872; 0.15×0.50 = 0.0750; 0.20×1.000 = 0.2000; 0.10×0.710 = 0.0710; sum = 0.7373 → ×100 = **73.7**
 
   (`V1` lane experience 13/(13+5) = 0.722; on-time shrunk toward the lane average 0.903 with k=5: (13 + 0.903×5)/(13+5) = 0.973)
 

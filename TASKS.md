@@ -108,11 +108,11 @@ The correction-handling story lives here. This is the heart of the assignment.
 
 | # | Task | Agent | Depends | Done when |
 |---|---|---|---|---|
-| [ ] L1 | Lane keys at all three tiers (ZIP3, METRO, REGION) | builder | I7, G1 | Suburb scatter collapses to one metro lane |
-| [ ] L2 | Tier walk with 5-load minimum, **reporting the tier used** | builder | L1 | Falls outward correctly |
-| [ ] L3 | Price estimate: median × miles, p25–p75 range | builder | L2 | Percentiles in SQL |
-| [ ] L4 | Confidence + provenance (tier, load count, date range, equipment) | builder | L3 | Low confidence labeled, not hidden |
-| [ ] L5 | Lane/pricing unit tests | unit-tester | L4 | Tier boundaries at 4 vs 5 loads |
+| [x] L1 | Lane keys at all four tiers (ZIP3, METRO, REGION, REGION_ANY) | builder | I7, G1 | `backend/app/domain/lanes.py`. Built during I6 for dirty-key marking, extended here with the read-side mirror rather than duplicated |
+| [x] L2 | Tier walk with 5-load minimum, **reporting the tier used** | builder | L1 | `walk_tiers()` returns the whole trace — every rung tried with its count — and stops at the first acceptance, so later rungs are *absent* rather than claimed with a count they were never asked for. All 16 day-11 walks match `TRACEABILITY.md` rung for rung |
+| [x] L3 | Price estimate: median × miles, p25–p75 range | builder | L2 | `percentile_cont` in SQL. Per **D18** the rate quantizes to 4dp *before* multiplying, so the dollar figure is reproducible by hand from the rate in its own provenance line |
+| [x] L4 | Confidence + provenance (tier, load count, date range, equipment) | builder | L3 | **D15 fires**: the `UNKNOWN`-equipment load matches 31 loads (23 dry van, 8 reefer) and caps to medium instead of the high its count alone earns, naming the mix in the provenance |
+| [x] L5 | Lane/pricing unit tests | unit-tester | L4 | `tests/unit/test_pricing.py`, 33 tests. Verified non-vacuous by mutation: `MIN_SAMPLE` 5→4 fails 6, and implementing D15 as "cap whenever the filter was skipped" rather than "cap when the pool is mixed" fails 4 |
 
 ---
 
@@ -164,7 +164,7 @@ Correctness and clarity only. README:101 — visual polish counts for nothing.
 | [ ] H1 | **End-to-end check**: fresh DB → ingest 132 files → named day-11 load returns expected top carrier | integration-tester | U6, DG8 | One command; prints *why* it passed |
 | [ ] H2 | Adversarial pass: tenant leaks, correction chains, hostile inputs, statistical nonsense | breaker | H1 | Findings reproduced, or attacks documented as failed |
 | [ ] H3 | Fix what `breaker` found | builder | H2 | Each with a regression test |
-| [ ] H4 | Full review against the invariants | reviewer | H3 | Report, ranked by severity |
+| [ ] H4 | Full review against the invariants | reviewer | H3 | Report, ranked by severity. **Carry-in:** `pricing.py` `_provenance` has an unreachable fallback (`'nothing — lane ends not on the map'`) — `REGION`/`REGION_ANY` key on a fixed constant rather than the load's geography, so `tried` can never be empty and even a geo-null load yields `(tried REGION 0, REGION_ANY 0)`. Dead code, not a wrong answer, but it reads as handling a case it cannot reach |
 | [ ] H5 | Fix what `reviewer` found | builder | H4 | — |
 
 ---

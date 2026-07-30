@@ -67,6 +67,7 @@ import random
 import sys
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
+from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -1612,6 +1613,33 @@ def write_tms_c(plan: BrokerPlan, ids: dict) -> dict[str, dict]:
 #   * deadhead credit = clamp((250 - miles) / 200, 0, 1)   [full <=50, zero >=250]
 
 
+def shown(value: float, places: int) -> Decimal:
+    """The number TRACEABILITY.md prints, as the number it also computes with.
+
+    DECISIONS D18: every figure in that document has to be reproducible from the
+    figures printed beside it. Displaying a rounded factor while multiplying the
+    unrounded one is how ``2.0200 x 187.2 = $378.15`` got written down. So a
+    factor is quantized to its displayed precision *first* and the product is
+    taken from the quantized value, never the other way round.
+
+    Half-up, because that is what Postgres does storing a ``NUMERIC(10,4)`` and
+    what a person does with a calculator; ``Decimal(str(...))`` so the input is
+    the float's own shortest representation rather than its binary tail.
+    """
+    return Decimal(str(value)).quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
+
+
+def usd(rate: Decimal, miles: float) -> Decimal:
+    """``rate x miles`` in dollars, from the rate exactly as displayed.
+
+    Mirrors ``app.domain.pricing._dollars`` (``round(rate * miles, 2)`` over a
+    rate read back out of ``lane_stats.rate_per_mile_p* NUMERIC(10,4)``) — same
+    4-dp rate in, same cents out — but in exact decimal arithmetic, so the
+    hand-check on a calculator lands on the printed cent too.
+    """
+    return (rate * Decimal(str(miles))).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+
 def pct_cont(values: list[float], p: float) -> float:
     """PostgreSQL ``percentile_cont`` semantics: linear interpolation."""
     xs = sorted(values)
@@ -1668,8 +1696,15 @@ def confidence(tier: str, n: int) -> str:
 DAY11_REF = date(2026, 7, 16)
 
 
-def deadhead_credit(miles: float) -> float:
-    return max(0.0, min(1.0, (250.0 - miles) / 200.0))
+def deadhead_credit(miles: float) -> Decimal:
+    """``clamp((250 - miles) / 200, 0, 1)`` in exact decimal, from the printed miles.
+
+    Decimal rather than float because the fixture has deadheads like 219.9 mi,
+    where the answer is exactly 0.1505 — a 3-dp tie. In binary that lands at
+    0.150499999999999967 and rounds *down*, so the table would print 0.150 beside
+    a distance that a reader's calculator turns into 0.151 (D18).
+    """
+    return max(Decimal(0), min(Decimal(1), (250 - Decimal(str(miles))) / 200))
 
 
 def recency_credit(days: float | None) -> float:
@@ -1678,46 +1713,74 @@ def recency_credit(days: float | None) -> float:
     return math.exp(-days / 30.0)
 
 
+#: The five PRD section 8 weights, as decimals so the term-by-term arithmetic
+#: printed in TRACEABILITY.md is the arithmetic that produced the score.
+W_EXPERIENCE = Decimal("0.35")
+W_RECENCY = Decimal("0.20")
+W_EQUIPMENT = Decimal("0.15")
+W_DEADHEAD = Decimal("0.20")
+W_ON_TIME = Decimal("0.10")
+
+#: Decimal places each signal is *printed* to, and therefore computed at (D18).
+DP_SIGNAL = 3
+DP_EQUIPMENT = 2
+DP_TERM = 4
+DP_SCORE = 1
+
+
 @dataclass
 class CarrierScore:
+    """One carrier's five signals and its score, at the precision they are shown.
+
+    Every field the document prints is a :class:`~decimal.Decimal` already
+    rounded to its display precision, and ``score`` is built by weighting those
+    rounded values rather than the floats behind them (D18). The cost is at most
+    0.05 of a score point against an infinite-precision model; the benefit is
+    that the ranking table is arithmetic a reader can redo in the margin.
+    """
+
     role: str
     name: str
     lane_loads: int
-    experience: float
+    experience: Decimal
     days_since_lane: float | None
-    recency: float
+    recency: Decimal
     equipment_ok: bool
-    equipment: float
+    equipment: Decimal
     last_delivery_place: Place | None
     last_delivery_at: datetime | None
     deadhead_miles: float | None
-    deadhead: float
+    deadhead: Decimal
     on_time_obs: int
     on_time_n: int
-    on_time: float
-    lane_avg_on_time: float
+    on_time: Decimal
+    lane_avg_on_time: Decimal
     avg_rpm: float | None
-    score: float
+    terms: tuple[Decimal, ...]
+    score: Decimal
 
 
 def score_carriers(plan: BrokerPlan, target: LoadPlan, tier: str,
                    backing: list[LoadPlan]) -> list[CarrierScore]:
     history = plan.loads
     lane_ontime = [1 if h.on_time else 0 for h in backing]
-    lane_avg = (sum(lane_ontime) / len(lane_ontime)) if lane_ontime else 0.85
+    # Rounded here, because the shrinkage line in the document states this
+    # average and then divides by it; the reader's arithmetic has to close.
+    lane_avg = shown(Decimal(sum(lane_ontime)) / len(lane_ontime) if lane_ontime
+                     else Decimal("0.85"), DP_SIGNAL)
 
     out: list[CarrierScore] = []
     for c in plan.cfg.carriers:
         mine = [h for h in backing if h.carrier_role == c.role]
         n = len(mine)
-        experience = n / (n + SHRINK_K)
+        experience = shown(Decimal(n) / (n + SHRINK_K), DP_SIGNAL)
 
         if mine:
             last_lane = max(h.delivered_at for h in mine if h.delivered_at)
             days = (DAY11_REF - last_lane.date()).days
         else:
             days = None
-        rec = recency_credit(days)
+        rec = shown(recency_credit(days), DP_SIGNAL)
 
         all_mine = [h for h in history if h.carrier_role == c.role]
         equip_ok = any(h.equipment == target.equipment for h in all_mine)
@@ -1725,31 +1788,36 @@ def score_carriers(plan: BrokerPlan, target: LoadPlan, tier: str,
             equip = 0.5
         else:
             equip = 1.0 if equip_ok else 0.0
+        equip = shown(equip, DP_EQUIPMENT)
 
         delivered = [h for h in all_mine if h.delivered_at]
         if delivered:
             last = max(delivered, key=lambda h: h.delivered_at)
             dh_miles = round(road_miles_between(last.dest, target.origin), 1)
-            dh = deadhead_credit(dh_miles)
+            dh = shown(deadhead_credit(dh_miles), DP_SIGNAL)
             last_place, last_at = last.dest, last.delivered_at
         else:
-            dh_miles, dh, last_place, last_at = None, 0.0, None, None
+            dh_miles, dh, last_place, last_at = None, shown(0.0, DP_SIGNAL), None, None
 
         obs = sum(1 for h in mine if h.on_time)
-        on_time = (obs + lane_avg * SHRINK_K) / (n + SHRINK_K)
+        on_time = shown((obs + lane_avg * SHRINK_K) / (n + SHRINK_K), DP_SIGNAL)
 
         rpms = [h.rpm for h in mine if h.carrier_rate]
         avg_rpm = (sum(rpms) / len(rpms)) if rpms else None
 
-        score = 100.0 * (0.35 * experience + 0.20 * rec + 0.15 * equip
-                         + 0.20 * dh + 0.10 * on_time)
+        terms = tuple(
+            shown(w * v, DP_TERM)
+            for w, v in ((W_EXPERIENCE, experience), (W_RECENCY, rec),
+                         (W_EQUIPMENT, equip), (W_DEADHEAD, dh), (W_ON_TIME, on_time))
+        )
+        score = shown(100 * sum(terms), DP_SCORE)
         out.append(CarrierScore(
             role=c.role, name=c.name, lane_loads=n, experience=experience,
             days_since_lane=days, recency=rec, equipment_ok=equip_ok, equipment=equip,
             last_delivery_place=last_place, last_delivery_at=last_at,
             deadhead_miles=dh_miles, deadhead=dh,
             on_time_obs=obs, on_time_n=n, on_time=on_time, lane_avg_on_time=lane_avg,
-            avg_rpm=avg_rpm, score=score,
+            avg_rpm=avg_rpm, terms=terms, score=score,
         ))
     out.sort(key=lambda s: (-s.score, s.role))
     return out
@@ -1813,6 +1881,22 @@ def build_traceability(plans: list[BrokerPlan]) -> str:
     w("percentiles = PostgreSQL percentile_cont (linear interpolation)")
     w("```")
     w("")
+    w("**Precision, and why it is part of the model** (DECISIONS D18). Every number below")
+    w("is rounded to the precision it is *printed* at before anything is multiplied by it:")
+    w("signals and the shrinkage lane average to 3 dp, equipment to 2 dp, each weighted")
+    w("term to 4 dp, the score to 1 dp, and $/mi percentiles to 4 dp — which is also what")
+    w("`lane_stats.rate_per_mile_p*` stores (`NUMERIC(10,4)`). So `2.0200 × 187.2` is")
+    w("written as `$378.14`, the cent a calculator returns, not the `$378.15` an")
+    w("unrounded rate would give. Rounding is half-up throughout. The cost is at most")
+    w("0.05 of a score point against an infinite-precision model; the benefit is that")
+    w("every line here can be re-derived from the line above it.")
+    w("")
+    w("That rounding is this document's convention, not a demand on the implementation:")
+    w("the **price** figures are exact — the system stores the same 4-dp rate and reaches")
+    w("the same cent — while a **score** computed from unrounded signals may sit up to")
+    w("0.05 away from the one printed here. Ranks are unaffected (no margin below is")
+    w("under 4 points), which is why the assertions are on rank and not on score.")
+    w("")
     w("If the implementation picks a different recency shape, the **ranking** assertions")
     w("still hold — every scenario below is built with a margin — but the absolute scores")
     w("will move. Assert on rank, tier, counts and price; treat scores as indicative.")
@@ -1869,7 +1953,11 @@ def build_traceability(plans: list[BrokerPlan]) -> str:
             tier, backing, trace = tier_walk(history, target)
             scores = score_carriers(plan, target, tier, backing)
             rpms = [h.rpm for h in backing]
-            p25, p50, p75 = pct_cont(rpms, 0.25), pct_cont(rpms, 0.50), pct_cont(rpms, 0.75)
+            # Quantized to the 4 dp the document prints and the system stores
+            # (lane_stats.rate_per_mile_p* NUMERIC(10,4)) *before* the dollars
+            # are taken from them — DECISIONS D18.
+            p25, p50, p75 = (shown(pct_cont(rpms, q), 4) for q in (0.25, 0.50, 0.75))
+            low_usd, point_usd, high_usd = (usd(p, target.miles) for p in (p25, p50, p75))
             conf = confidence(tier, len(backing))
             dates = sorted(h.delivered_at.date() for h in backing if h.delivered_at)
 
@@ -1983,11 +2071,11 @@ def build_traceability(plans: list[BrokerPlan]) -> str:
               + ", ".join(f"{v:.3f}" for v in srt))
             w("")
             w(f"- p25 = {p25:.4f} $/mi → {p25:.4f} × {target.miles} = "
-              f"**${p25 * target.miles:,.2f}**")
+              f"**${low_usd:,.2f}**")
             w(f"- **median = {p50:.4f} $/mi → {p50:.4f} × {target.miles} = "
-              f"${p50 * target.miles:,.2f}**  ← point estimate")
+              f"${point_usd:,.2f}**  ← point estimate")
             w(f"- p75 = {p75:.4f} $/mi → {p75:.4f} × {target.miles} = "
-              f"**${p75 * target.miles:,.2f}**")
+              f"**${high_usd:,.2f}**")
             w(f"- Provenance line: *median of {len(backing)} loads on "
               f"`{_provenance_key(target, tier)}`, "
               f"{'all equipment types' if unfiltered else target.equipment}, "
@@ -2003,8 +2091,9 @@ def build_traceability(plans: list[BrokerPlan]) -> str:
                 w(f"  medium. Whichever is chosen, it should be a recorded decision, not an")
                 w(f"  accident of the code.")
             w(f"- Margin check: customer quote ${target.customer_rate:,.2f} vs expected buy "
-              f"${p50 * target.miles:,.2f} → "
-              f"{100 * (target.customer_rate - p50 * target.miles) / target.customer_rate:.1f}% gross")
+              f"${point_usd:,.2f} → "
+              f"{shown(100 * (Decimal(str(target.customer_rate)) - point_usd) / Decimal(str(target.customer_rate)), 1):.1f}"
+              f"% gross")
             w("")
             w("### Carrier ranking")
             w("")
@@ -2027,13 +2116,14 @@ def build_traceability(plans: list[BrokerPlan]) -> str:
             w("Arithmetic for the top two, term by term:")
             w("")
             for s in (top, second):
+                t = s.terms
                 w(f"- **{s.name}** — "
-                  f"0.35×{s.experience:.3f} = {0.35 * s.experience:.4f}; "
-                  f"0.20×{s.recency:.3f} = {0.20 * s.recency:.4f}; "
-                  f"0.15×{s.equipment:.2f} = {0.15 * s.equipment:.4f}; "
-                  f"0.20×{s.deadhead:.3f} = {0.20 * s.deadhead:.4f}; "
-                  f"0.10×{s.on_time:.3f} = {0.10 * s.on_time:.4f} "
-                  f"→ ×100 = **{s.score:.1f}**")
+                  f"0.35×{s.experience:.3f} = {t[0]:.4f}; "
+                  f"0.20×{s.recency:.3f} = {t[1]:.4f}; "
+                  f"0.15×{s.equipment:.2f} = {t[2]:.4f}; "
+                  f"0.20×{s.deadhead:.3f} = {t[3]:.4f}; "
+                  f"0.10×{s.on_time:.3f} = {t[4]:.4f}; "
+                  f"sum = {sum(t):.4f} → ×100 = **{s.score:.1f}**")
             w("")
             w(f"  (`{top.role}` lane experience {top.lane_loads}/({top.lane_loads}+5) = "
               f"{top.experience:.3f}; on-time shrunk toward the lane average "
