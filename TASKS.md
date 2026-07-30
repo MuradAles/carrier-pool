@@ -9,9 +9,9 @@ Execution plan for `PRD.md`. Ordered by dependency — each phase needs the one 
 Phases are handed to `orchestrator` one at a time; the per-task `Agent` column below is who it
 dispatches.
 
-Status: **Phases 0–9 complete except H1.** 453 tests (291 unit + 22 data-integrity +
-54 integration + 86 adversarial). Committed through `9811742`. `docker compose up` verified
-end to end: a day-11 answer reaches the browser through the frontend proxy from a cold start.
+Status: **Phases 0–9 complete.** 454 tests (287 unit + 22 data-integrity + 57 integration +
+88 adversarial). Committed through `9811742`. `docker compose up` verified end to end: a
+day-11 answer reaches the browser through the frontend proxy from a cold start.
 
 72 of 83 rows done. What the project can defend:
 
@@ -23,8 +23,6 @@ end to end: a day-11 answer reaches the browser through the frontend proxy from 
   *rule* and never code. `data/TRACEABILITY.md` was computed before the code existed and has
   been the authoritative artifact three times (D18, D19, H5).
 - `breaker` found **14 defects and failed 70 attacks**; `reviewer` found 3 more. All fixed.
-
-**In flight:** H1 — the one-command end-to-end check.
 
 **Not started:** X1 README run section · X2 `DECISIONS.md` final pass (incl. the 70 failed
 attacks) · X4 clean-checkout rehearsal · X5 walkthrough notes. Phase 11 ships as design only
@@ -179,7 +177,7 @@ Correctness and clarity only. README:101 — visual polish counts for nothing.
 
 | # | Task | Agent | Depends | Done when |
 |---|---|---|---|---|
-| [ ] H1 | **End-to-end check**: fresh DB → ingest 132 files → named day-11 load returns expected top carrier | integration-tester | U6, DG8 | One command; prints *why* it passed |
+| [x] H1 | **End-to-end check**: fresh DB → ingest 132 files → named day-11 load returns expected top carrier | integration-tester | U6, DG8 | `backend/scripts/e2e_check.py` (also runnable as `pytest tests/integration/test_end_to_end.py`). Creates and drops its own database (`carrier_pool_e2e_check`), never `carrier_pool`/`carrier_pool_phase5`. 132 files, 0 skipped; 295 loads, `sum(carrier_rate)=$150,716.43`, `sum(customer_rate)=$186,840.92`; idempotent re-ingest (0/132); one named day-11 load per tier rung (ZIP3/METRO/REGION/REGION_ANY) matches `data/TRACEABILITY.md` on tier, load count, top carrier, score, price point/range and confidence — except the UNKNOWN-equipment load's confidence, sourced from DECISIONS.md D15 (medium), which supersedes the traceability table's uncapped "high" that D15 itself flagged as an open question. ~11s |
 | [x] H2 | Adversarial pass: tenant leaks, correction chains, hostile inputs, statistical nonsense | breaker | H1 | `tests/adversarial/`, **14 defects found and 70 attacks that failed**. Each finding written as an `xfail` carrying its own reproduction and arithmetic, so the fix flips a test that already existed |
 | [x] H3 | Fix what `breaker` found | builder | H2 | All 14 fixed, 431→447 tests, 0 xfailed. **FINDING 2**: three documents asserted something false about our own data — the composite was verified (veteran ahead by 22.39) *before* the claim was rewritten. D21–D24 record the calls |
 | [x] H4 | Full review against the invariants | reviewer | H3 | First look at the whole codebase. 3 defects + 2 doc drifts, each with a reproduction it had actually run. **One finding rejected**: it reported `CLAUDE.md:51` as carrying the false cold-start claim, having quoted one line and stopped at the wrap — the correction runs 51–58. Cleared, having run rather than pattern-matched: **zero score/reason divergences across all 192 rows**, `mc_number` in no `WHERE`/`JOIN`, no `UPDATE`/`DELETE` on the event tables. Carry-in confirmed still present: the unreachable `_provenance` fallback (`pricing.py:481`), dead code, not a wrong answer |
