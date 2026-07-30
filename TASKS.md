@@ -9,10 +9,12 @@ Execution plan for `PRD.md`. Ordered by dependency — each phase needs the one 
 Phases are handed to `orchestrator` one at a time; the per-task `Agent` column below is who it
 dispatches.
 
-Status: **Phases 0 and 1 complete.** F2 cleared — Docker is up, Postgres 16.14 healthy.
-150 tests passing (130 unit + 22 data-integrity, minus overlap). Phase 2 ready to start.
+Status: **Phases 0 and 1 complete**, committed on `phase-1-geography-and-fixtures` (`c4fef9b`).
+F2 cleared — Docker up, Postgres 16.14 healthy. 152 tests passing (130 unit + 22 data-integrity).
 
-One item deferred to the user: the TMS C on-time timezone rule (see Phase 1 follow-ups).
+**Phase 2 complete.** 169 tests passing (130 unit + 22 data-integrity + 17 integration).
+Tenant isolation is enforced by Postgres RLS under a non-privileged role, not by convention —
+an unscoped query raises rather than returning rows. Phases 3–11 not started.
 
 ---
 
@@ -64,10 +66,10 @@ Everything downstream reads this data. Get it right before writing logic against
 
 | # | Task | Agent | Depends | Done when |
 |---|---|---|---|---|
-| [ ] M1 | Canonical dataclasses: Load, Stop, Carrier, Customer | builder | D3 | Covers every field all three TMSs produce |
-| [ ] M2 | DB schema (PRD §5) + migration/bootstrap SQL | builder | M1, D3 | Applies to a fresh Postgres cleanly |
-| [ ] M3 | Repository layer — **`broker_id` enforced structurally**, not by convention | builder | M2 | A query cannot be written without a broker |
-| [ ] M4 | Repository tenant-isolation tests | integration-tester | M3 | Proves no path reaches cross-broker rows |
+| [x] M1 | Canonical dataclasses: Load, Stop, Carrier, Customer | builder | D3 | `backend/app/domain/model.py`, 421 lines. `Equipment` enum with no dry-van default; geo-null distinct from absent; money nullable so "unknown" never becomes 0 |
+| [x] M2 | DB schema (PRD §5) + migration/bootstrap SQL | builder | M1, D3 | `backend/app/repository/schema.sql`, 299 lines. Applies clean to a fresh Postgres, idempotent. 8 tables; RLS enabled **and forced** on 7 (`brokers` excluded — the broker list is not tenant data) |
+| [x] M3 | Repository layer — **`broker_id` enforced structurally**, not by convention | builder | M2 | `broker_repository.py`, 774 lines. Raw unscoped SELECT, a forged `app.broker_id` GUC, and a cross-broker UPDATE all raise `InsufficientPrivilege: no broker bound`. Credentials split: `DATABASE_URL` → `carrier_pool_app` (no superuser, no `bypassrls`), `ADMIN_DATABASE_URL` → owner, bootstrap only. **A plain `psycopg.connect(DATABASE_URL)` now fails closed** — verified after dropping the schema *and* the app role, so a clean `docker compose up` works |
+| [x] M4 | Repository tenant-isolation tests | integration-tester | M3 | `backend/tests/integration/`, 17 tests. Broker A's reads are **exactly equal** (frozen-dataclass `==`) before and after broker B writes with identical `source_load_id`, identical `source_carrier_id` + MC/DOT, and colliding customer id. Covers aggregates, a join with **no** `broker_id` in its condition, upsert collisions, `sync_events` ordering, and deletes. Verified non-vacuous: mutating the RLS predicate to `USING (true)` fails 6 of 17 |
 
 ---
 

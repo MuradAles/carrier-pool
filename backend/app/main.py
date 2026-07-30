@@ -1,26 +1,45 @@
 """FastAPI entrypoint.
 
-Scaffold only: health check plus the route surface from PRD section 10, so the
-shape is visible. The recommendation, pricing, and ingestion logic is not
-implemented yet — those endpoints deliberately return 501 rather than fake data.
+Health check plus the route surface from PRD section 10, so the shape is
+visible. The recommendation, pricing, and ingestion logic is not implemented yet
+— those endpoints deliberately return 501 rather than fake data.
+
+The schema is applied on startup, in the lifespan, before anything is served
+(DECISIONS.md D8). It is idempotent, so a container restart re-applies it for
+free; and it fails loudly, because serving requests against a database whose
+shape is unknown produces wrong answers rather than slow ones. The chronological
+ingest joins it here in Phase 4.
 """
 
 import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 import psycopg
 from fastapi import FastAPI, HTTPException
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://carrier:carrier@localhost:5432/carrier_pool")
+from .repository import DEFAULT_DATABASE_URL, bootstrap, connect_admin
+
 DATA_DIR = Path(os.environ.get("DATA_DIR", "../data"))
 
-app = FastAPI(title="Carrier Pool", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    # The one place the admin credential is used: applying the schema. Every
+    # request afterwards runs on DATABASE_URL, which cannot bypass RLS.
+    with connect_admin() as conn:
+        bootstrap(conn)
+    yield
+
+
+app = FastAPI(title="Carrier Pool", version="0.1.0", lifespan=lifespan)
 
 
 @app.get("/api/health")
 def health() -> dict[str, str]:
     try:
-        with psycopg.connect(DATABASE_URL, connect_timeout=3) as conn:
+        with psycopg.connect(DEFAULT_DATABASE_URL, connect_timeout=3) as conn:
             conn.execute("SELECT 1")
         database = "ok"
     except Exception as exc:  # surface the reason instead of a bare 500

@@ -20,7 +20,12 @@ services:
   backend:
     build: ./backend
     environment:
-      DATABASE_URL: postgresql://carrier:carrier@db:5432/carrier_pool
+      # The application credential: no SUPERUSER, no BYPASSRLS, so a query
+      # outside a broker binding fails closed. Created by the schema bootstrap.
+      DATABASE_URL: postgresql://carrier_pool_app:carrier_pool_app@db:5432/carrier_pool
+      # Owner rights, used only to apply the schema at startup. Any other use
+      # of this credential bypasses row-level security.
+      ADMIN_DATABASE_URL: postgresql://carrier:carrier@db:5432/carrier_pool
       # Sync files are read-only input; the container never writes here.
       DATA_DIR: /data
     ports:
