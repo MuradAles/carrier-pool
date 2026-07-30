@@ -12,9 +12,17 @@ dispatches.
 Status: **Phases 0 and 1 complete**, committed on `phase-1-geography-and-fixtures` (`c4fef9b`).
 F2 cleared — Docker up, Postgres 16.14 healthy. 152 tests passing (130 unit + 22 data-integrity).
 
-**Phase 2 complete.** 169 tests passing (130 unit + 22 data-integrity + 17 integration).
+**Phases 2–5 complete**, plus X3. 290 tests (237 unit + 22 data-integrity + 31 integration).
 Tenant isolation is enforced by Postgres RLS under a non-privileged role, not by convention —
-an unscoped query raises rather than returning rows. Phases 3–11 not started.
+an unscoped query raises rather than returning rows.
+
+**Phase 6 in progress.** R1–R5 built; signals, shrinkage and reason generation verified, but
+`rank_carriers` agrees with `TRACEABILITY.md`'s ranking tables on only **6 of 16** day-11 loads.
+Counts match everywhere (12 rows / 12 ranked / 12 carriers), so specific scores differ rather
+than carriers being dropped. Per D12 the doc's tables come from a *reference scorer* in the
+generator, so two implementations have diverged and which one is wrong is unresolved.
+
+Phase 8: U1–U2 done, U3–U6 blocked on the API. Phases 7, 9–11 not started.
 
 ---
 
@@ -91,16 +99,16 @@ The correction-handling story lives here. This is the heart of the assignment.
 
 | # | Task | Agent | Depends | Done when |
 |---|---|---|---|---|
-| [ ] I1 | File discovery + chronological sort by filename timestamp | builder | A5 | Strict order across all three directories |
-| [ ] I2 | One-file-at-a-time ingestion loop, append-only `sync_events` | builder | I1, M3 | Never bulk-loads |
-| [ ] I3 | Upsert loads/carriers/customers from newest event | builder | I2 | Later sync overwrites earlier truth |
-| [ ] I4 | **TMS B rate-only sync** — load absent from `loads` array still updates money | builder | I3, D3 | The known trap is handled |
-| [ ] I5 | Idempotency on `broker_id + sync_file` | builder | I3 | Re-ingest changes no row and no summed total |
-| [ ] I6 | Dirty-key marking — carrier, lane, and every tier above | builder | I3 | All affected keys dirtied |
-| [ ] I7 | Rebuild `lane_stats` / `carrier_stats` from raw events for dirty keys | builder | I6 | Rebuild, never delta-patch |
-| [ ] I8 | Carrier last-known delivery position (for deadhead) | builder | I7 | Updated on DELIVERED |
-| [ ] I9 | Ingestion integration tests: order, idempotency, overwrite, partial failure | integration-tester | I8 | Real Postgres |
-| [ ] I10 | **Replay-equivalence test** — correct-then-rebuild equals ingest-corrected-from-start | integration-tester | I9 | All three correction flavors |
+| [x] I1 | File discovery + chronological sort by filename timestamp | builder | A5 | `ingestion/discovery.py`. A true merge sort across all three directories, not per-directory concatenation — tested. The shared local Central clock is what makes cross-directory ordering valid, and that assumption is stated where the sort happens |
+| [x] I2 | One-file-at-a-time ingestion loop, append-only `sync_events` | builder | I1, M3 | `ingestion/pipeline.py`. 132 files, 1,156 events. Append-only verified two ways: the actual `GRANT` set, and a behavioural UPDATE/DELETE attempt with a broker bound |
+| [x] I3 | Upsert loads/carriers/customers from newest event | builder | I2 | Later sync overwrites; **earlier versions stay retrievable from `sync_events`** — both halves tested, since the audit trail is what makes a correction visible in the UI |
+| [x] I4 | **TMS B rate-only sync** — load absent from `loads` array still updates money | builder | I3, D3 | `HD-2026-004733` = 674.70 + 148.10 − 120.00 = **702.80**, where the −120 arrives in a file whose `loads` array holds only `004817/004821/004832`. Verified against the raw file on disk, not just the DB |
+| [x] I5 | Idempotency on `broker_id + sync_file` | builder | I3 | Re-ingest: 0 ingested, 132 skipped. Asserted on **summed money** (`150716.43` / `186840.92`) as well as row counts — double-counted TMS B line items would show there and nowhere else. Also 10× re-ingest with two brokers interleaved |
+| [x] I6 | Dirty-key marking — carrier, lane, and every tier above | builder | I3 | 1,556 lane keys rebuilt over the corpus. A rate-only correction dirties ZIP3, METRO, REGION, REGION_ANY **and** the carrier — all five asserted |
+| [x] I7 | Rebuild `lane_stats` / `carrier_stats` from raw events for dirty keys | builder | I6 | Rebuild, never delta-patch. Cross-checked against `TRACEABILITY.md`, computed before this code existed: ZIP3 `750→774` DRY_VAN is 12 loads in all three brokers, medians `1.7800 / 2.1600 / 2.5100` — exact |
+| [x] I8 | Carrier last-known delivery position (for deadhead) | builder | I7 | 261 carrier repositions over the corpus; feeds the deadhead signal in R1 |
+| [x] I9 | Ingestion integration tests: order, idempotency, overwrite, partial failure | integration-tester | I8 | 10 tests, real Postgres. Order-sensitivity proven by *bypassing* the sort and showing the answer becomes wrong; partial failure via an exception inside the transaction leaving no trace |
+| [x] I10 | **Replay-equivalence test** — correct-then-rebuild equals ingest-corrected-from-start | integration-tester | I9 | 4 tests, all three flavors, two independent runs per flavor compared with exact dataclass equality on `lane_stats` at all four tiers **plus** `carrier_stats` — every percentile, not just the corrected load's own rate. **Verified non-vacuous by mutation:** dirty-key marking limited to ZIP3 fails 4 tests; changing rate accumulation from `+=` to latest-wins — the exact snapshot mistake D3 exists to prevent — fails 3 |
 
 ---
 

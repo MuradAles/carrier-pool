@@ -67,7 +67,7 @@ import random
 import sys
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import ROUND_FLOOR, ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -1611,20 +1611,41 @@ def write_tms_c(plan: BrokerPlan, ids: dict) -> dict[str, dict]:
 # free parameter are pinned explicitly and stated in TRACEABILITY.md:
 #   * recency decay   = exp(-days_since_last_lane_load / 30)
 #   * deadhead credit = clamp((250 - miles) / 200, 0, 1)   [full <=50, zero >=250]
+#
+# It stays independent of app/domain/scoring.py on purpose (D12): two scorers
+# written from the PRD can disagree on a formula, which is the only way the
+# document can catch one. What they DO share is a stated rule -- PRD section 8's
+# rounding contract -- because a disagreement about the last printed digit is
+# not a finding, it is noise that a real regression could hide behind.
+#
+# Two different rounding situations live below, and they are not the same rule:
+#
+#   * A **price** is a product of a stored factor. lane_stats.rate_per_mile_p*
+#     is NUMERIC(10,4), so the rate a broker is shown IS the rate the system
+#     multiplied. The factor is quantized first and the dollars come from the
+#     quantized value (D18).
+#   * A **score** has no stored factor. Its signals are exact ratios and an
+#     exp(), computed at full precision and rounded once at the end (D19). Here
+#     the display has to be wide enough that the printed row still reproduces
+#     the printed score -- see DP_SIGNAL.
 
 
-def shown(value: float, places: int) -> Decimal:
-    """The number TRACEABILITY.md prints, as the number it also computes with.
+def shown(value: float | Decimal, places: int) -> Decimal:
+    """``value`` rounded half-up to ``places`` -- one rule for every rounding here.
 
-    DECISIONS D18: every figure in that document has to be reproducible from the
-    figures printed beside it. Displaying a rounded factor while multiplying the
-    unrounded one is how ``2.0200 x 187.2 = $378.15`` got written down. So a
-    factor is quantized to its displayed precision *first* and the product is
-    taken from the quantized value, never the other way round.
+    Half-up because that is what Postgres does storing a ``NUMERIC(10,4)`` and
+    what a person does with a calculator, and because a score landing exactly on
+    ``.X5`` must not depend on which construct rounded it. ``app.domain.scoring.
+    round_half_up`` is the production statement of the same rule.
 
-    Half-up, because that is what Postgres does storing a ``NUMERIC(10,4)`` and
-    what a person does with a calculator; ``Decimal(str(...))`` so the input is
-    the float's own shortest representation rather than its binary tail.
+    ``Decimal(str(...))`` so a float input arrives as its own shortest
+    representation rather than its binary tail. Python's builtin ``round`` skips
+    that step and rounds the bits, where ``22.05`` is really
+    ``22.05000000000000071`` and ``69.55`` is really ``69.54999999999999716`` --
+    so ``round(22.05, 1)`` goes up to 22.1 and ``round(69.55, 1)`` goes down to
+    69.5. The direction is invisible in the printed digits and varies per
+    number, which is the whole reason the rule has to be stated rather than
+    inherited from a language construct.
     """
     return Decimal(str(value)).quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
 
@@ -1721,22 +1742,43 @@ W_EQUIPMENT = Decimal("0.15")
 W_DEADHEAD = Decimal("0.20")
 W_ON_TIME = Decimal("0.10")
 
-#: Decimal places each signal is *printed* to, and therefore computed at (D18).
-DP_SIGNAL = 3
+#: In PRD section 8's order, so a printed row and its arithmetic line iterate
+#: the same tuple and cannot drift apart.
+WEIGHTS = (W_EXPERIENCE, W_RECENCY, W_EQUIPMENT, W_DEADHEAD, W_ON_TIME)
+
+#: Decimal places each signal is *printed* to. Not the precision it is computed
+#: at -- PRD section 8's contract is full precision throughout, rounded once at
+#: the end (D19) -- but wide enough that the printed row reproduces the printed
+#: score. 3 dp was not: 0.35 x 4/9 is 0.0156 of a point away from 0.35 x 0.444,
+#: and 16 of the 192 rows landed on the wrong side of a boundary because of
+#: it. ``Validator.check_ranking_arithmetic`` asserts the reproduction row by
+#: row, so a re-seed that needs more digits fails loudly instead of quietly
+#: printing a row that does not add up.
+DP_SIGNAL = 6
 DP_EQUIPMENT = 2
-DP_TERM = 4
+#: ``100 x weight`` is an integer for all five weights, so a signal shown to
+#: DP_SIGNAL places times 100 x weight is *exact* at DP_SIGNAL places. The
+#: points column is therefore a product a reader reproduces exactly, not a
+#: rounded one.
+DP_POINTS = DP_SIGNAL
 DP_SCORE = 1
 
 
 @dataclass
 class CarrierScore:
-    """One carrier's five signals and its score, at the precision they are shown.
+    """One carrier's five signals, kept at full precision, and its score.
 
-    Every field the document prints is a :class:`~decimal.Decimal` already
-    rounded to its display precision, and ``score`` is built by weighting those
-    rounded values rather than the floats behind them (D18). The cost is at most
-    0.05 of a score point against an infinite-precision model; the benefit is
-    that the ranking table is arithmetic a reader can redo in the margin.
+    PRD section 8's presentation contract (DECISIONS D19): the signals are
+    exact, the weighted sum is taken from them unrounded, and the only rounding
+    is ``score`` -- once, half-up, to one decimal. ``score_exact`` is what the
+    ranking sorts on, matching the production scorer's rule that rank comes from
+    the unrounded sum.
+
+    :attr:`displayed` and :attr:`points` are the presentation side: the values
+    the table prints and the exact points they contribute. D18's rule is that
+    those two must add up to ``score`` -- a reader multiplying the printed
+    columns by PRD section 8's weights has to land on the printed score -- which
+    is a property of DP_SIGNAL and is asserted, not assumed.
     """
 
     role: str
@@ -1754,72 +1796,98 @@ class CarrierScore:
     on_time_obs: int
     on_time_n: int
     on_time: Decimal
-    lane_avg_on_time: Decimal
+    #: The lane on-time average as the exact fraction it is, because the
+    #: shrinkage line prints the division a reader redoes. ``61/70`` repeats, so
+    #: any decimal we could print there would not reproduce ``on_time``.
+    lane_on_time_num: int
+    lane_on_time_den: int
     avg_rpm: float | None
-    terms: tuple[Decimal, ...]
+    score_exact: Decimal
     score: Decimal
+
+    @property
+    def displayed(self) -> tuple[Decimal, ...]:
+        """The five signals exactly as the ranking table prints them."""
+        return (
+            shown(self.experience, DP_SIGNAL),
+            shown(self.recency, DP_SIGNAL),
+            shown(self.equipment, DP_EQUIPMENT),
+            shown(self.deadhead, DP_SIGNAL),
+            shown(self.on_time, DP_SIGNAL),
+        )
+
+    @property
+    def points(self) -> tuple[Decimal, ...]:
+        """``100 x weight x displayed signal`` -- the points column, exact."""
+        return tuple(
+            (100 * w * v).quantize(Decimal(1).scaleb(-DP_POINTS))
+            for w, v in zip(WEIGHTS, self.displayed)
+        )
 
 
 def score_carriers(plan: BrokerPlan, target: LoadPlan, tier: str,
                    backing: list[LoadPlan]) -> list[CarrierScore]:
     history = plan.loads
     lane_ontime = [1 if h.on_time else 0 for h in backing]
-    # Rounded here, because the shrinkage line in the document states this
-    # average and then divides by it; the reader's arithmetic has to close.
-    lane_avg = shown(Decimal(sum(lane_ontime)) / len(lane_ontime) if lane_ontime
-                     else Decimal("0.85"), DP_SIGNAL)
+    # The prior is the exact fraction, not a rounded decimal: PRD section 8 says
+    # signals are computed at full precision, and the shrinkage line prints this
+    # division so a reader can redo it (D19).
+    ot_num, ot_den = (sum(lane_ontime), len(lane_ontime)) if lane_ontime else (85, 100)
+    lane_avg = Decimal(ot_num) / Decimal(ot_den)
 
     out: list[CarrierScore] = []
     for c in plan.cfg.carriers:
         mine = [h for h in backing if h.carrier_role == c.role]
         n = len(mine)
-        experience = shown(Decimal(n) / (n + SHRINK_K), DP_SIGNAL)
+        experience = Decimal(n) / (n + SHRINK_K)
 
         if mine:
             last_lane = max(h.delivered_at for h in mine if h.delivered_at)
             days = (DAY11_REF - last_lane.date()).days
         else:
             days = None
-        rec = shown(recency_credit(days), DP_SIGNAL)
+        # ``Decimal(str(...))`` takes the float's shortest repr rather than its
+        # binary tail -- exp() is the one signal with no exact decimal form.
+        rec = Decimal(str(recency_credit(days)))
 
         all_mine = [h for h in history if h.carrier_role == c.role]
         equip_ok = any(h.equipment == target.equipment for h in all_mine)
         if target.equipment == UNKNOWN:
-            equip = 0.5
+            equip = Decimal("0.5")
         else:
-            equip = 1.0 if equip_ok else 0.0
-        equip = shown(equip, DP_EQUIPMENT)
+            equip = Decimal(1) if equip_ok else Decimal(0)
 
         delivered = [h for h in all_mine if h.delivered_at]
         if delivered:
             last = max(delivered, key=lambda h: h.delivered_at)
             dh_miles = round(road_miles_between(last.dest, target.origin), 1)
-            dh = shown(deadhead_credit(dh_miles), DP_SIGNAL)
+            dh = deadhead_credit(dh_miles)
             last_place, last_at = last.dest, last.delivered_at
         else:
-            dh_miles, dh, last_place, last_at = None, shown(0.0, DP_SIGNAL), None, None
+            dh_miles, dh, last_place, last_at = None, Decimal(0), None, None
 
         obs = sum(1 for h in mine if h.on_time)
-        on_time = shown((obs + lane_avg * SHRINK_K) / (n + SHRINK_K), DP_SIGNAL)
+        on_time = (obs + lane_avg * SHRINK_K) / (n + SHRINK_K)
 
         rpms = [h.rpm for h in mine if h.carrier_rate]
         avg_rpm = (sum(rpms) / len(rpms)) if rpms else None
 
-        terms = tuple(
-            shown(w * v, DP_TERM)
-            for w, v in ((W_EXPERIENCE, experience), (W_RECENCY, rec),
-                         (W_EQUIPMENT, equip), (W_DEADHEAD, dh), (W_ON_TIME, on_time))
+        exact = 100 * sum(
+            w * v for w, v in zip(WEIGHTS, (experience, rec, equip, dh, on_time))
         )
-        score = shown(100 * sum(terms), DP_SCORE)
         out.append(CarrierScore(
             role=c.role, name=c.name, lane_loads=n, experience=experience,
             days_since_lane=days, recency=rec, equipment_ok=equip_ok, equipment=equip,
             last_delivery_place=last_place, last_delivery_at=last_at,
             deadhead_miles=dh_miles, deadhead=dh,
-            on_time_obs=obs, on_time_n=n, on_time=on_time, lane_avg_on_time=lane_avg,
-            avg_rpm=avg_rpm, terms=terms, score=score,
+            on_time_obs=obs, on_time_n=n, on_time=on_time,
+            lane_on_time_num=ot_num, lane_on_time_den=ot_den,
+            avg_rpm=avg_rpm, score_exact=exact, score=shown(exact, DP_SCORE),
         ))
-    out.sort(key=lambda s: (-s.score, s.role))
+    # Rank on the unrounded sum, tie-broken by role -- PRD section 8. Sorting on
+    # the rounded score would let a 0.04-point gap decide the order by whichever
+    # side of a boundary each landed on.
+    out.sort(key=lambda s: (-s.score_exact, s.role))
     return out
 
 
@@ -1828,9 +1896,44 @@ def score_carriers(plan: BrokerPlan, target: LoadPlan, tier: str,
 # ---------------------------------------------------------------------------
 
 
+def _precision_facts(plans: list[BrokerPlan]) -> dict[str, int]:
+    """The three counts the precision section states, counted rather than recalled.
+
+    ``at_3dp`` is how many ranking rows the *old* 3 dp display would have printed
+    a different score for, ``on_boundary`` how many sit exactly on a ``.X5`` tie,
+    and ``tied`` how many share their unrounded sum with another row in the same
+    table -- the rows whose ORDER is a tie-break rather than a result. All three
+    are claims about this fixture, so a re-seed rewrites them instead of leaving
+    a stale number in a document whose whole point is checkability.
+    """
+    rows = at_3dp = on_boundary = tied = 0
+    for plan in plans:
+        for target in plan.day11:
+            tier, backing, _ = tier_walk(plan.loads, target)
+            scores = score_carriers(plan, target, tier, backing)
+            seen: dict[Decimal, int] = {}
+            for s in scores:
+                seen[s.score_exact] = seen.get(s.score_exact, 0) + 1
+            tied += sum(n for n in seen.values() if n > 1)
+            for s in scores:
+                rows += 1
+                tenths = s.score_exact * 10
+                if tenths - tenths.to_integral_value(rounding=ROUND_FLOOR) == Decimal("0.5"):
+                    on_boundary += 1
+                three = 100 * sum(
+                    w * shown(v, 3)
+                    for w, v in zip(WEIGHTS, (s.experience, s.recency, s.equipment,
+                                              s.deadhead, s.on_time))
+                )
+                if shown(three, DP_SCORE) != s.score:
+                    at_3dp += 1
+    return {"rows": rows, "at_3dp": at_3dp, "on_boundary": on_boundary, "tied": tied}
+
+
 def build_traceability(plans: list[BrokerPlan]) -> str:
     lines: list[str] = []
     w = lines.append
+    facts = _precision_facts(plans)
 
     w("# Day-11 traceability")
     w("")
@@ -1881,21 +1984,58 @@ def build_traceability(plans: list[BrokerPlan]) -> str:
     w("percentiles = PostgreSQL percentile_cont (linear interpolation)")
     w("```")
     w("")
-    w("**Precision, and why it is part of the model** (DECISIONS D18). Every number below")
-    w("is rounded to the precision it is *printed* at before anything is multiplied by it:")
-    w("signals and the shrinkage lane average to 3 dp, equipment to 2 dp, each weighted")
-    w("term to 4 dp, the score to 1 dp, and $/mi percentiles to 4 dp — which is also what")
-    w("`lane_stats.rate_per_mile_p*` stores (`NUMERIC(10,4)`). So `2.0200 × 187.2` is")
-    w("written as `$378.14`, the cent a calculator returns, not the `$378.15` an")
-    w("unrounded rate would give. Rounding is half-up throughout. The cost is at most")
-    w("0.05 of a score point against an infinite-precision model; the benefit is that")
-    w("every line here can be re-derived from the line above it.")
+    w("**Precision, and why it is part of the model** (DECISIONS D18, D19). Every number")
+    w("below has to be reproducible from the numbers printed beside it, and prices and")
+    w("scores get there by two different routes because they are two different kinds of")
+    w("number:")
     w("")
-    w("That rounding is this document's convention, not a demand on the implementation:")
-    w("the **price** figures are exact — the system stores the same 4-dp rate and reaches")
-    w("the same cent — while a **score** computed from unrounded signals may sit up to")
-    w("0.05 away from the one printed here. Ranks are unaffected (no margin below is")
-    w("under 4 points), which is why the assertions are on rank and not on score.")
+    w("- **Prices multiply a stored factor.** `lane_stats.rate_per_mile_p*` is")
+    w("  `NUMERIC(10,4)`, so the rate a broker is shown *is* the rate the system")
+    w("  multiplied. The percentile is rounded to 4 dp **first** and the dollars come")
+    w("  from that: `2.0200 × 187.2` is written `$378.14`, the cent a calculator")
+    w("  returns, not the `$378.15` an unrounded rate would give.")
+    w("- **Scores have no stored factor.** Signals are exact — `n/(n+5)`, `exp(-d/30)`,")
+    w("  `(250-mi)/200`, and a rate shrunk toward its lane — so per PRD section 8 they")
+    w("  are computed at **full precision**, weighted, and the 0–100 result is rounded")
+    w(f"  **once at the end** to {DP_SCORE} dp. Nothing is rounded on the way in.")
+    w("")
+    w(f"Signals are therefore *displayed* to {DP_SIGNAL} dp — enough that the printed row")
+    w(f"still reproduces the printed score. At 3 dp it did not: `0.35 × 0.444` is 0.0156")
+    w(f"of a point short of `0.35 × 4/9`, and {facts['at_3dp']} of the {facts['rows']} rows below would land")
+    w("on the wrong side of a rounding boundary because of it. The **points** in each")
+    w("term-by-term line are exact — `100 × weight` is a whole number for all five")
+    w(f"weights, so a {DP_SIGNAL} dp signal times it is exact at {DP_SIGNAL} dp.")
+    w("`backend/scripts/validate_data.py` asserts, row by row, that the printed columns")
+    w("times PRD section 8's weights reproduce the printed score, so a re-seed that needs")
+    w("more digits fails rather than printing a row that does not add up.")
+    w("")
+    w("The one figure printed as a **fraction** rather than a decimal is the on-time")
+    w("shrinkage prior — `(observed + (lane on-time)×5)/(n+5)`. Most of these lane")
+    w("averages repeat as decimals (`61/70`, `86/93`), so any decimal short enough to")
+    w("print would not reproduce the on-time column it feeds. Its numerator and")
+    w("denominator are the on-time count and the load count of the accepted tier's")
+    w("backing set — the loads in the *Supporting history* table above it.")
+    w("")
+    w("**Rounding is half-up everywhere** — `22.05` → `22.1`, never `22.0`. That is not")
+    w(f"hypothetical: {facts['on_boundary']} of the rows below land on a `.X5` tie exactly. What half-up buys")
+    w("is not a different answer from Python's builtin `round()` — it is a *predictable*")
+    w("one. `round()` rounds the binary value, where `22.05` is really")
+    w("`22.05000000000000071` and `69.55` is really `69.54999999999999716`, so it sends the")
+    w("first up and the second down. Nothing in the printed digits tells you which, so a")
+    w("published score would depend on a fact about floating point that no reader can see.")
+    w("`app.domain.scoring.round_half_up` is the production statement of the same rule.")
+    w("This is a shared **rule**, not shared code: the reference model here was written")
+    w("from the PRD independently (D12), which is the only reason a disagreement between")
+    w("the two would mean anything.")
+    w("")
+    w("Ranking is by the **unrounded** sum, so two carriers whose printed scores are equal")
+    w("are still ordered and the order never contradicts the printed digits. But")
+    w(f"{facts['tied']} of the {facts['rows']} rows below sit in an *exact* tie with another row — carriers")
+    w("with no lane history and no deadhead credit differ in nothing the score can see.")
+    w("This document breaks those ties by the generator's carrier role; the production")
+    w("scorer breaks them by `source_carrier_id`. Both are deterministic and neither is")
+    w("more correct, so **assert the set of carriers at a given score, not their order**")
+    w("within it. Every rank asserted below is separated by at least 4 points.")
     w("")
     w("If the implementation picks a different recency shape, the **ranking** assertions")
     w("still hold — every scenario below is built with a margin — but the absolute scores")
@@ -2097,39 +2237,48 @@ def build_traceability(plans: list[BrokerPlan]) -> str:
             w("")
             w("### Carrier ranking")
             w("")
+            w(f"Signals to {DP_SIGNAL} dp. `0.35×exp + 0.20×recency + 0.15×equip + "
+              f"0.20×deadhead + 0.10×on-time`, ×100, rounded half-up once, reproduces the "
+              f"**score** column from the columns beside it.")
+            w("")
             w("| # | carrier | lane loads n | exp n/(n+5) | days since | recency | equip | "
               "last delivery | deadhead mi | deadhead | on-time | **score** |")
             w("|---|---|---|---|---|---|---|---|---|---|---|---|")
             for i, s in enumerate(scores, start=1):
                 last_s = (f"{s.last_delivery_place.city} {s.last_delivery_at:%m-%d}"
                           if s.last_delivery_place else "—")
-                w(f"| {i} | {s.name} (`{s.role}`) | {s.lane_loads} | {s.experience:.3f} | "
+                d_exp, d_rec, d_eq, d_dh, d_ot = s.displayed
+                w(f"| {i} | {s.name} (`{s.role}`) | {s.lane_loads} | {d_exp} | "
                   f"{'—' if s.days_since_lane is None else s.days_since_lane} | "
-                  f"{s.recency:.3f} | {s.equipment:.2f} | {last_s} | "
+                  f"{d_rec} | {d_eq} | {last_s} | "
                   f"{'—' if s.deadhead_miles is None else f'{s.deadhead_miles:.1f}'} | "
-                  f"{s.deadhead:.3f} | {s.on_time:.3f} | **{s.score:.1f}** |")
+                  f"{d_dh} | {d_ot} | **{s.score:.1f}** |")
             w("")
             top, second = scores[0], scores[1]
             w(f"**Expected top carrier: {top.name} (`{top.role}`), score {top.score:.1f}, "
               f"{top.score - second.score:.1f} ahead of {second.name} (`{second.role}`).**")
             w("")
-            w("Arithmetic for the top two, term by term:")
+            w("Arithmetic for the top two, signal by signal, in points out of 100 — "
+              "`100 × weight × signal`, so PRD section 8's weights 0.35 / 0.20 / 0.15 / "
+              "0.20 / 0.10 read as 35 / 20 / 15 / 20 / 10 points. Every product below is "
+              "exact:")
             w("")
             for s in (top, second):
-                t = s.terms
+                d = s.displayed
+                p = s.points
                 w(f"- **{s.name}** — "
-                  f"0.35×{s.experience:.3f} = {t[0]:.4f}; "
-                  f"0.20×{s.recency:.3f} = {t[1]:.4f}; "
-                  f"0.15×{s.equipment:.2f} = {t[2]:.4f}; "
-                  f"0.20×{s.deadhead:.3f} = {t[3]:.4f}; "
-                  f"0.10×{s.on_time:.3f} = {t[4]:.4f}; "
-                  f"sum = {sum(t):.4f} → ×100 = **{s.score:.1f}**")
+                  f"experience 35×{d[0]} = {p[0]}; "
+                  f"recency 20×{d[1]} = {p[1]}; "
+                  f"equipment 15×{d[2]} = {p[2]}; "
+                  f"deadhead 20×{d[3]} = {p[3]}; "
+                  f"on-time 10×{d[4]} = {p[4]}; "
+                  f"**total {sum(p)} → {s.score:.1f}**")
             w("")
             w(f"  (`{top.role}` lane experience {top.lane_loads}/({top.lane_loads}+5) = "
-              f"{top.experience:.3f}; on-time shrunk toward the lane average "
-              f"{top.lane_avg_on_time:.3f} with k=5: "
-              f"({top.on_time_obs} + {top.lane_avg_on_time:.3f}×5)/({top.on_time_n}+5) = "
-              f"{top.on_time:.3f})")
+              f"{top.displayed[0]}; on-time shrunk toward the lane average "
+              f"{top.lane_on_time_num}/{top.lane_on_time_den} with k=5: "
+              f"({top.on_time_obs} + ({top.lane_on_time_num}/{top.lane_on_time_den})×5)"
+              f"/({top.on_time_n}+5) = {top.displayed[4]})")
             w("")
             w(f"**Why this is the right answer:** {WHY[target.behavior]}")
             w("")
@@ -3173,6 +3322,51 @@ class Validator:
                       f"kg-line-item={'yes' if 'messy_kg_line_item' in scen else 'n/a'}, "
                       f"out-of-order-lastModified={n_ooo}")
 
+    def check_ranking_arithmetic(self) -> None:
+        """Every ranking row in TRACEABILITY.md must add up from its own columns.
+
+        The score is computed at full precision and rounded once (PRD section 8),
+        but it is *printed* beside signals rounded to DP_SIGNAL. Those two only
+        agree because DP_SIGNAL is wide enough, which is a fact about this
+        fixture, not a theorem: a score sitting within 10^-(DP_SIGNAL-2) of a
+        ``.X5`` boundary would print a digit its own row contradicts. That is
+        exactly the defect D18 found in the price lines, so it is asserted here
+        rather than eyeballed.
+        """
+        rows = worst = 0
+        worst_row = ""
+        for plan in self.plans:
+            for target in plan.day11:
+                tier, backing, _ = tier_walk(plan.loads, target)
+                for s in score_carriers(plan, target, tier, backing):
+                    rows += 1
+                    from_columns = 100 * sum(w * v for w, v in zip(WEIGHTS, s.displayed))
+                    if shown(from_columns, DP_SCORE) != s.score:
+                        self.fail(
+                            f"{plan.cfg.key}/{target.key}/{s.role}: ranking row prints "
+                            f"score {s.score} but its own {DP_SIGNAL} dp columns give "
+                            f"{shown(from_columns, DP_SCORE)} (exact {s.score_exact:.8f})"
+                        )
+                    if sum(s.points) != shown(from_columns, DP_POINTS):
+                        self.fail(f"{plan.cfg.key}/{target.key}/{s.role}: points column "
+                                  f"{sum(s.points)} != {shown(from_columns, DP_POINTS)}")
+                    # How much headroom the display has before a row could
+                    # contradict itself: distance from the exact score to the
+                    # nearest .X5 tie, in units of the display's own error bound.
+                    tenths = s.score_exact * 10
+                    gap = abs(tenths - tenths.to_integral_value(rounding=ROUND_FLOOR)
+                              - Decimal("0.5")) / 10
+                    if gap > 0 and (worst == 0 or gap < worst):
+                        worst, worst_row = gap, f"{plan.cfg.key}/{target.key}/{s.role}"
+        bound = Decimal(1).scaleb(-DP_SIGNAL) / 2 * 100
+        self.note(f"ranking arithmetic: {rows} rows reproduce from their printed "
+                  f"{DP_SIGNAL} dp columns; tightest non-tie row is {worst:.8f} from a "
+                  f".X5 boundary ({worst_row}) against a display error bound of {bound}")
+        if worst and worst < bound:
+            self.fail(f"{worst_row}: exact score is {worst} from a .X5 boundary, inside "
+                      f"the {DP_SIGNAL} dp display's {bound} error bound — the printed row "
+                      f"reproduces by luck; widen DP_SIGNAL")
+
     def check_cross_tms_carrier(self) -> None:
         by_mc: dict[str, list[tuple[str, str]]] = {}
         for plan in self.plans:
@@ -3302,6 +3496,7 @@ class Validator:
         self.check_cross_file()
         self.check_sanity()
         self.check_scenarios()
+        self.check_ranking_arithmetic()
         self.check_cross_tms_carrier()
         self.check_tier_rung_coverage()
         self.check_rate_band_separation()

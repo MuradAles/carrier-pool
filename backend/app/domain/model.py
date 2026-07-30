@@ -49,6 +49,7 @@ __all__ = [
     "CargoItem",
     "Load",
     "Carrier",
+    "LastDelivery",
     "Customer",
     "RateLine",
     "SyncEvent",
@@ -326,6 +327,32 @@ class Carrier:
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "last_delivery_at", as_utc(self.last_delivery_at))
+
+
+@dataclass(frozen=True, slots=True)
+class LastDelivery:
+    """Where a carrier's truck last ended up, and which load put it there.
+
+    The deadhead signal needs coordinates; the reason a rep reads wants a town
+    name ("delivered in Baytown yesterday, 38 mi from your pickup"). Both come
+    off this one object, derived from one delivered load, so the miles that were
+    scored and the place that was named can never describe different events.
+
+    ``lat``/``lon`` are the load's own delivery coordinates — the same columns
+    ingestion writes to ``carriers.last_delivery_*`` — and ``location`` carries
+    the raw city/state/zip for display. Distance is always measured from the
+    coordinates, never re-derived from the label.
+    """
+
+    source_carrier_id: str
+    source_load_id: str
+    lat: float
+    lon: float
+    at: datetime | None
+    location: StopLocation
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "at", as_utc(self.at))
 
 
 @dataclass(frozen=True, slots=True)

@@ -215,6 +215,25 @@ A carrier with 2 loads sits at 0.29 on experience and near the lane average on o
 climbs as evidence accumulates. A good new carrier still surfaces; it just cannot leapfrog a
 proven one on 2 data points.
 
+### Score precision (the presentation contract)
+
+Signals are computed and kept at full precision. The weighted sum is rounded **once**, at the
+end, to **one decimal, half-up** — `22.05` → `22.1`, never `22.0`. Half-up because it is what
+PostgreSQL `NUMERIC` rounding and a rep with a calculator both do, and because
+`data/TRACEABILITY.md` computes at display precision the same way (`DECISIONS.md` D18).
+
+This is a rule both scorers honor, not code they share: the reference scorer in
+`backend/scripts/generate_data.py` is independent by design (D12), which is the only reason the
+document can catch a formula error. Sharing the rule removes a disagreement that was never about
+the model; sharing the code would remove the oracle (D19).
+
+Two consequences worth stating:
+
+- **Rank by the unrounded sum**, tie-broken by carrier id so an order is stable across runs.
+  Rounding is monotone, so a rendered list never shows a higher number above a lower one.
+- **Round in the API, never in the browser.** A percentage the frontend recomputes is a second
+  source of truth for a number that already exists.
+
 ### Reasoning
 Every ranked carrier returns plain-language reasons, generated from the same numbers that drove
 the score — never written independently of it:

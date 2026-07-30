@@ -49,7 +49,7 @@ from __future__ import annotations
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Any
 
 import psycopg
@@ -65,7 +65,7 @@ from ..domain.lanes import (
     TIER_ZIP3,
     LaneKey,
 )
-from ..domain.localtime import delivered_on_time
+from ..domain.localtime import central_date, delivered_on_time
 from ..domain.model import (
     ANY_EQUIPMENT,
     CargoItem,
@@ -75,12 +75,14 @@ from ..domain.model import (
     EntityType,
     Equipment,
     LaneStats,
+    LastDelivery,
     Load,
     LoadStatus,
     Stop,
     StopLocation,
     SyncEvent,
 )
+from ..domain.scoring import RankingInputs
 from .db import APP_ROLE, BROKER_SETTING, get_broker
 
 __all__ = ["BrokerRepository", "UnknownBroker", "broker_session"]
@@ -1110,3 +1112,172 @@ class BrokerRepository:
                 (self._broker_id, tier, lane_key, equipment),
             )
             return [_carrier_stats_from_row(row) for row in cur.fetchall()]
+
+    # -- the ranking read side (Phase 6) -------------------------------------
+    #
+    # Read-only, and every one of them goes through the same binding as the
+    # rest: a ranking is as tenant-confined as an ingest. The lane-scoped ones
+    # take a LaneKey rather than four loose strings so a caller cannot ask for
+    # a carrier's record on one bucket and the lane average on another.
+    def lane_on_time_for(self, key: LaneKey) -> tuple[int, int]:
+        """One lane bucket's on-time record: ``(on_time, answerable)``.
+
+        The prior the ranking shrinks a carrier's on-time rate toward
+        (DECISIONS.md D5). Computed from :meth:`_population` — the same
+        predicate :meth:`compute_lane_stats` and :meth:`compute_carrier_stats`
+        use — so the lane average and the carrier observations shrunk toward it
+        always describe the same loads.
+
+        The second element counts loads with a **verdict**, not loads: a rolling
+        truck has no arrival and no verdict, and counting it in the denominator
+        would drag the prior down by exactly the freight that is going fine
+        (TASKS.md R1).
+        """
+        where, params = self._population(
+            tier=key.tier,
+            origin_key=key.origin_key,
+            dest_key=key.dest_key,
+            equipment=key.equipment,
+        )
+        with self._cursor() as cur:
+            cur.execute(
+                "SELECT count(*) FILTER (WHERE delivered_on_time) AS on_time_count,"
+                " count(*) FILTER (WHERE delivered_on_time IS NOT NULL) AS eligible"
+                " FROM loads" + where,
+                params,
+            )
+            row = cur.fetchone()
+        return (row["on_time_count"], row["eligible"])
+
+    def carrier_equipment_loads(self) -> dict[str, dict[str, int]]:
+        """How many loads of each equipment type every carrier has actually run.
+
+        The equipment signal is broker-wide, not lane-scoped: "has this carrier
+        ever hauled a reefer for me" is a fact about the carrier, and PRD
+        section 8 scores it that way. ``RATED_STATUSES`` because a load that was
+        only ever quoted is not a trailer anyone pulled.
+
+        ``UNKNOWN`` appears as a key like any other type and is never merged
+        into another one (invariant 5) — a load whose equipment nobody recorded
+        is not evidence that the carrier owns a dry van. Scoring never looks it
+        up, because a load whose *own* equipment is ``UNKNOWN`` is neutral by
+        rule (DECISIONS.md D12).
+        """
+        with self._cursor() as cur:
+            cur.execute(
+                "SELECT source_carrier_id, equipment, count(*) AS load_count"
+                " FROM loads WHERE broker_id = %s AND status = ANY(%s)"
+                " AND source_carrier_id IS NOT NULL"
+                " GROUP BY source_carrier_id, equipment",
+                (self._broker_id, [str(s) for s in RATED_STATUSES]),
+            )
+            rows = cur.fetchall()
+        counts: dict[str, dict[str, int]] = {}
+        for row in rows:
+            counts.setdefault(row["source_carrier_id"], {})[row["equipment"]] = row[
+                "load_count"
+            ]
+        return counts
+
+    def last_deliveries(self) -> dict[str, LastDelivery]:
+        """Every carrier's most recent placeable delivery, keyed by carrier id.
+
+        The bulk form of :meth:`latest_delivery_position` — same statuses, same
+        "must have coordinates" filter, same ``(delivery_actual_at DESC,
+        source_load_id DESC)`` tie-break — so the position the ranking scores
+        from is by construction the one ingestion wrote to
+        ``carriers.last_delivery_*``. It returns more: the delivering load's id
+        and its last drop, so the deadhead reason can name the town without a
+        second query that might land on a different load.
+
+        A carrier with nothing placeable behind them is simply absent, which the
+        deadhead signal renders as "no known last delivery" rather than as a
+        distance of zero.
+        """
+        with self._cursor() as cur:
+            cur.execute(
+                "SELECT DISTINCT ON (source_carrier_id) source_carrier_id,"
+                " source_load_id, delivery_lat, delivery_lon, delivery_actual_at,"
+                " stops"
+                " FROM loads"
+                " WHERE broker_id = %s AND source_carrier_id IS NOT NULL"
+                " AND status = ANY(%s) AND delivery_actual_at IS NOT NULL"
+                " AND delivery_lat IS NOT NULL AND delivery_lon IS NOT NULL"
+                " ORDER BY source_carrier_id, delivery_actual_at DESC,"
+                " source_load_id DESC",
+                (
+                    self._broker_id,
+                    [str(LoadStatus.DELIVERED), str(LoadStatus.COMPLETED)],
+                ),
+            )
+            rows = cur.fetchall()
+        deliveries: dict[str, LastDelivery] = {}
+        for row in rows:
+            stops = _stops_from_json(row["stops"])
+            drop = next((s for s in reversed(stops) if s.is_drop), stops[-1])
+            deliveries[row["source_carrier_id"]] = LastDelivery(
+                source_carrier_id=row["source_carrier_id"],
+                source_load_id=row["source_load_id"],
+                lat=row["delivery_lat"],
+                lon=row["delivery_lon"],
+                at=row["delivery_actual_at"],
+                location=drop.location,
+            )
+        return deliveries
+
+    def latest_sync_at(self) -> datetime | None:
+        """When this broker's newest ingested file was synced. ``None`` if none.
+
+        The ranking's "as of" clock. Recency is measured against the freshest
+        data we hold rather than against ``now()``, so an answer is a function
+        of the fixture and stays reproducible — ``data/TRACEABILITY.md``'s
+        expected scores are still the expected scores next month, and a demo
+        does not silently decay as the wall clock moves away from day 11.
+        """
+        with self._cursor() as cur:
+            cur.execute(
+                "SELECT max(synced_at) AS latest FROM sync_files WHERE broker_id = %s",
+                (self._broker_id,),
+            )
+            return cur.fetchone()["latest"]
+
+    def ranking_inputs(
+        self, key: LaneKey | None, *, as_of: date | None = None
+    ) -> RankingInputs:
+        """Everything :func:`~app.domain.scoring.rank_carriers` needs, in one go.
+
+        ``key`` is the rung the tier walk accepted, or ``None`` when it accepted
+        nothing — in which case there is no lane to have experience on and the
+        lane-scoped reads are skipped rather than guessed at.
+
+        ``as_of`` defaults to the Central date of the newest sync file (see
+        :meth:`latest_sync_at`); a caller can override it, which is what makes
+        "what would this have ranked on day 7" answerable without a clock. The
+        fallback to today only fires for a broker with no ingested files, which
+        also has no carriers to rank.
+        """
+        if as_of is None:
+            latest = self.latest_sync_at()
+            as_of = central_date(latest) if latest is not None else central_date(
+                datetime.now(timezone.utc)
+            )
+        stats: dict[str, CarrierStats] = {}
+        on_time: tuple[int, int] = (0, 0)
+        if key is not None:
+            stats = {
+                row.source_carrier_id: row
+                for row in self.list_carrier_stats(
+                    tier=key.tier, lane_key=key.lane_key, equipment=key.equipment
+                )
+            }
+            on_time = self.lane_on_time_for(key)
+        return RankingInputs(
+            as_of=as_of,
+            carriers=tuple(self.list_carriers()),
+            carrier_stats=stats,
+            equipment_loads=self.carrier_equipment_loads(),
+            last_deliveries=self.last_deliveries(),
+            lane_on_time_count=on_time[0],
+            lane_on_time_eligible_count=on_time[1],
+        )
+

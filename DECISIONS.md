@@ -672,6 +672,86 @@ unnoticed.
 
 ---
 
+## D19 — Two scorers may disagree on rounding, never on a signal
+
+**What happened.** `data/TRACEABILITY.md`'s ranking tables come from a *reference scorer* inside
+the generator (D12); `app/domain/scoring.py` is the production one. They are deliberately
+independent — that is the entire reason the document can serve as an oracle. Comparing all 192
+ranking rows across the 16 day-11 loads:
+
+```
+176  agree exactly
+ 10  the doc computes the weighted sum from its 3dp-displayed signals; the code uses full precision
+  6  differ by 0.1 at a rounding boundary — e.g. 0.15 + 0.0205 + 0.05 = 22.050000 exactly
+  0  disagree on any signal value
+```
+
+**The finding is the last line.** Every `n/(n+5)`, every recency decay, every deadhead credit,
+every shrunk on-time rate matched between two independently written implementations. The
+divergence is entirely in how the final number is presented.
+
+**Decision.** Fix the document, not the scorer, and pin the presentation contract:
+
+1. The traceability table displays signal values at the precision it computes with, so its
+   arithmetic reproduces — the D18 rule applied to ranking instead of pricing.
+2. Both scorers round the final 0–100 score by one documented rule, stated in `PRD.md` §8.
+   A score landing on exactly `.X5` must not depend on which language construct rounded it.
+
+**What is deliberately *not* done: making the generator import `scoring.py`.** That would make
+the two agree by construction and destroy the oracle. The reference scorer's value is that it
+was written from the PRD independently, so a genuine formula error in either one shows up as a
+disagreement. Sharing a rounding *rule* is a spec; sharing the *code* is collusion.
+
+**Why this isn't the D18 situation.** D18 corrected the document because it contradicted itself
+— its printed factors did not produce its printed result. Here both artifacts are internally
+consistent; they simply made different presentation choices. So the fix is to align the
+contract, not to declare one side wrong.
+
+**Honest note.** These differences are ≤0.1 on a 0–100 scale and change no ranking order and no
+top carrier. They matter because Phase 9's end-to-end check asserts against this document, and
+an assertion that needs a tolerance band is an assertion that will hide a real regression later.
+
+---
+
+## D20 — Whose datum is missing decides whether a gap scores 0.0 or neutral
+
+**The question.** `deadhead_credit` had no obvious answer for a missing input, and "be consistent
+with `UNKNOWN` equipment, which is neutral" turned out to be the wrong generalization.
+
+**Decision.** The rule is *whose* datum is missing.
+
+| Gap | Credit | Why |
+|---|---|---|
+| The **load's** pickup can't be placed | `0.5` neutral | Nobody can be measured, so it applies to all carriers identically |
+| **One carrier** has no known last delivery | `0.0` | Not rank-neutral — it is a gap in that carrier's own record |
+
+**The arithmetic that settles it.** A gap in the *load* shifts every carrier by exactly the same
+amount, so a neutral 0.5 cannot reorder anyone — while 0.0 would deflate all twelve scores by 20
+points for a fact about the load, making a first-rate carrier read as mediocre. That is pure
+downside, so neutral wins.
+
+A gap in *one carrier's* record is different. On `broker_a`'s `DAY11-RICH`, six carriers score
+24.17 with a deadhead credit of 0.000 and **known** positions 257–305 mi out. A carrier with no
+delivery history at all would score 34.17 under a neutral 0.5 and outrank all six — **promoted
+for the absence of evidence.** That is exactly the failure D5 identified in the experience
+signal, reappearing inside the deadhead term. So it scores 0.0.
+
+**Reason strings name the gap rather than implying a distance.** "No known recent delivery for
+this carrier, so no proximity credit", and "This load's pickup is not on the map, so proximity
+could not be measured for anyone — scored neutral". A reason that said "0 mi" or implied
+remoteness would be a reason disagreeing with its own basis, which invariant 2 forbids.
+
+**Why `UNKNOWN` equipment is not a counterexample.** It is a gap in the *load*, identical for
+every carrier, so by the rule above it is neutral — which is what PRD §8 already said. The two
+rules agree; the earlier framing just generalized from the wrong half of the table.
+
+**Honest note.** No day-11 load has a geo-null pickup and all 36 carriers have a placeable last
+delivery, so neither branch fires on the current fixture. Both are reachable on real data, which
+is precisely why they need a stated rule rather than whatever the first `None` check happened to
+return.
+
+---
+
 ## Honest limitations
 
 *To be filled as they're found — including what `breaker` attacked and could not break.*
