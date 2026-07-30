@@ -622,6 +622,56 @@ which three they are.
 
 ---
 
+## D18 — An estimate must be reproducible by hand from its own provenance line
+
+**The problem.** Six of the sixteen day-11 loads disagreed with `data/TRACEABILITY.md` by exactly
+one cent. `lane_stats.rate_per_mile_p*` is `NUMERIC(10,4)`, while the generator computed the
+traceability figures at full float precision:
+
+```
+true p75   2.020017478 × 187.2 = 378.1473 → $378.15   (the doc)
+stored p75 2.0200      × 187.2 = 378.1440 → $378.14   (the system)
+```
+
+**The doc is wrong, and it can be shown wrong without reference to our code.**
+`TRACEABILITY.md:296` reads:
+
+```
+p75 = 2.0200 $/mi → 2.0200 × 187.2 = **$378.15**
+```
+
+`2.0200 × 187.2` is `378.144`. The document states a multiplication and then prints a different
+answer — it displayed a rounded rate while computing with precision it never shows. That is an
+internal contradiction, not a disagreement with the implementation.
+
+**Decision.** Keep `NUMERIC(10,4)`. Regenerate the traceability figures from the rate the
+document actually displays.
+
+**Why the stored precision is the right one.** Invariant 6 exists so a broker can check the
+answer: every estimate reports its tier, its load count, and its rate. If we printed $378.15
+beside a stated rate of $2.0200/mi, a rep multiplying those two numbers would get $378.14 and
+conclude our arithmetic is broken. **An estimate whose own evidence does not reproduce it is
+worse than one that is a cent away from a hypothetical.** Nothing in this product compares our
+dollars to an external source of truth; everything compares them to the numbers printed next
+to them.
+
+**Note on method.** Throughout this project the rule has been that when generated expectations
+disagree with the implementation, the expectation wins and the code is fixed — otherwise tests
+merely assert current behavior. This is the one case where the reverse applies, and it qualifies
+only because the document contradicts *itself*: its stated arithmetic does not produce its
+stated result. That test — can the discrepancy be demonstrated using only the artifact in
+question — is what separates a genuine correction from bending expectations toward the code.
+
+**Rejected:** widening the column to `NUMERIC(10,9)`. It would match the doc, but it makes every
+estimate un-hand-checkable — nobody verifies `2.020017478 × 187.2` on a phone call — and it
+would not repair the already-stored rows without a full rebuild.
+
+**Rejected:** tolerating a cent in the Phase 9 end-to-end assertion. It hides the question
+rather than answering it, and a tolerance band is exactly where a real regression later goes
+unnoticed.
+
+---
+
 ## Honest limitations
 
 *To be filled as they're found — including what `breaker` attacked and could not break.*

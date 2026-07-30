@@ -159,6 +159,7 @@ def _seed_colliding_broker(
             **_CARRIER_STAT_KEY,
             load_count=lane_load_count,
             on_time_count=lane_load_count - 1,
+            on_time_eligible_count=lane_load_count,
             avg_rate_per_mile=lane_p50,
             first_load_at=utc(2026, 7, 6),
             last_load_at=utc(2026, 7, 6),
@@ -401,10 +402,12 @@ def test_delete_carrier_stats_cannot_reach_another_brokers_row(app_conn):
 
     repo_a.insert_carrier_stats(
         CarrierStats(source_carrier_id="CARR-X", **key, load_count=5, on_time_count=4,
+                     on_time_eligible_count=5,
                      avg_rate_per_mile=1.5, first_load_at=utc(2026, 7, 6), last_load_at=utc(2026, 7, 6))
     )
     repo_b.insert_carrier_stats(
         CarrierStats(source_carrier_id="CARR-X", **key, load_count=50, on_time_count=45,
+                     on_time_eligible_count=50,
                      avg_rate_per_mile=2.5, first_load_at=utc(2026, 7, 6), last_load_at=utc(2026, 7, 6))
     )
 

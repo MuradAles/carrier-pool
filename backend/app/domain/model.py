@@ -404,6 +404,14 @@ class CarrierStats:
     The carrier's last known delivery position lives on ``Carrier``, not here:
     it is one fact per carrier, and a copy on every lane row could disagree with
     itself after a partial rebuild.
+
+    **Three counts, not two.** ``on_time_count`` is a numerator whose denominator
+    is ``on_time_eligible_count`` — the loads that *have a verdict*
+    (:func:`~app.domain.localtime.delivered_on_time` returns ``None`` for a load
+    with no arrival yet) — and not ``load_count``. Dividing by ``load_count``
+    counts every rolling truck as a miss, which understates precisely the
+    carriers with freight in motion (TASKS.md R1). They are stored separately so
+    scoring cannot reconstruct the wrong ratio from the right numbers.
     """
 
     source_carrier_id: str
@@ -412,6 +420,7 @@ class CarrierStats:
     equipment: str
     load_count: int
     on_time_count: int
+    on_time_eligible_count: int
     avg_rate_per_mile: float | None
     first_load_at: datetime | None
     last_load_at: datetime | None
@@ -419,3 +428,26 @@ class CarrierStats:
     def __post_init__(self) -> None:
         object.__setattr__(self, "first_load_at", as_utc(self.first_load_at))
         object.__setattr__(self, "last_load_at", as_utc(self.last_load_at))
+        # Loads with a verdict are a subset of the carrier's loads on the lane,
+        # and the on-time ones are a subset of those. A rebuild that violates
+        # this has counted two different populations, which would silently
+        # produce an on-time rate above 1.0 or below the truth.
+        if not 0 <= self.on_time_count <= self.on_time_eligible_count <= self.load_count:
+            raise ValueError(
+                f"carrier {self.source_carrier_id} on {self.lane_key}: expected "
+                f"0 <= on_time_count <= on_time_eligible_count <= load_count, got "
+                f"{self.on_time_count} <= {self.on_time_eligible_count} <= "
+                f"{self.load_count}"
+            )
+
+    @property
+    def on_time_rate(self) -> float | None:
+        """Observed on-time rate, or ``None`` when nothing is answerable yet.
+
+        The one place the ratio is formed, so no caller picks its own
+        denominator. Scoring shrinks this toward the lane average (D5); it does
+        not re-divide.
+        """
+        if self.on_time_eligible_count == 0:
+            return None
+        return self.on_time_count / self.on_time_eligible_count

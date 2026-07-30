@@ -5,12 +5,15 @@ visible. The recommendation, pricing, and ingestion logic is not implemented yet
 — those endpoints deliberately return 501 rather than fake data.
 
 The schema is applied on startup, in the lifespan, before anything is served
-(DECISIONS.md D8). It is idempotent, so a container restart re-applies it for
-free; and it fails loudly, because serving requests against a database whose
-shape is unknown produces wrong answers rather than slow ones. The chronological
-ingest joins it here in Phase 4.
+(DECISIONS.md D8), and the full chronological ingest runs immediately after it,
+synchronously. Both are idempotent, so a container restart re-applies the schema
+and re-runs the ingest for free — the already-ingested files are skipped at the
+database level. Both fail loudly: serving requests against a database whose shape
+or contents are unknown produces wrong answers rather than slow ones, and D8
+rejects background ingestion for exactly that reason.
 """
 
+import logging
 import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -19,9 +22,12 @@ from pathlib import Path
 import psycopg
 from fastapi import FastAPI, HTTPException
 
-from .repository import DEFAULT_DATABASE_URL, bootstrap, connect_admin
+from .ingestion import ingest_all
+from .repository import DEFAULT_DATABASE_URL, bootstrap, connect, connect_admin
 
 DATA_DIR = Path(os.environ.get("DATA_DIR", "../data"))
+
+log = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -30,6 +36,11 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # request afterwards runs on DATABASE_URL, which cannot bypass RLS.
     with connect_admin() as conn:
         bootstrap(conn)
+    # Ingestion runs as the unprivileged app role like everything else, so a bug
+    # here cannot cross a tenant boundary either.
+    with connect() as conn:
+        report = ingest_all(conn, DATA_DIR)
+    log.info("startup ingest: %s", report.summary())
     yield
 
 

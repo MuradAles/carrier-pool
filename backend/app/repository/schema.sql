@@ -128,6 +128,13 @@ CREATE TABLE IF NOT EXISTS loads (
     delivery_scheduled_date DATE,
     pickup_actual_at        TIMESTAMPTZ,
     delivery_actual_at      TIMESTAMPTZ,
+    -- Delivered on or before the scheduled delivery date (D7), compared in
+    -- Central (D16). NULL is the third outcome, not a miss: no last drop, no
+    -- scheduled date, or no arrival yet. Written from
+    -- app.domain.localtime.delivered_on_time on every upsert, so the aggregate
+    -- SQL below counts a verdict rather than re-deriving one — there is exactly
+    -- one implementation of the rule, and it is the Python one.
+    delivered_on_time       BOOLEAN,
 
     -- Full ordered stop list, canonical form. Middle stops are kept here; they
     -- are not lane-forming but they are part of the load.
@@ -214,11 +221,25 @@ CREATE TABLE IF NOT EXISTS carrier_stats (
         CHECK (equipment IN ('DRY_VAN', 'REEFER', 'FLATBED', 'UNKNOWN', 'ANY')),
     load_count        INTEGER NOT NULL,
     on_time_count     INTEGER NOT NULL,
+    -- The *answerable* denominator: loads with an on-time verdict, which is not
+    -- every load. Stored beside the numerator so scoring cannot divide by
+    -- load_count and count every in-transit load as a miss (TASKS.md R1).
+    on_time_eligible_count INTEGER NOT NULL,
     avg_rate_per_mile NUMERIC(10, 4),
     first_load_at     TIMESTAMPTZ,
     last_load_at      TIMESTAMPTZ,
     UNIQUE (broker_id, source_carrier_id, tier, lane_key, equipment)
 );
+
+-- Both columns above arrived in Phase 4, after these tables existed. schema.sql
+-- is applied on every start (D8), so a database created before then is brought
+-- into step here rather than needing a hand-run migration; on a fresh database
+-- the CREATE TABLEs already have them and these are no-ops. The DEFAULT is
+-- dropped immediately so the end state matches the CREATE TABLE exactly.
+ALTER TABLE loads ADD COLUMN IF NOT EXISTS delivered_on_time BOOLEAN;
+ALTER TABLE carrier_stats
+    ADD COLUMN IF NOT EXISTS on_time_eligible_count INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE carrier_stats ALTER COLUMN on_time_eligible_count DROP DEFAULT;
 
 -- Ranking reads every carrier on one lane at the accepted tier.
 CREATE INDEX IF NOT EXISTS carrier_stats_lane_idx
