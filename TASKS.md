@@ -9,26 +9,30 @@ Execution plan for `PRD.md`. Ordered by dependency — each phase needs the one 
 Phases are handed to `orchestrator` one at a time; the per-task `Agent` column below is who it
 dispatches.
 
-Status: **Phases 0–7 complete.** 338 tests (285 unit + 22 data-integrity + 31 integration).
-Committed through `074d7cd` on `phase-1-geography-and-fixtures`.
+Status: **Phases 0–9 complete except H1.** 453 tests (291 unit + 22 data-integrity +
+54 integration + 86 adversarial). Committed through `9811742`. `docker compose up` verified
+end to end: a day-11 answer reaches the browser through the frontend proxy from a cold start.
 
-- Tenant isolation is enforced by Postgres RLS under a non-privileged role, not by convention —
-  an unscoped query *raises* rather than returning rows, and a cross-broker request 404s.
-- A late correction produces derived state **identical** to having ingested the corrected value
-  from the start, proven for all three correction flavors across every percentile (I10).
-- Production scoring and the generator's independent reference scorer agree on **all 192**
-  ranking rows and 16/16 expected top carriers, having shared a rounding *rule* and never code.
+72 of 83 rows done. What the project can defend:
 
-**In flight:** P6 (API integration tests) · U3–U6 (load detail, price panel, ranked carriers,
-sync history).
+- An unscoped query **raises** rather than returning rows; a cross-broker request 404s. Proven
+  with all three brokers loaded simultaneously on one lane key, each seeing its own median.
+- A late correction produces derived state **identical** to on-time arrival — all three
+  flavours, every percentile (I10).
+- Two independently written scorers agree on **all 192** ranking rows, having shared a rounding
+  *rule* and never code. `data/TRACEABILITY.md` was computed before the code existed and has
+  been the authoritative artifact three times (D18, D19, H5).
+- `breaker` found **14 defects and failed 70 attacks**; `reviewer` found 3 more. All fixed.
 
-**Not started:** Phase 9 — *nothing adversarial has run yet*, which `CLAUDE.md` says is what
-"done" requires · Phase 10 (README run section, clean-checkout rehearsal, walkthrough notes) ·
-Phase 11 (pool build; the design ships as D17 regardless).
+**In flight:** H1 — the one-command end-to-end check.
 
-**Carried defects:** the integration suite truncates a shared database, so concurrent pytest
-runs deadlock — matters for X4 · unreachable provenance fallback in `pricing.py`, logged against
-H4.
+**Not started:** X1 README run section · X2 `DECISIONS.md` final pass (incl. the 70 failed
+attacks) · X4 clean-checkout rehearsal · X5 walkthrough notes. Phase 11 ships as design only
+(D17), per D4.
+
+**Known, unfixed:** `pricing.py:481`'s unreachable `_provenance` fallback — dead code, no wrong
+answer. The integration suite truncates a shared database, so parallel pytest invocations
+against one database conflict; the three suites are run as separate invocations.
 
 ---
 
@@ -152,7 +156,7 @@ The correction-handling story lives here. This is the heart of the assignment.
 | [x] P3 | `/api/loads/{id}/price-estimate` | builder | L4 | Returns the **whole walk** — every rung tried with its count, `min_sample`, and whether the equipment filter applied — not just the accepted rung. Invariant 6 |
 | [x] P4 | `/api/admin/ingest` — replay all files chronologically | builder | I5 | Idempotent. Per **D8** a full ingest also runs in the FastAPI lifespan, synchronously, before serving |
 | [x] P5 | Load detail includes sync history, so corrections are visible | builder | P1 | `HD-2026-004733`: 6 entries, four rate lines on 07-11 then the −120 `ADJUSTMENT` on 07-12, settling at 702.80. Each carries `raw_json` — the entity exactly as its TMS stated it |
-| [ ] P6 | API integration tests incl. cross-broker access attempt | integration-tester | P5 | 404, not 500; no leak |
+| [x] P6 | API integration tests incl. cross-broker access attempt | integration-tester | P5 | `tests/integration/test_api.py`, 23 tests. 404 not 500 on every load-scoped route, disjointness across brokers rather than counts, a SQL-injection-shaped id, 422 on a missing `broker_id`. **Isolation proven with all three brokers loaded simultaneously** on the identical lane key — each sees its own median `{1.78, 2.16, 2.51}`, not the pooled ~2.16 |
 
 ---
 
@@ -164,10 +168,10 @@ Correctness and clarity only. README:101 — visual polish counts for nothing.
 |---|---|---|---|---|
 | [x] U1 | API client + types | builder | P3 | Built ahead of the API behind one documented seam (`provisional.tsx`). Nullable in the API is nullable in the type — an `ACTIVE` load must not render `$0.00` |
 | [x] U2 | Load list: broker dropdown, status filter, `ACTIVE` first-class | builder | U1 | No router, no state library. **The browser computes nothing it displays** — verified by grep for division, ×100, `toFixed` and `reduce` outside the formatter |
-| [ ] U3 | Load detail: facts, stops, dates, rates | builder | U1 | — |
-| [ ] U4 | Price estimate panel with provenance line | builder | U3 | Shows tier and load count |
-| [ ] U5 | Ranked carriers with bulleted reasons | builder | U3 | Reasons legible to a non-technical rep |
-| [ ] U6 | Sync history panel — a correction is visibly a correction | builder | P5 | — |
+| [x] U3 | Load detail: facts, stops, dates, rates | builder | U1 | Stops in order; a geo-null stop still renders its raw city/state/zip — excluded from lane stats is not hidden from the user |
+| [x] U4 | Price estimate panel with provenance line | builder | U3 | `PriceEstimatePanel.tsx` + `TierWalk.tsx` — renders **every rung tried** with its count and verdict, not just the winner. Its mixed-pool caveat deliberately refuses to name a confidence level, since the backend's label is the only thing entitled to say which |
+| [x] U5 | Ranked carriers with bulleted reasons | builder | U3 | `RankedCarriersPanel.tsx`. Does not re-sort, truncate, or filter — the zero-score carrier appears last with its reasons, so R5 survives to the screen |
+| [x] U6 | Sync history panel — a correction is visibly a correction | builder | P5 | `SyncHistoryPanel.tsx`. `HD-2026-004733` shows four rate lines on 07-11 then the −120 `ADJUSTMENT` on 07-12, each with `raw_json` as its TMS stated it |
 
 ---
 
@@ -176,10 +180,10 @@ Correctness and clarity only. README:101 — visual polish counts for nothing.
 | # | Task | Agent | Depends | Done when |
 |---|---|---|---|---|
 | [ ] H1 | **End-to-end check**: fresh DB → ingest 132 files → named day-11 load returns expected top carrier | integration-tester | U6, DG8 | One command; prints *why* it passed |
-| [ ] H2 | Adversarial pass: tenant leaks, correction chains, hostile inputs, statistical nonsense | breaker | H1 | Findings reproduced, or attacks documented as failed |
-| [ ] H3 | Fix what `breaker` found | builder | H2 | Each with a regression test |
-| [ ] H4 | Full review against the invariants | reviewer | H3 | Report, ranked by severity. **Carry-in:** `pricing.py` `_provenance` has an unreachable fallback (`'nothing — lane ends not on the map'`) — `REGION`/`REGION_ANY` key on a fixed constant rather than the load's geography, so `tried` can never be empty and even a geo-null load yields `(tried REGION 0, REGION_ANY 0)`. Dead code, not a wrong answer, but it reads as handling a case it cannot reach |
-| [ ] H5 | Fix what `reviewer` found | builder | H4 | — |
+| [x] H2 | Adversarial pass: tenant leaks, correction chains, hostile inputs, statistical nonsense | breaker | H1 | `tests/adversarial/`, **14 defects found and 70 attacks that failed**. Each finding written as an `xfail` carrying its own reproduction and arithmetic, so the fix flips a test that already existed |
+| [x] H3 | Fix what `breaker` found | builder | H2 | All 14 fixed, 431→447 tests, 0 xfailed. **FINDING 2**: three documents asserted something false about our own data — the composite was verified (veteran ahead by 22.39) *before* the claim was rewritten. D21–D24 record the calls |
+| [x] H4 | Full review against the invariants | reviewer | H3 | First look at the whole codebase. 3 defects + 2 doc drifts, each with a reproduction it had actually run. **One finding rejected**: it reported `CLAUDE.md:51` as carrying the false cold-start claim, having quoted one line and stopped at the wrap — the correction runs 51–58. Cleared, having run rather than pattern-matched: **zero score/reason divergences across all 192 rows**, `mc_number` in no `WHERE`/`JOIN`, no `UPDATE`/`DELETE` on the event tables. Carry-in confirmed still present: the unreachable `_provenance` fallback (`pricing.py:481`), dead code, not a wrong answer |
+| [x] H5 | Fix what `reviewer` found | builder | H4 | 447→453. A live invariant-2 violation (`low` confidence beside "capped at medium"), negative distance poisoning lane percentiles, and a dedupe key narrower than the rebuild's. **`TRACEABILITY.md` needed no regeneration** — the oracle was right and the code was wrong, for the third time today |
 
 ---
 
@@ -189,7 +193,7 @@ Correctness and clarity only. README:101 — visual polish counts for nothing.
 |---|---|---|---|---|
 | [ ] X1 | README run section — exact command sequence, from clean checkout | builder | H1 | A stranger can reproduce results |
 | [ ] X2 | `DECISIONS.md`: judgment calls, rejected alternatives, honest limits | builder | H5 | D1–D4 plus what `breaker` couldn't break |
-| [ ] X3 | Shared-pool section — what crosses the broker boundary, what never does, how it's enforced | builder | D4 | Boundary + threat model + enforcement |
+| [x] X3 | Shared-pool section — what crosses the broker boundary, what never does, how it's enforced | builder | D4 | **D17**, field by field against the real schema. Establishes that k-anonymity is arithmetically unavailable at three brokers and says so rather than claiming a threshold that doesn't exist |
 | [ ] X4 | Clean-checkout rehearsal: `git clone` → `docker compose up` → verify | integration-tester | X1 | Works on a machine with nothing cached |
 | [ ] X5 | Walkthrough notes for the review call — trace one day-11 answer end to end by hand | — | X4 | Defensible without the code |
 
