@@ -1,0 +1,49 @@
+name: carrier-pool
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: carrier_pool
+      POSTGRES_USER: carrier
+      POSTGRES_PASSWORD: carrier
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U carrier -d carrier_pool"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql://carrier:carrier@db:5432/carrier_pool
+      # Sync files are read-only input; the container never writes here.
+      DATA_DIR: /data
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./data:/data:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      # Keep the image's node_modules; don't let the bind mount shadow it.
+      - /app/node_modules
+    depends_on:
+      - backend
+    command: npm run dev -- --host 0.0.0.0
+
+volumes:
+  db_data:
