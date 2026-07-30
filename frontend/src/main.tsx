@@ -1,39 +1,40 @@
-import { StrictMode, useEffect, useState } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-type Health = { status: string; database: string; data_dir: string };
+import { App } from "./App";
+import { getHealth } from "./api";
+import type { Health } from "./types";
+import { useApi } from "./useApi";
+import "./styles.css";
 
-function App() {
-  const [health, setHealth] = useState<Health | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch("/api/health")
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then(setHealth)
-      .catch((e: Error) => setError(e.message));
-  }, []);
+/**
+ * A one-line footer saying whether the backend and its data are reachable.
+ *
+ * Kept from the scaffold because while the API is half-built it answers the
+ * first question anyone debugging this screen will ask: is the panel empty
+ * because there is no data, or because nothing is running?
+ */
+function HealthFooter() {
+  const health = useApi<Health>("health", getHealth);
 
   return (
-    <main style={{ fontFamily: "system-ui, sans-serif", padding: "2rem", lineHeight: 1.5 }}>
-      <h1>Carrier Pool</h1>
-      <p>Scaffold is up. The load list and load detail screens go here.</p>
-      <h2>Backend</h2>
-      {error && <p style={{ color: "crimson" }}>Cannot reach backend: {error}</p>}
-      {health && (
-        <ul>
-          <li>status: {health.status}</li>
-          <li>database: {health.database}</li>
-          <li>data dir: {health.data_dir}</li>
-        </ul>
+    <footer>
+      {health.state === "loading" && "backend: checking…"}
+      {health.state === "idle" && "backend: not checked"}
+      {health.state === "error" && <span className="error">backend: {health.message}</span>}
+      {health.state === "ready" && (
+        <>
+          backend: {health.data.status} · database: {health.data.database} · data:{" "}
+          {health.data.data_dir}
+        </>
       )}
-      {!health && !error && <p>Checking…</p>}
-    </main>
+    </footer>
   );
 }
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />
+    <HealthFooter />
   </StrictMode>,
 );

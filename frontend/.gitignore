@@ -1,0 +1,3 @@
+# `tsc -b` (npm run build) leaves this next to tsconfig.json. Build artifact,
+# not source. The root .gitignore already covers node_modules/ and dist/.
+*.tsbuildinfo

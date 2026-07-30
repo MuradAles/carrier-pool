@@ -1,0 +1,118 @@
+/* README:101 — "visual polish counts for nothing." This stylesheet exists to
+   make numbers legible and to make an ACTIVE load and a low-confidence answer
+   distinguishable at a glance. Nothing here is decoration. */
+
+body {
+  font-family: system-ui, sans-serif;
+  line-height: 1.45;
+  margin: 0;
+  color: #111;
+}
+
+main {
+  padding: 1.5rem;
+}
+
+h1 {
+  font-size: 1.4rem;
+}
+
+.controls {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  border-bottom: 1px solid #ddd;
+  padding: 0.35rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #f3f3f3;
+}
+
+/* Money and distances line up on the decimal point, so two rows are comparable
+   without reading them character by character. */
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The loads the platform exists to answer for. */
+.active-load {
+  background: #fffbe6;
+}
+
+.status {
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+.status-active {
+  font-weight: 700;
+}
+
+/* Geo-null and other caveats ride next to the value they qualify, never in a
+   footnote — a caveated number must not read like a clean one. */
+.flag {
+  margin-left: 0.4rem;
+  font-size: 0.7rem;
+  border: 1px solid #b58900;
+  color: #7a5c00;
+  padding: 0 0.25rem;
+}
+
+.muted {
+  color: #666;
+}
+
+.note {
+  color: #444;
+}
+
+.error {
+  color: #b00020;
+}
+
+.link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #0645ad;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.15rem 1rem;
+  max-width: 40rem;
+}
+
+.facts dt {
+  color: #555;
+}
+
+.facts dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+footer {
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid #ddd;
+  font-size: 0.8rem;
+  color: #555;
+}
