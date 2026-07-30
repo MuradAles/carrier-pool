@@ -1077,4 +1077,236 @@ in this file as an accepted one.
 
 ## Honest limitations
 
-*To be filled as they're found — including what `breaker` attacked and could not break.*
+Everything above records a decision. This records what those decisions cost, what is broken and
+still broken, and where the evidence for the rest of this file runs out.
+
+### What `breaker` attacked and could not break
+
+`backend/tests/adversarial/` holds 88 tests. **63** sit under the file's own heading *attacks
+that failed to break anything*; 19 are the regression tests the 14 defects left behind, four of
+which characterise a finding rather than assert a fix; 3 guard the harness against redirecting
+another suite's connections; 3 are the concurrency file. The 85 in `test_adversarial.py` pass
+in 8.4 s. Grouped by the claim each set supports, and by what that claim does not reach:
+
+**Tenant isolation holds against a query, not against a caller.** Eleven raw statements —
+`SELECT count(*) FROM loads`, `SET ROLE carrier`, `ALTER ROLE carrier_pool_app BYPASSRLS`,
+`DROP POLICY broker_isolation ON loads`, redefining `current_broker()` to return `'broker_b'`,
+`DELETE FROM sync_events` — each raises `InsufficientPrivilege`, and an unbound connection
+fails closed rather than open. With broker B loaded on the same lane key, sharing A's carrier
+MC/DOT, A's literal `source_load_id` strings and A's customer name while paying 13× a load,
+every one of A's percentiles and every carrier's `score_exact` is identical before and after B
+exists; the colliding id resolves to a different load under each tenant; the disjointness holds
+through `count` and `sum`, where the owner connection sees all ten loads and neither binding
+saw more than its own. Another broker's load id is a 404 whose body is byte-comparable with a
+nonexistent id's.
+
+*What it does not cover.* All of this is enforcement against a query that forgot its broker or
+a role that tried to widen itself. `broker_id` arrives as an unauthenticated query parameter,
+so nothing here establishes *who is asking* (below). And no test touches a pool read path,
+because there is no pool read path (D17).
+
+**A correction lands the same wherever it lands.** `700 → 900 → 1100 → 700` as TMS A
+restatements restores every derived row bit-identically — percentiles, carrier averages,
+on-time counts, truck positions. So does a TMS B `−200 / +200` adjustment chain, including the
+rate-only file whose `loads` array never names the load. A correction that drops a rung below
+the 5-load minimum makes the walk re-reject it instead of serving it stale; a correction that
+moves a load to another lane leaves no stale row on the lane it left; ten re-ingests with three
+brokers interleaved change nothing.
+
+*What it does not cover.* All of it replays the file *shapes the fixture contains*. A TMS
+restating history in a shape none of the three uses is untested by construction — D22 and D25.4
+were both exactly that, found by reasoning about the schemas rather than by running the corpus.
+
+**Impossible inputs degrade to a null and a sentence.** Unicode, empty strings and nulls in
+every string field; a blank carrier id; an unresolvable address; a rates row with a blank
+`code`; `NaN` mileage; −271 mi; a $0 booked rate; a 20-**ton** line item; a NUL byte in an id;
+a 1-stop and a 12-stop load; a dangling carrier reference and a dangling location reference;
+seven equipment strings that must not become `DRY_VAN`; a 4,000-character load id; and
+injection-shaped load ids, broker ids and status values (404 or 422, never a 500, never SQL).
+Nothing is invented from any of them, and D23's rule means each refusal ships with the wording
+that names it.
+
+*What it does not cover.* Hand-picked shapes. Nothing here is generated, so the coverage is
+"what we thought of" — there is no property-based layer over the adapters.
+
+**Statistical nonsense does not move an answer.** A $125/mi outlier among five normal loads
+leaves the median under $2/mi; twelve identical rates report a zero-width range honestly at
+medium; a carrier whose only rate is $0 does not top a ranking, and its reason quotes the same
+$0 the average was built from; an empty lane answers "no estimate", never `$0`; the deadhead
+curve is bounded and monotone at 0 / 50 / 150 / 250 / 1e9 / `None`; 2-for-2 loses to
+164-for-200 on the composite by more than 22 points at every lane average (D21).
+
+*What it does not cover.* No attack here changed a **rank order** in the fixture — every day-11
+scenario was built with a ≥5-point margin (D12), which is a property of the data we generated
+as much as of the scorer.
+
+**Reasons cannot drift from scores.** Checked structurally rather than by string matching: the
+published score equals the sum of the signal contributions, every reason is its own signal's
+sentence, the experience sentence quotes the count that signal scored, and the on-time sentence
+quotes its own numerator and denominator. Zero divergences across all 192 day-11 rows.
+
+*What it does not cover.* It proves a sentence was generated from the number beside it. It does
+not prove the sentence is a fair *description* of that number — both H4 findings in D25.1 and
+D25.2 were grammatical (a caveat claiming a cap that had not bound; an equipment word on the
+wrong side of a comparison), and no structural check catches those.
+
+**A survived attack is evidence, not proof.** The same method that produced those 63 produced
+14 defects, three of which reached a screen or would have. The honest reading is that this
+suite has stopped finding things, not that there is nothing left to find.
+
+### Known-broken, and unfixed
+
+**Dead code in `_provenance` (`pricing.py:494`).** The no-rung branch ends
+`tried or "nothing — lane ends not on the map"`. That fallback cannot fire: the `REGION` and
+`REGION_ANY` keys are the constant `TX_TRIANGLE→TX_TRIANGLE` and do not depend on either lane
+end resolving, so a walk always reports at least two non-skipped rungs and `tried` is never
+empty. Verified by running a fully geo-null load through `estimate_price`: it reads
+`tried REGION 0, REGION_ANY 0`. Confirmed still present after H5. It produces no wrong answer,
+which is a reason not to hurry, not a reason it is fine.
+
+**The integration suite truncates a shared database.** Its `clean_db` fixture truncates all
+seven tenant tables before and after every test on one fixed database, so two pytest
+invocations against that database delete each other's rows mid-test. The adversarial suite fixed
+this for itself — a database per pid, swept on exit — after the failure produced `2 passed,
+66 errors` against `68 passed`; the integration suite did not. The three suites are therefore
+run as three separate invocations. It is a harness defect of exactly the kind this project
+treats as real when it appears in product code.
+
+**Four findings characterised and left unmarked.**
+
+- **FINDING 11.** `broker_session` nested inside an outer transaction becomes a savepoint, and
+  releasing a savepoint *keeps* its `SET LOCAL` values. So raw SQL issued on that connection
+  after the block, outside any binding, runs as the last-bound broker instead of failing closed
+  — the third barrier the repository docstring relies on. Not reachable in current code: a
+  repository is per-file and per-broker, so the surviving binding is always the one just used.
+  The barrier's real strength is therefore "nothing in this codebase does that", not "it cannot
+  be done".
+- **FINDING 12.** `/recommendations` and `/price-estimate` are separate requests that each run
+  their own tier walk. An ingest landing between them — `POST /api/admin/ingest` is live —
+  leaves the load-detail screen quoting a ZIP3 ranking beside a METRO estimate. Mitigated by D8
+  (ingestion finishes before serving) and by nothing else.
+- **FINDING 13.** An unplaceable pickup shifts every carrier on that load by exactly **+10.00
+  points**, because D20's neutral `0.5` replaces a `0.0` each of them had earned. Rank-neutral
+  within one ranking, which is what D20 argues and all D20 claims; not comparable *across*
+  loads, and nothing on the screen normalises for it. A rep comparing two loads sees the
+  worse-documented one's carriers look uniformly better.
+- **FINDING 15.** `bootstrap()` is not concurrency-safe. `schema.sql` ends in cluster-wide role
+  DDL, and `pg_authid` / `pg_auth_members` are **shared** catalogs, so two API instances
+  starting against one Postgres cluster update the same role tuple and one dies with
+  `tuple concurrently updated`. Because D8 makes the lifespan fail loudly, that container does
+  not start. Reachable by `docker compose up --scale api=2` or a rolling restart; a separate
+  database per instance is not the mitigation.
+
+**D10's mileage, and its one-directional deadhead bias.** Haversine × 1.2 overstates straight
+corridors by ~13% — Dallas→Houston 271.0 mi against a real ~239. Every ratio cancels the factor;
+the deadhead thresholds are *constants* and do not. Across all 192 (carrier, day-11 load) pairs,
+85 (44%) would change credit by more than 0.02 at a true road factor of 1.06, and 45 cross a
+zero- or full-credit boundary. No day-11 answer changes, but the policy the code applies is
+still not the policy PRD §8 states, and it is always the stricter one.
+
+**D17's k-anonymity.** Arithmetically unavailable at three brokers: every pooled statistic about
+a shared carrier is one other broker's data minus your own, and only 2 of 34 carriers are shared
+at all. Bucketing is obfuscation without a proof. The design says that rather than claiming a
+threshold it cannot enforce.
+
+### What the design does not do
+
+- **No authentication.** `broker_id` is a query parameter. Anything that can reach the API can
+  name any broker, and the isolation above is enforcement against a query that forgot its
+  tenant, not against a caller who lies about theirs. In a deployment the value passed to
+  `broker_session` comes from an authenticated session; here it comes from the URL. This is the
+  largest gap between this and something you could run.
+- **No shared pool.** D17 is a design checked field by field against `schema.sql`, with its
+  enforcement written as tests that do not exist. D4 made that trade deliberately and it stands,
+  but a design is not a passing test.
+- **No road routing.** Invariant 7 forbids network at runtime; distance is Haversine × 1.2 over
+  a 180-row hardcoded table. D10 is the bill for that.
+- **One machine.** One Postgres, one process, one connection, and ingestion is a `for` loop over
+  132 files.
+
+**What breaks at millions of loads.** The README asks directly. The answer is the rebuild, and
+the bottleneck is the region rungs:
+
+- One touched load dirties **8 lane keys** — 4 tiers × {its own equipment, `ANY`}
+  (`keys_for_load`) — and `_rebuild_lane_key` handles each with `DELETE` + recompute from raw
+  `loads`, **inside the ingest transaction**.
+- Three of those 8 are `REGION`/`REGION_ANY`, whose key is the constant
+  `TX_TRIANGLE→TX_TRIANGLE`. That bucket is *the broker's entire placeable history*. So every
+  file ingested re-runs three `percentile_cont` sorts over every load the broker has ever had,
+  and `compute_carrier_stats` re-derives one row per carrier on those keys.
+- Cost per file is therefore **O(the broker's total loads), not O(loads changed)**. At 132 files
+  and ~93 loads a broker that is a few seconds inside `docker compose up` (D8). At 10⁶ loads it
+  is a full-history sort per sync, in a transaction that also holds the write lock on
+  `lane_stats` — ingestion serialises against itself and tail latency grows with history size,
+  which is exactly backwards.
+- **The fix is not delta-patching.** Invariant 3 is what buys "a late correction produces the
+  same numbers as if it had arrived on time", proved exactly by I10, and that is the
+  assignment's central question. The order this wants doing: (1) move the rebuild out of the
+  ingest transaction into an idempotent job keyed on the dirty key, so ingestion only *records*
+  dirt — the tier walk then reads a possibly-stale row and has to say so, which is a change to
+  invariant 6's provenance line and not merely to a scheduler; (2) shard that queue by broker,
+  which invariant 4 permits because chronological order only has to hold within one broker;
+  (3) replace exact `percentile_cont` on the region rungs with a mergeable sketch. Only (3)
+  changes a published number, and it changes it at the two rungs D6 already fixes at **low**
+  confidence.
+
+### What I'd do next, in this order
+
+1. **Authentication, with `broker_id` derived from the session rather than the URL.** Everything
+   else on this list improves an answer; this one is the difference between a boundary that
+   holds against a bug and one that holds against a person. It is also the cheapest — the
+   binding point already exists and is already enforced, only its input is untrusted.
+2. **Move the derived-stats rebuild off the ingest transaction.** Named above. It is the first
+   thing that fails at scale, and it is structural, so it wants doing before more code is
+   written that assumes the rebuild is synchronous.
+3. **Build the pool (D17, S1–S6).** Designed against the real schema, with the enforcement
+   already expressed as checkable assertions. Third rather than first because it changes no
+   existing answer and D4's argument for building it last still holds.
+4. **A property-based layer over the three adapters.** The 63 failed attacks are shapes someone
+   thought of; the two rate-line dedupe defects (D22, D25.4) were found by reading schemas, not
+   by running data. Fourth because what it is most likely to surface are defects that never
+   change a shipped answer — which is also why it is worth doing before the corpus grows.
+5. **Split the D15 estimate per equipment type.** D15 deferred it pending a UI that can present
+   the distinction without inventing one the broker has not made. It removes the one estimate in
+   the fixture whose p75 sits in an interval no carrier has ever been paid in.
+6. **One walk behind both endpoints (FINDING 12).** Narrow, currently masked by D8, and the
+   cheapest of the four unfixed findings — but it is a product-level contradiction on the
+   screen, which is the class of bug this project treats as worst.
+
+### The verification method, and where it stops
+
+This project leaned on an independent oracle. `data/TRACEABILITY.md` was computed by a reference
+scorer inside the generator, written from `PRD.md` **before any production code existed**;
+`backend/scripts/generate_data.py` imports `app.domain.distance` and `app.domain.geo` and has
+never imported `app/domain/scoring.py`. D19 states why: sharing a rounding *rule* is a spec,
+sharing the *code* is collusion, and two scorers that agree by construction cannot disagree when
+one is wrong.
+
+It earned that. The two scorers agreed on all 192 ranking rows and on **every** signal value —
+`n/(n+5)`, each recency decay, each deadhead credit, each shrunk on-time rate — differing only
+in presentation. And the document was the authoritative artifact three separate times: D19's
+rounding and H5's confidence clause, where the doc was right and the code moved; and D18's
+pricing arithmetic, where the *document* was wrong and lost, but only because its own printed
+factors did not produce its own printed result. That last one is the important one: the oracle
+is not simply believed. The test that separates a correction from bending expectations toward
+the code is whether the discrepancy can be shown using only the artifact in question.
+
+**What it does not buy.** An oracle catches a formula written two ways. It cannot catch a
+misreading held once and implemented twice — two implementations of the same wrong reading of
+the PRD agree with each other and are both wrong. That is precisely FINDING 2. `CLAUDE.md`'s
+Known traps, `PRD.md` §8 and D5 all asserted "2-for-2 must not beat 164-for-200" without naming
+a signal; it is false on the shrunk on-time rate for every lane average above `738/990`, which
+is where every substantial lane in the fixture sits; and the traceability table could never have
+caught it, because the table was generated from the same sentence. The one test that came near
+it — `test_2_for_2_does_not_outrank_164_for_200_at_a_realistic_lane_rate` — picked `L = 0.70`,
+below the crossover, said so in its docstring, and passed from Phase 6 to Phase 9 while three
+documents stayed wrong.
+
+Two further limits on all of the above. The oracle checks **numbers, not sentences**: every
+prose claim in this system is checked only where someone thought to write a test for it, and
+three of D25's five findings were sentences rather than arithmetic. And its authority stops at
+the corpus — "effect
+on the shipped fixture: none" appears three times in this file, and D23's honest limit says the
+same of seven refusals at once. Those fixes are exercised only by the adversarial suite, on data
+we invented for the purpose, which is the weakest evidence in this document and is labelled as
+such where it appears.
