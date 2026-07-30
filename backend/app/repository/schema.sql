@@ -91,9 +91,24 @@ CREATE INDEX IF NOT EXISTS sync_events_load_order_idx
 --
 -- Only RATE_LINE rows are covered: a LOAD or CARRIER event is a restatement of
 -- current truth and is *supposed* to arrive many times.
-CREATE UNIQUE INDEX IF NOT EXISTS sync_events_rate_line_identity_idx
-    ON sync_events (broker_id, source_entity_id)
+--
+-- The key includes source_load_id (D25) because that is the grain
+-- pipeline._rebuild_money dedupes at, and the narrower (broker_id,
+-- source_entity_id) form refused a *different* load's rate line whenever a TMS
+-- numbers its rate ids per load rather than globally — two loads in one file
+-- both carrying rate_id 1, and the second load's money silently never arrives.
+-- D22's duplicate is a restatement of one load's own line item, which is
+-- same-load by definition, so this key still refuses it.
+CREATE UNIQUE INDEX IF NOT EXISTS sync_events_rate_line_load_identity_idx
+    ON sync_events (broker_id, source_load_id, source_entity_id)
     WHERE entity_type = 'RATE_LINE';
+
+-- Superseded by the index above. Dropped rather than left in place: it is
+-- strictly narrower, so a database created before D25 would keep refusing the
+-- rows the new key admits. schema.sql is applied on every start (D8), so this
+-- is how an existing database is brought into step; on a fresh one it is a
+-- no-op.
+DROP INDEX IF EXISTS sync_events_rate_line_identity_idx;
 
 -- ---------------------------------------------------------------------------
 -- Current truth, rewritten from the newest event

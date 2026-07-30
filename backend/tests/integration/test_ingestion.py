@@ -112,6 +112,35 @@ def test_files_ordered_by_filename_timestamp_across_all_three_tms_directories(tm
     assert [f for f, _ in order] != per_directory_concat
 
 
+def test_a_non_json_neighbour_is_skipped_but_a_misnamed_json_file_raises(
+    tmp_path, app_conn
+):
+    """D25: the module docstring claimed *every* non-matching name raises, and
+    the code skips anything not ending ``.json``.
+
+    Both halves are deliberate and both are asserted here, because the doc used
+    to describe only one of them. The extension is the "is this data" test --
+    all three shipped TMS directories hold the assignment's annotated
+    ``example_sync.jsonc`` beside the real syncs, so a rule that raised on those
+    would fail every clean-checkout run. The filename pattern is the "is this
+    data well-formed" test, and there raising is right: a ``.json`` file with no
+    place in the chronological order is data we would be silently dropping
+    (invariant 4).
+    """
+    brokers = list_brokers(app_conn)
+    envelope = {"syncedAt": "2026-07-06T00:00:00-05:00", "loads": []}
+    write_file(tmp_path, TMS_A_DIR, "2026-07-06T00-00_sync.json", envelope)
+    write_file(tmp_path, TMS_A_DIR, "example_sync.jsonc", envelope)
+    (tmp_path / TMS_A_DIR / "notes.txt").write_text("scratch", encoding="utf-8")
+
+    discovered = discover_sync_files(tmp_path, brokers)
+    assert [d.sync_file for d in discovered] == ["2026-07-06T00-00_sync.json"]
+
+    write_file(tmp_path, TMS_A_DIR, "monday.json", envelope)
+    with pytest.raises(ValueError, match="does not match"):
+        discover_sync_files(tmp_path, brokers)
+
+
 # ---------------------------------------------------------------------------
 # 2. Overwrite + audit trail
 # ---------------------------------------------------------------------------

@@ -933,6 +933,148 @@ carrier record, so the candidate pool is unchanged and the 192 day-11 ranking ro
 
 ---
 
+## D25 — A refusal has to be refused everywhere it is read, and a caveat may only claim what happened
+
+Five findings from H4, the full review. Four are one shape each; they are recorded together
+because three of them are the same mistake at three layers — a rule stated in one place and not
+carried to the second place that reads the same value.
+
+### 1. The provenance claimed a cap that never bound
+
+`_confidence` returns **low** for `REGION`/`REGION_ANY` *before* the D15 heterogeneity cap is
+evaluated, so on rung 4 the cap cannot bind. But `mix` is computed for any accepted key whose
+equipment is `ANY`, which rung 4 always is — so the clause fired anyway. Live on broker_b's
+day-11 load `HD-2026-005077`:
+
+```
+confidence field : low
+provenance says  : ...so confidence is capped at medium
+```
+
+That is invariant 2 at the pricing layer, and it reached the screen. `PriceEstimatePanel.tsx`
+deliberately refuses to name a confidence level in its own mixed-pool caveat *for exactly this
+reason* — "the effective confidence can still be lower … `confidence` above is the only thing
+entitled to say which" — and then renders the backend's provenance verbatim. The frontend was
+careful and the backend undid it.
+
+**Decision.** Gate the cap sentence on the **outcome**, not on the mix: append
+`", so confidence is capped at medium"` only when the confidence actually is medium. Name the
+mix unconditionally — that half is true at every rung, and it is the part a reader needs.
+
+**Rejected:** dropping the whole clause on rung 4. The mix is the most important fact about a
+rung-4 pool; suppressing it to avoid a wrong half-sentence trades a contradiction for a silence,
+and D23 already settled that a silent refusal breaks the explanation, which is the deliverable.
+
+**Rejected:** evaluating the D15 cap before the region rule so the sentence becomes true.
+It would make rung 4 read *medium*, contradicting D6, which fixes rung 4 at low **by rule** —
+repairing a caveat by corrupting the label it describes.
+
+### 2. Rung 4's equipment word read as a claim about the pool
+
+The same sentence named the *load's* equipment — "median of 93 loads on `TX_TRIANGLE`
+(any equipment), **flatbed**" — in the position where every other rung prints the *pool's* type.
+Only 4 of those 93 loads are flatbed. The mix clause repaired the impression, but only
+incidentally, and `price_estimate` can be called without a mix.
+
+**Decision.** Rung 4 says **"for a flatbed load"**, and "for a load of unknown equipment" when
+the load's own equipment is `UNKNOWN`. Same value, same source; the grammar now carries which
+side of the comparison it belongs to. This is deliberately consistent with fix 1: the clause that
+states the pool composition stays, so neither sentence depends on the other to be true.
+
+### 3. A negative distance was refused as a subject and accepted as evidence
+
+D23 refuses `distance ≤ 0` for the load being *priced*, because a negative mileage is an
+impossible measurement rather than a small one. The same load as **evidence** was unfiltered:
+`_population` filtered on `rate_per_mile IS NOT NULL` and nothing about sign, and `schema.sql`'s
+generated column nulls a distance of exactly zero (`NULLIF`) but not a negative one. Flipping
+broker_a's `127400898` to −250.30 mi:
+
+```
+p25/p50/p75                       1.7500/1.7800/1.8050  ->  1.7425/1.7650/1.8000
+carrier 834323 avg_rate_per_mile  1.8500                ->  -1.8500
+```
+
+All three percentiles stay positive, so D23's `_non_positive_rates` guard never fires and the
+label stays **medium**. And `scoring._rate_note` prints **"Averages $-1.85/mi"** inside that
+carrier's reasons — a reason built correctly from a number that should never have existed.
+
+**Decision.** `_population` gains `AND distance_miles > 0 AND rate_per_mile >= 0`.
+
+**`>= 0` and not `> 0`, deliberately.** D23 decided to keep $0 booked loads in the population and
+move the *label* instead ("the percentile is arithmetically correct; it is the label on it that
+was lying"). Tightening to `> 0` here would quietly re-decide that in the opposite direction, and
+the carrier paid $0 would vanish from the ranking rather than being reported.
+
+**Two predicates, not one.** `rate_per_mile` is `carrier_rate / NULLIF(distance_miles, 0)`, and
+two negatives divide to a positive — a −$463 rate over −250 mi publishes a perfectly plausible
+$1.85/mi. A non-negative rate does not imply a usable distance, so both are stated.
+
+**What this changes for the refused load.** It leaves the population entirely, so the lane's
+count drops (12 → 11 in the reproduction above) and the percentiles move with it. That is the
+intended reading: a load with an impossible distance has no $/mi to contribute, exactly as a load
+with no carrier rate has none.
+
+**Effect on the shipped fixture: none.** No load in the 132 files has a non-positive distance;
+this is reachable only from data the fixture does not contain.
+
+### 4. The rate-line dedupe key was narrower than the grain it dedupes at
+
+D22 wrote `UNIQUE (broker_id, source_entity_id) WHERE entity_type = 'RATE_LINE'`, while
+`pipeline._rebuild_money` counts each `rate_id` once **per load**. A TMS that numbers rate ids per
+load rather than globally — an ordinary convention — then loses every load after the first in a
+file:
+
+```
+HD-1 carrier_rate 700.00 | HD-2 carrier_rate NULL
+RATE_LINE events written: 1
+```
+
+Fragility rather than a wrong shipped answer: all 380 rate ids in the fixture are distinct.
+
+**Decision.** `sync_events_rate_line_load_identity_idx` —
+`UNIQUE (broker_id, source_load_id, source_entity_id) WHERE entity_type = 'RATE_LINE'`, with the
+`ON CONFLICT` target matched, and the superseded index dropped by `schema.sql` so a database
+created before this is brought into step on the next start (D8) rather than silently keeping the
+stricter key.
+
+**It does not eat D22's case.** D22 refuses a line item *restated in a later file*, which is the
+same load's line item by definition — same `source_load_id`, same `rate_id`, still refused. Both
+D22 regression tests pass unchanged, including the hard one where a file mixes a restated line
+with a genuine negative `ADJUSTMENT` and the answer must be `700 − 120 = 580`. All three
+correction flavours were re-verified against the replay-equivalence suite after the change.
+
+### 5. `discovery.py` documented one rule and implemented two
+
+The docstring said a filename that does not match the pattern **raises**; the code skips anything
+not ending `.json` and raises only past that gate.
+
+**Decision.** Correct the docstring; the behaviour is right. All three shipped TMS directories
+hold the assignment's annotated `example_sync.jsonc` beside the real syncs, so a rule that raised
+on every non-matching name would fail `docker compose up` from a clean checkout. The extension is
+the "is this data" test; the filename pattern is the "is this data well-formed" test, and there
+raising is correct — a `.json` file with no place in the chronological order is data we would be
+silently dropping (invariant 4). Both halves are now asserted, because the doc previously
+described only one of them.
+
+### Also in this pass, and one thing deliberately not done
+
+`PRD.md` §5's table sketch had drifted from `schema.sql`: it listed `last_delivery_lat/lon/at`
+under `carrier_stats`, where D17 and the schema comment both explain they must **not** be — one
+copy per lane row could disagree with itself after a partial rebuild — and it omitted
+`on_time_eligible_count`, `equipment` and `first_load_at` from `carrier_stats`, `first_load_at`
+from `lane_stats`, and the generated `rate_per_mile` and stored `delivered_on_time` from `loads`.
+Brought in line, with the two reasons that are load-bearing stated inline.
+
+**The review's first documentation finding was rejected.** It reported that `CLAUDE.md`'s
+cold-start trap still carried the pre-D21 one-line claim. It does not: the qualification runs to
+the end of that bullet and closes with "The original one-line version of this trap was **false as
+written** — see `DECISIONS.md` D21." `CLAUDE.md` is correct, and `scoring.py`'s past-tense
+reference to it is therefore correct too. Both left alone. Recorded because "the reviewer said so"
+is not a reason to edit a document that is already right, and a rejected finding is worth as much
+in this file as an accepted one.
+
+---
+
 ## Honest limitations
 
 *To be filled as they're found — including what `breaker` attacked and could not break.*

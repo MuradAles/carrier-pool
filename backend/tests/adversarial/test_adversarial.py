@@ -401,6 +401,51 @@ def test_a_restated_rate_line_beside_a_new_one_counts_each_exactly_once(
     )
 
 
+def test_two_loads_in_one_file_may_share_a_rate_id(app_conn, data_root):
+    """D25: D22's dedupe key was narrower than the grain it dedupes at.
+
+    ``sync_events_rate_line_identity_idx`` was ``UNIQUE (broker_id,
+    source_entity_id)`` while ``_rebuild_money`` counts each ``rate_id`` once
+    **per load**. A TMS that numbers rate ids per load rather than globally --
+    an ordinary convention -- then loses every load after the first: the second
+    load's ``rate_id: 1`` is refused as a duplicate of the first load's, no
+    ``RATE_LINE`` event is written, and its carrier rate stays NULL with nothing
+    anywhere saying why.
+
+    The key is now ``(broker_id, source_load_id, source_entity_id)``, which
+    still refuses D22's duplicate -- a restated line item is the same load's by
+    definition, which the test above asserts.
+    """
+    write_file(
+        data_root,
+        TMS_B_DIR,
+        "2026-07-06T00-00_sync.json",
+        tms_b_envelope(
+            "2026-07-06 00:00:00",
+            carriers=[tms_b_carrier(800001, name="Alamo", mc_no="1", dot_no="2")],
+            loads=[tms_b_load("HD-5"), tms_b_load("HD-6")],
+            rates=[
+                tms_b_rate(1, "HD-5", "pay", "LINEHAUL", 700.0),
+                tms_b_rate(1, "HD-6", "pay", "LINEHAUL", 815.0),
+            ],
+        ),
+    )
+    ingest_all(app_conn, data_root)
+
+    repo = BrokerRepository(app_conn, "broker_b")
+    rates = {load_id: repo.get_load(load_id).carrier_rate for load_id in ("HD-5", "HD-6")}
+    assert rates["HD-5"] == pytest.approx(700.0), rates
+    assert rates["HD-6"] == pytest.approx(815.0), (
+        f"HD-6's rate line was refused as a duplicate of HD-5's: {rates}"
+    )
+
+    with broker_session(app_conn, "broker_b") as cur:
+        cur.execute(
+            "SELECT count(*) AS n FROM sync_events WHERE entity_type = 'RATE_LINE'"
+        )
+        assert cur.fetchone()["n"] == 2, "one of the two rate lines was never logged"
+
+
 def test_identical_tms_b_payload_under_two_filenames_is_not_double_counted(
     app_conn, data_root
 ):
@@ -612,6 +657,79 @@ def test_a_negative_distance_does_not_produce_a_negative_price(app_conn, data_ro
         f"point estimate {estimate.point_usd} on {estimate.distance_miles} mi; "
         f"provenance: {estimate.provenance}"
     )
+
+
+def test_a_negative_distance_does_not_vote_in_anyone_elses_statistics(
+    app_conn, data_root
+):
+    """D25: D23 refused a negative distance for the load being *priced*; the
+    same load as **evidence** was unfiltered.
+
+    ``_population`` filtered on ``rate_per_mile IS NOT NULL`` and nothing about
+    sign, and ``schema.sql``'s generated column only nulls a distance of exactly
+    zero. So one −250.30 mi load with a $463.06 carrier rate published a
+    −1.8500 $/mi into the pool: it dragged all three lane percentiles without
+    pushing any of them to zero (so the D23 non-positive guard never fired, and
+    the label stayed medium), and it made its carrier's ``avg_rate_per_mile``
+    negative, which ``scoring._rate_note`` prints as "Averages $-1.85/mi" inside
+    that carrier's reasons.
+
+    Five honest loads over 271 mi at $650/$675/$700/$725/$750 -- deliberately
+    spread, so a sixth entrant moves every percentile rather than hiding in a
+    flat pool -- plus the poisoned sixth.
+    """
+    write_file(
+        data_root,
+        TMS_A_DIR,
+        "2026-07-06T00-00_sync.json",
+        tms_a_envelope(
+            "2026-07-06T00:00:00-05:00",
+            [
+                tms_a_load(700000 + i, carrier=CAR_A, total_buy=buy)
+                for i, buy in enumerate([650.0, 675.0, 700.0, 725.0, 750.0], start=1)
+            ]
+            + [
+                tms_a_load(
+                    700006, carrier=CAR_A2, mileage=-250.30, total_buy=463.06
+                )
+            ],
+        ),
+    )
+    write_file(
+        data_root,
+        TMS_A_DIR,
+        "2026-07-16T00-00_sync.json",
+        tms_a_envelope("2026-07-16T00:00:00-05:00", [day11()]),
+    )
+    ingest_all(app_conn, data_root)
+
+    estimate, ranking = answers(app_conn, "broker_a", "770001")
+
+    assert estimate.load_count == 5, (
+        f"{estimate.load_count} loads back this estimate: the −250.30 mi load "
+        f"is being counted as evidence. provenance: {estimate.provenance}"
+    )
+    # The five honest loads alone: 675/271, 700/271, 725/271 at 4dp.
+    for label, rate, expected in (
+        ("p25", estimate.rate_per_mile_p25, 2.4908),
+        ("median", estimate.rate_per_mile_p50, 2.5830),
+        ("p75", estimate.rate_per_mile_p75, 2.6753),
+    ):
+        assert rate == pytest.approx(expected, abs=1e-4), (
+            f"{label} is {rate} $/mi, not {expected}: the impossible load voted"
+        )
+
+    ghost = next(
+        c for c in ranking.carriers if c.carrier.source_carrier_id == str(CAR_A2[0])
+    )
+    assert ghost.rate_note is None or "$-" not in ghost.rate_note, (
+        f"a carrier's reasons quote a negative rate: {ghost.rate_note!r}"
+    )
+    for score in ranking.carriers:
+        for reason in score.reasons:
+            assert "$-" not in reason, (
+                f"{score.carrier.source_carrier_id} reads {reason!r}"
+            )
 
 
 def test_a_nul_byte_in_a_load_id_is_a_404(client):

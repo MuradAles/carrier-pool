@@ -97,6 +97,11 @@ _SCATTER_A = "127412960"
 # caps the resulting heterogeneous pool at medium.
 _UNKNOWN_EQUIP_C = "a0jO900000RE5kFMEU"
 
+# DAY11-COLDSTART, broker_b: only 4 flatbed loads in the whole history, so
+# ZIP3/METRO/REGION all fall short with the filter on and the walk lands on
+# rung 4 -- the one rung where the D15 cap can never bind (D25).
+_COLDSTART_B = "HD-2026-005077"
+
 # The rate-only ADJUSTMENT correction (CLAUDE.md "Known traps"), broker_b.
 _RATE_ONLY_CORRECTION_B = "HD-2026-004733"
 
@@ -464,6 +469,43 @@ def test_unknown_equipment_load_caps_at_medium_with_the_mix_named(
     assert "mixed pool" in body["provenance"]
     assert "23 dry van, 8 reefer" in body["provenance"]
     assert "capped at medium" in body["provenance"]
+
+
+def test_rung_four_provenance_does_not_contradict_its_own_confidence(
+    client: TestClient,
+) -> None:
+    """DAY11-COLDSTART / HD-2026-005077 (broker_b), the shipped load D25 was
+    found on.
+
+    The mirror of the test above, at the one rung where the D15 cap *cannot*
+    bind: REGION_ANY is low by rule before the cap is ever evaluated, yet the
+    pool is unfiltered so the mix is computed anyway. The mix must still be
+    named -- 4 of these 93 loads are flatbed and a reader has to know that --
+    but the sentence must not claim a cap the ``confidence`` field beside it
+    contradicts (invariant 2).
+    """
+    resp = client.get(
+        f"/api/loads/{_COLDSTART_B}/price-estimate", params={"broker_id": "broker_b"}
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["tier"] == "REGION_ANY"
+    assert body["load_count"] == 93
+    assert body["load_equipment"] == "FLATBED"
+    assert body["equipment_filter"] == "ANY"
+    assert body["confidence"] == "low"
+    assert body["is_heterogeneous"] is True
+    assert body["equipment_mix"] == [
+        {"equipment": "DRY_VAN", "load_count": 71},
+        {"equipment": "REEFER", "load_count": 18},
+        {"equipment": "FLATBED", "load_count": 4},
+    ]
+    provenance = body["provenance"]
+    assert "71 dry van, 18 reefer, 4 flatbed" in provenance
+    assert "for a flatbed load" in provenance  # the load's, not the pool's
+    assert "capped" not in provenance, (
+        f"confidence is {body['confidence']!r} but the provenance reads: {provenance!r}"
+    )
 
 
 # ---------------------------------------------------------------------------

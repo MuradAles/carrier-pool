@@ -347,6 +347,20 @@ def _mix_phrase(mix: tuple[tuple[str, int], ...]) -> str:
     )
 
 
+def _load_equipment_phrase(load_equipment: str) -> str:
+    """How rung 4 names the *load's* equipment, unmistakably as the load's.
+
+    Rung 4's pool has no equipment filter, so a bare ``"flatbed"`` sitting where
+    every other rung prints the *pool's* type reads as "93 flatbed loads" when
+    only 4 of the 93 are (D25). Naming the load explicitly is the whole
+    correction; the mix clause below then says what the pool actually holds.
+    """
+    if load_equipment == "UNKNOWN":
+        return "for a load of unknown equipment"
+    word = _EQUIPMENT_WORDS.get(load_equipment, load_equipment.lower())
+    return f"for a {word} load"
+
+
 def price_estimate(
     load: Load,
     walk: TierWalk,
@@ -483,9 +497,12 @@ def _provenance(
 
     # The equipment phrase names the *load* on rung 4 (the lane label already
     # said the pool is unfiltered there) and the *pool* everywhere else, which is
-    # where "all equipment types" means the D6 filter skip.
+    # where "all equipment types" means the D6 filter skip. Rung 4 says "for a
+    # flatbed load" rather than "flatbed", because in the one position where
+    # every other rung prints the pool's type, a bare equipment word claims the
+    # pool is that type (D25).
     if key.tier == TIER_REGION_ANY:
-        equipment_phrase = _EQUIPMENT_WORDS.get(load_equipment, load_equipment)
+        equipment_phrase = _load_equipment_phrase(load_equipment)
     else:
         equipment_phrase = _EQUIPMENT_WORDS.get(key.equipment, key.equipment)
 
@@ -497,10 +514,15 @@ def _provenance(
         f"{equipment_phrase}{span} — {confidence} confidence"
     )
     if len(mix) > 1:
-        line += (
-            f"; mixed pool ({load_count} loads: {_mix_phrase(mix)}), "
-            "so confidence is capped at medium"
-        )
+        line += f"; mixed pool ({load_count} loads: {_mix_phrase(mix)})"
+        # The cap is claimed only where it actually decided the label. On rung 4
+        # the estimate is already low by rule (_confidence returns before the
+        # D15 cap is reached), so a sentence saying "capped at medium" beside a
+        # confidence field reading "low" is a reason contradicting its own score
+        # — invariant 2 at the pricing layer (D25). The mix itself is true at
+        # every rung and is stated unconditionally above.
+        if confidence is Confidence.MEDIUM:
+            line += ", so confidence is capped at medium"
     if non_positive:
         stated = ", ".join(f"{label} {value:.4f}" for label, value in non_positive)
         line += (

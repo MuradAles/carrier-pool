@@ -124,23 +124,41 @@ sync_events        APPEND-ONLY. id, sync_file_id, broker_id, entity_type,
                    -- number traces back here. RATE_LINE carries source_load_id
                    -- so a TMS B rate-only change is representable (see D3)
 
-loads              broker_id, source_load_id, status, equipment, weight_lbs,
-                   distance_miles, customer_rate, carrier_rate, carrier_id,
-                   customer_id, pickup_*, delivery_*, scheduled/actual dates,
-                   last_seen_sync_at
+loads              broker_id, source_load_id, load_number, status, equipment,
+                   weight_lbs, distance_miles, customer_rate, carrier_rate,
+                   rate_per_mile, source_carrier_id, source_customer_id,
+                   pickup_*, delivery_*, scheduled/actual dates,
+                   delivered_on_time, stops, cargo, last_seen_sync_at
                    -- current truth, rewritten from the newest event
+                   -- rate_per_mile is GENERATED: one definition of $/mi, so
+                   --   every SQL consumer reads a column instead of a ratio
+                   -- delivered_on_time is the stored verdict (D7/D16); NULL is
+                   --   a third outcome, not a miss
 
 carriers           broker_id, source_carrier_id, name, mc_number, dot_number,
-                   phone, home_city, home_state
+                   phone, home_city, home_state,
+                   last_delivery_lat/lon/at
+                   -- the last known truck position, for the deadhead signal.
+                   -- ONE fact per carrier, so it lives here and not on every
+                   -- carrier_stats lane row, where a partial rebuild could
+                   -- leave two lanes disagreeing about where the truck is (D17)
 
 customers          broker_id, source_customer_id, name
 
 lane_stats         DERIVED. broker_id, tier, origin_key, dest_key, equipment,
-                   load_count, rate_per_mile_p25/p50/p75, last_load_at
+                   load_count, rate_per_mile_p25/p50/p75,
+                   first_load_at, last_load_at
+                   -- both ends of the span: every estimate reports the date
+                   --   range its evidence covers (section 9)
 
-carrier_stats      DERIVED. broker_id, carrier_id, lane_key, tier, load_count,
-                   on_time_count, avg_rate_per_mile, last_load_at,
-                   last_delivery_lat/lon/at
+carrier_stats      DERIVED. broker_id, source_carrier_id, tier, lane_key,
+                   equipment, load_count, on_time_count,
+                   on_time_eligible_count, avg_rate_per_mile,
+                   first_load_at, last_load_at
+                   -- on_time_eligible_count is the *answerable* denominator:
+                   --   loads with a verdict, which is not every load. Stored
+                   --   beside the numerator so scoring cannot divide by
+                   --   load_count and read every rolling truck as a miss
 ```
 
 **Multi-tenancy:** `broker_id` on every row, applied in the repository layer so no query path

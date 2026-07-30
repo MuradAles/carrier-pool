@@ -442,6 +442,66 @@ class TestHeterogeneousPoolD15:
         assert estimate.equipment_mix == ()
         assert estimate.confidence == Confidence.HIGH  # 20 >= 15, untouched by the cap
 
+    def test_rung_four_names_the_mix_without_claiming_a_cap_that_never_bound(
+        self,
+    ) -> None:
+        """D25: on REGION_ANY the cap sentence would contradict its own label.
+
+        ``_confidence`` returns LOW for REGION_ANY *before* the D15 cap is
+        reached, so nothing was ever capped at medium -- but ``mix`` is computed
+        for any accepted key whose equipment is ANY, which rung 4 always is. The
+        old wording therefore shipped ``confidence: low`` beside a sentence
+        reading "so confidence is capped at medium", live on broker_b's day-11
+        load ``HD-2026-005077``. That is invariant 2 at the pricing layer.
+
+        The mix itself is true at every rung and stays; the cap claim is gated
+        on the outcome. Reproduces the shipped pool: 93 loads on TX_TRIANGLE,
+        71 dry van / 18 reefer / 4 flatbed, for a FLATBED load.
+        """
+        load = _load(
+            equipment=Equipment.FLATBED, distance_miles=200.0, stops=DALLAS_HOUSTON_STOPS
+        )
+        key = LaneKey(TIER_REGION_ANY, "TX_TRIANGLE", "TX_TRIANGLE", ANY_EQUIPMENT)
+        stats = _stats(
+            TIER_REGION_ANY, "TX_TRIANGLE", "TX_TRIANGLE", ANY_EQUIPMENT, 93,
+            p25=2.07, p50=2.33, p75=2.58,
+        )
+        walk = walk_tiers(load, _lookup({key: stats}))
+        assert walk.tier == TIER_REGION_ANY
+
+        mix = {"DRY_VAN": 71, "REEFER": 18, "FLATBED": 4}
+        estimate = price_estimate(load, walk, equipment_mix=mix)
+
+        assert estimate.confidence == Confidence.LOW  # rung 4 is low by rule (D6)
+        assert estimate.is_heterogeneous is True
+        assert "71 dry van, 18 reefer, 4 flatbed" in estimate.provenance
+        assert "low confidence" in estimate.provenance
+        assert "capped" not in estimate.provenance, (
+            f"the provenance claims a cap the confidence field contradicts: "
+            f"{estimate.provenance!r}"
+        )
+
+    def test_rung_four_names_the_loads_equipment_as_the_loads(self) -> None:
+        """D25, the other half: 4 of those 93 loads are flatbed, and the phrase
+        sitting where every other rung prints the *pool's* type must not read as
+        a claim about the pool."""
+        load = _load(
+            equipment=Equipment.FLATBED, distance_miles=200.0, stops=DALLAS_HOUSTON_STOPS
+        )
+        key = LaneKey(TIER_REGION_ANY, "TX_TRIANGLE", "TX_TRIANGLE", ANY_EQUIPMENT)
+        stats = _stats(
+            TIER_REGION_ANY, "TX_TRIANGLE", "TX_TRIANGLE", ANY_EQUIPMENT, 93,
+            p25=2.07, p50=2.33, p75=2.58,
+        )
+        walk = walk_tiers(load, _lookup({key: stats}))
+
+        # No mix supplied: the sentence has to stand on its own, because
+        # price_estimate can be called without one.
+        estimate = price_estimate(load, walk)
+        assert "(any equipment)" in estimate.provenance
+        assert "for a flatbed load" in estimate.provenance
+        assert ", flatbed" not in estimate.provenance
+
 
 # ---------------------------------------------------------------------------
 # D18 -- an estimate is reproducible by hand from its own provenance line.

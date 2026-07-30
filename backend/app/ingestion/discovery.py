@@ -19,9 +19,15 @@ correctness one — brokers are isolated tenants and one's files cannot change
 another's numbers — so files sharing a timestamp are broken by broker id to make
 a run reproducible.
 
-A file whose name does not match the pattern raises rather than being skipped: a
-stray file in a TMS directory is either data we would be silently dropping or a
-mistake, and both deserve a stack trace.
+**What counts as data, and what a non-matching name does.** A ``.json`` file is
+a sync file, and one whose name does not match the pattern **raises** rather
+than being skipped: it is either data we would be silently dropping or a
+mistake, and both deserve a stack trace. Anything else in the directory is not
+data and is skipped — the three TMS directories ship the assignment's annotated
+``example_sync.jsonc`` files alongside the real syncs, and a rule that raised on
+those would fail every ``docker compose up`` from a clean checkout. The
+extension is therefore the whole of the "is this data" test, and the filename
+pattern is the whole of the "is this data well-formed" test (D25).
 """
 
 from __future__ import annotations
@@ -84,6 +90,10 @@ def discover_sync_files(
         if not directory.is_dir():
             continue
         for path in sorted(directory.iterdir()):
+            # Not a sync file at all — a directory, or the assignment's
+            # ``.jsonc`` example. A ``.json`` file that gets past here and does
+            # not match the pattern raises in _filename_at; see the module
+            # docstring for why the line is drawn at the extension.
             if not path.is_file() or not path.name.endswith(".json"):
                 continue
             found.append(

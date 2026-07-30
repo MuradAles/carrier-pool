@@ -498,20 +498,26 @@ class BrokerRepository:
         append-only is a privilege, not a convention.
 
         ``None`` means the event was already in the log: a ``RATE_LINE`` whose
-        ``source_entity_id`` (the TMS B ``rate_id``) has been recorded before,
-        under this or any earlier file. That is DECISIONS.md D3's second dedupe
-        key, enforced by ``sync_events_rate_line_identity_idx`` rather than by a
-        check a call site could forget (D22) — a restated line item is the same
-        $700, and counting it twice is a silently wrong carrier rate. A genuine
-        correction carries a *new* rate_id, so it conflicts with nothing and is
-        appended like any other contribution.
+        ``(source_load_id, source_entity_id)`` — the load and the TMS B
+        ``rate_id`` — has been recorded before, under this or any earlier file.
+        That is DECISIONS.md D3's second dedupe key, enforced by
+        ``sync_events_rate_line_load_identity_idx`` rather than by a check a call
+        site could forget (D22) — a restated line item is the same $700, and
+        counting it twice is a silently wrong carrier rate. A genuine correction
+        carries a *new* rate_id, so it conflicts with nothing and is appended
+        like any other contribution.
+
+        The load is part of the key (D25) because that is the grain
+        :func:`~app.ingestion.pipeline._rebuild_money` sums at. Keyed on the rate
+        id alone, a TMS numbering rate ids *per load* — an ordinary convention —
+        would have its second load's money refused as a duplicate of the first's.
         """
         with self._cursor() as cur:
             cur.execute(
                 "INSERT INTO sync_events (sync_file_id, broker_id, entity_type,"
                 " source_entity_id, source_load_id, raw_json, event_seq, synced_at)"
                 " VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                " ON CONFLICT (broker_id, source_entity_id)"
+                " ON CONFLICT (broker_id, source_load_id, source_entity_id)"
                 "   WHERE entity_type = 'RATE_LINE' DO NOTHING"
                 " RETURNING id",
                 (
@@ -900,12 +906,23 @@ class BrokerRepository:
         value — broker, keys, equipment, statuses — is a parameter. Nothing
         derived from data is ever interpolated into the statement.
 
-        Three filters, each load-bearing:
+        Four filters, each load-bearing:
 
         * ``status = ANY(...)`` — only booked rates count (``RATED_STATUSES``),
           so a day-11 ``ACTIVE`` load looking for a truck does not vote.
         * ``rate_per_mile IS NOT NULL`` — a load with no carrier rate, or no
           distance, has no $/mi. Counting it as zero would drag the median down.
+        * ``distance_miles > 0 AND rate_per_mile >= 0`` — D23 refuses to *price*
+          a load whose distance is zero or negative, because a negative mileage
+          is an impossible measurement rather than a small one; the same load as
+          *evidence* has to be refused on the same grounds, or one bad sign flips
+          a carrier's ``avg_rate_per_mile`` negative and its reasons go out
+          reading "Averages $-1.85/mi" (D25). ``>= 0`` and not ``> 0`` on the
+          rate is deliberate: D23 keeps $0 booked loads in the population and
+          moves the *label* instead, and this must not quietly re-decide that.
+          They are two predicates and not one because ``rate_per_mile`` is
+          ``carrier_rate / NULLIF(distance_miles, 0)``: two negatives divide to
+          a positive, so a non-negative rate does not imply a usable distance.
         * The tier predicate is written against the ``pickup_*``/``delivery_*``
           key columns, which are NULL for a geo-null stop — so a load we could
           not place is excluded from every tier including ``REGION``, while its
@@ -919,6 +936,7 @@ class BrokerRepository:
             ) from None
         sql = (
             " WHERE broker_id = %s AND status = ANY(%s) AND rate_per_mile IS NOT NULL"
+            " AND distance_miles > 0 AND rate_per_mile >= 0"
             f" AND (%s = '{ANY_EQUIPMENT}' OR equipment = %s) AND {predicate}"
         )
         params: list[Any] = [
