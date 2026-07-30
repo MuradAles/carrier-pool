@@ -472,6 +472,156 @@ is recorded late. That is wrong in the domain, not just inconvenient.
 
 ---
 
+## D17 — The shared carrier pool: the boundary, field by field
+
+D4 decided to build this last and ship it as a written design if it didn't get built. PRD §2 cut
+the build. So this is the deliverable, and it is written to be checked against
+`backend/app/repository/schema.sql` rather than agreed with.
+
+**The shape.** A broker opts in as a whole (`pool_opt_in (broker_id PK REFERENCES brokers,
+opted_in_at)`; no row means not in). For one of *its own* `ACTIVE` loads, an opted-in broker's
+carrier ranking gains a labeled second section: carriers it has never used, known to other
+opted-in brokers, matched across brokers on `carriers.mc_number` (D2). **The price estimate is
+untouched** — it is computed from `lane_stats` percentiles, and no rate column crosses, so the
+number a broker is quoted stays derived entirely from its own loads. Invariant 1 bends for the
+ranking only, which is the one place the README's opt-in exception buys anything.
+
+### What crosses
+
+| Column | Why it is safe to share |
+|---|---|
+| `carriers.mc_number`, `carriers.dot_number` | Federal authority numbers, public in FMCSA licensing records. Identity is not a relationship. |
+| `carriers.name`, `carriers.phone` | The carrier's own published contact details. It is what makes the answer actionable — "call them" needs a number. |
+| `carriers.home_city`, `carriers.home_state` | The carrier's own fact, and coarse. Where they are based, not where their truck is now. |
+| `carrier_stats.lane_key` at `tier = 'METRO'` or `'REGION'` only | A metro pair ("DFW→HOU") is a market. It does not name a facility. |
+| `carrier_stats.equipment` | What the truck is. A property of the carrier's fleet, not of anyone's freight. |
+| `carrier_stats.load_count`, **bucketed** — suppressed below 5, then `5–9 / 10–19 / 20–49 / 50+` | Depth of the relationship at a resolution too coarse to be a shipment count. The floor of 5 is `CLAUDE.md`'s minimum sample, reused. |
+| On-time as a **band** (`≥90% / 75–89% / <75%`), derived from `carrier_stats.on_time_count / on_time_eligible_count` | Reliability, without the raw pair. D16's table is the argument for banding: `18/22` is a fingerprint that identifies one carrier under one broker. |
+| Recency as a **boolean**, `carrier_stats.last_load_at > now() - 30 days` | "Still running" without a date. |
+
+### What never crosses
+
+| Column | What a competitor does with it |
+|---|---|
+| `loads.carrier_rate` | The harm D4 names. What Broker B pays this carrier; undercut B's bid, or poach the carrier at $25 more. |
+| `loads.rate_per_mile` | The same number per mile, and a **generated column** — so `SELECT *` on `loads` carries it even for someone who remembered to exclude `carrier_rate`. |
+| `carrier_stats.avg_rate_per_mile`, `lane_stats.rate_per_mile_p25/p50/p75` | The same number, aggregated, which is not laundering. Per D13 the three brokers' medians differ by ≥0.15 $/mi, so one leaked percentile identifies both the cost *and* whose it is. |
+| `loads.customer_rate` | The other broker's sell price. With the carrier rate it is their margin; alone it is what a shipper will pay — enough to bid against them on the customer side. |
+| `customers.name`, `loads.source_customer_id` | The book of business. The single most poachable asset a broker has. |
+| `loads.source_load_id`, `load_number`, `stops`, `cargo`, `weight_lbs`, `distance_miles` | An individual shipment. Stops plus a date plus "frozen poultry" identifies the shipper without ever naming it. |
+| `loads.pickup_zip3`, `loads.delivery_zip3` | A ZIP3 pair is roughly a facility. This is why only the METRO and REGION tiers cross. |
+| `carriers.last_delivery_lat/lon/at`, `loads.delivery_actual_at`, `loads.pickup_scheduled_date` | Where a competitor's capacity physically is, this morning. It is our own deadhead signal pointed at someone else's fleet. |
+| `sync_files.raw_json`, `sync_events.raw_json` | Every row above, in original form. The pool read path must not reference these two tables at all. |
+
+### The threat model: an adversarial broker who has opted in
+
+The outside attacker is not the interesting one. The interesting one is a broker who joined,
+queries honestly-shaped questions repeatedly, and does arithmetic.
+
+**Small numbers, and the honest answer.** Our own fixtures are the worst case. Exactly **2 of 34
+carriers** appear under more than one broker, and each appears under exactly two:
+
+```
+MC 1346382  IBRAHIM TRANSPORT INC / "Ibrahim Transport, Inc."   broker_a 22 loads, broker_c  2
+MC 884201   DELTA PRIME LLC       / "Delta Prime, L.L.C."       broker_b 12 loads, broker_c 11
+```
+
+If the pool published a true count of 24 for Ibrahim, broker_c subtracts its own 2 and knows
+broker_a's 22 exactly. With three brokers there is no k-anonymity to have: every pooled
+statistic about a shared carrier *is* one other broker's data minus your own. A "≥3 contributing
+brokers" threshold would suppress 100% of this pool.
+
+So the design does not pretend to hide the contributor. It makes the disclosure survivable
+instead: **every crossing field is chosen so that perfect subtraction yields exactly what the
+opt-in offered** — that the other broker runs this carrier, roughly this often, roughly this
+reliably, recently. Rates, customers and shipments are not in the set, so no amount of
+arithmetic reaches them. What is genuinely lost is anonymity of the source, and with three
+brokers that is about one bit. Say so rather than claim a threshold that doesn't exist.
+
+**Inference from a moving aggregate.** A count that goes 4 → 5 tells you a specific load
+happened. Bucketing turns most increments invisible: a change is observable only at a band edge,
+so a carrier's first 50 loads produce 4 observable transitions (at 5, 10, 20, 50) rather than 50.
+It does not reduce it to zero, and the transition that *is* visible is dated by when you asked.
+
+**Enumeration and timing.** The pool is not a directory. It answers only for a load in the
+requester's own `loads` table with `status = 'ACTIVE'` — so the query space is bounded by
+freight the broker actually has, not by the carrier universe. You cannot walk MC numbers looking
+for a competitor's roster. Every pool read is written to an audit row keyed by
+`(broker_id, source_load_id, asked_at)`, which makes repetition visible after the fact.
+
+**Collusion.** Two opted-in brokers comparing their own pool views isolate the third's
+contribution exactly. Nothing in this design prevents that, and nothing technical can.
+
+### Enforcement — the part that is checkable
+
+Built on the three barriers already in `broker_repository.py`, not beside them.
+
+1. **One cross-broker reader, and it is a projection.** A view `pool_carrier_lane` over
+   `carriers` and `carrier_stats`, with an explicit column list and `security_invoker = false`
+   (the default), so the underlying policies are checked against the *view owner*.
+   `carrier_pool_app` is granted `SELECT` on the view and nothing else. Not a filter over the
+   full record: a filter is one forgotten `SELECT *` away from a leak; a projection has no rate
+   column to forget.
+
+   The owner has to be a **new** role holding `BYPASSRLS`, not the schema owner: `schema.sql`
+   declares `FORCE ROW LEVEL SECURITY` on every tenant table, so even the table owner is subject
+   to `broker_isolation` and an unbound read raises out of `current_broker()`. That is the single
+   riskiest line of the whole feature — it mints the only credential in the system that sees
+   across brokers — and it is why the projection, not the grant, is the control.
+2. **RLS stays on underneath.** `loads` is never referenced by the view, so the view cannot
+   reach a rate even transitively, and a caller who joins the view back to `loads` inside a
+   `broker_session` gets its own rows — the policy filters the join, not the projection.
+3. **A `PoolCarrier` dataclass with no money attribute.** The pool reasons are built by a scorer
+   that takes `PoolCarrier`; there is no field from which a rate reason could be formatted, so
+   invariant 2 holds by construction rather than by review.
+
+What proves it:
+
+- `set(PoolCarrier.__dataclass_fields__) == {…}` — **equality**, not a subset check, so adding a
+  field to the dataclass fails the test until someone justifies it in this table.
+- A catalog test: read every column the view depends on out of `pg_depend` joined to
+  `pg_attribute` (`information_schema.view_column_usage` is the readable form, but it only
+  reports tables the querying role owns) and assert the set is disjoint from the forbidden column
+  list above. This covers columns the view *reads* and does not return — which a test against the
+  JSON response would miss.
+- Opt-out: broker_c leaves; broker_a's pool section loses exactly the carriers whose only other
+  contributor was c, and the remaining bands recompute.
+- D13's separated rate bands make a leak numerically detectable: assert no number in a pool
+  payload falls inside another broker's $/mi band.
+- `breaker` should attack the view's `SELECT` grant directly, the ACTIVE-load precondition (can a
+  COMPLETED or another broker's load id get through?), and whether a band edge plus an own-count
+  reconstructs an exact competitor count.
+
+**Rejected:** a `shared` boolean on the existing rows, filtered at query time. It makes the RLS
+policy read `broker_id = current_broker() OR shared` — the one control that enforces the
+boundary becomes the control that relaxes it, and every existing query silently gains pool rows.
+
+**Rejected:** a physical `pool_carriers` table populated at ingest with the shareable fields.
+Tempting because no rate is physically present, but it is a second source of truth that drifts
+from `carrier_stats` the moment a correction rebuilds a dirty key (invariant 3) — and a copy job
+is exactly where "while we're here, copy avg_rate too" gets written.
+
+**Rejected:** differential privacy on the counts. The right tool at scale and the wrong one at
+n=22: noise large enough to hide a single load makes the count ±5, which is useless for deciding
+who to call, and invariant 2 would then have reasons quoting a number that is not real. Bucketing
+is the honest small-n version — coarse, and admittedly not a privacy guarantee.
+
+**Rejected:** per-carrier opt-in instead of per-broker. Finer control, but the *set* a broker
+chooses is itself the signal — declining to share exactly your three best carriers tells everyone
+which three they are.
+
+### What this does not do
+
+- No k-anonymity guarantee. At three brokers it is arithmetically unavailable (above).
+- Bucketing is obfuscation, not a privacy mechanism with a proof. A determined observer with
+  enough queries over enough days recovers more than the bands intend to give.
+- Nothing here is rate-limited or contractual. A real deployment needs the opt-in terms to
+  enumerate this table, and needs the audit log to be read by someone.
+- **It is unbuilt.** The enforcement above is a design, not a passing test. The three barriers it
+  builds on are real and tested; the view, the dataclass and the catalog assertion are not.
+
+---
+
 ## Honest limitations
 
 *To be filled as they're found — including what `breaker` attacked and could not break.*
