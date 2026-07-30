@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-10T00:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127405024,
+      "status": "Completed",
+      "mileage": 218.3,
+      "totalSell": 573.7,
+      "totalBuy": 478.08,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "48 ft Flatbed",
+      "weightTotal": 35600.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75207",
+          "estimatedReadyDateTime": "2026-07-08T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-08T19:39:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78701",
+          "estimatedReadyDateTime": "2026-07-09T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T06:39:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-05T07:39:00-05:00",
+      "lastModifiedDate": "2026-07-09T08:32:00-05:00"
+    },
+    {
+      "shipmentId": 127405161,
+      "status": "Completed",
+      "mileage": 220.6,
+      "totalSell": 541.08,
+      "totalBuy": 483.11,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 836824,
+        "name": "IRON HORSE FLATBED CO",
+        "mcNumber": "1177336",
+        "dotNumber": "3288740",
+        "phoneNumber": "+19725550455"
+      },
+      "equipment": "48 ft Flatbed",
+      "weightTotal": 34000.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "GARLAND",
+          "state": "TX",
+          "zipCode": "75040",
+          "estimatedReadyDateTime": "2026-07-08T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-08T17:12:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "ELGIN",
+          "state": "TX",
+          "zipCode": "78621",
+          "estimatedReadyDateTime": "2026-07-09T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T03:12:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-07T16:12:00-05:00",
+      "lastModifiedDate": "2026-07-09T05:14:00-05:00"
+    },
+    {
+      "shipmentId": 127405298,
+      "status": "Completed",
+      "mileage": 187.7,
+      "totalSell": 421.54,
+      "totalBuy": 369.77,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 830683,
+        "name": "LONE STAR COLD LINES LLC",
+        "mcNumber": "902114",
+        "dotNumber": "2338907",
+        "phoneNumber": "+18175550118"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 23700.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "ROSENBERG",
+          "state": "TX",
+          "zipCode": "77471",
+          "estimatedReadyDateTime": "2026-07-09T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T04:23:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78247",
+          "estimatedReadyDateTime": "2026-07-09T10:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T19:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T12:23:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-07T22:23:00-05:00",
+      "lastModifiedDate": "2026-07-09T14:13:00-05:00"
+    }
+  ]
+}

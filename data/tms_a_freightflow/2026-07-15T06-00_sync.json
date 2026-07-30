@@ -1,0 +1,89 @@
+{
+  "syncedAt": "2026-07-15T06:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127411874,
+      "status": "Completed",
+      "mileage": 163.5,
+      "totalSell": 408.36,
+      "totalBuy": 364.61,
+      "customer": {
+        "customerId": 880970,
+        "name": "Trinity Paper Mills"
+      },
+      "carrier": {
+        "carrierMasterId": 832550,
+        "name": "PINEY WOODS CARTAGE LLC",
+        "mcNumber": "1120674",
+        "dotNumber": "3102885",
+        "phoneNumber": "+19365550196"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 24300.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78744",
+          "estimatedReadyDateTime": "2026-07-14T13:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-14T22:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-14T15:10:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "THE WOODLANDS",
+          "state": "TX",
+          "zipCode": "77380",
+          "estimatedReadyDateTime": "2026-07-15T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-15T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-15T02:10:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-13T03:10:00-05:00",
+      "lastModifiedDate": "2026-07-15T04:02:00-05:00"
+    },
+    {
+      "shipmentId": 127411969,
+      "status": "Completed",
+      "mileage": 289.1,
+      "totalSell": 693.84,
+      "totalBuy": 578.2,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 830683,
+        "name": "LONE STAR COLD LINES LLC",
+        "mcNumber": "902114",
+        "dotNumber": "2338907",
+        "phoneNumber": "+18175550118"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 26200.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "BURLESON",
+          "state": "TX",
+          "zipCode": "76028",
+          "estimatedReadyDateTime": "2026-07-14T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-14T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-14T16:24:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "LA PORTE",
+          "state": "TX",
+          "zipCode": "77571",
+          "estimatedReadyDateTime": "2026-07-15T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-15T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-15T00:24:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-11T04:24:00-05:00",
+      "lastModifiedDate": "2026-07-15T02:20:00-05:00"
+    }
+  ]
+}

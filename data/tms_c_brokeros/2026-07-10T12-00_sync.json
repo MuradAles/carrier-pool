@@ -1,0 +1,197 @@
+{
+  "synced_at": "2026-07-10T17:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000P3TJPXVB",
+      "Name": "SHP6700836",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 284.2,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I00000OrJJdyEO",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 793.77,
+      "bos__Carrier_Rate__c": 696.29,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000FhwqVTqa",
+          "bos__Scheduled_Date__c": "2026-07-09",
+          "bos__Arrival_Time__c": "2026-07-09T17:14:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000008gxvqAAF",
+          "bos__Scheduled_Date__c": "2026-07-09",
+          "bos__Arrival_Time__c": "2026-07-10T02:14:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 26900.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 21.0
+        }
+      ],
+      "CreatedDate": "2026-07-07T06:14:00.000+0000",
+      "LastModifiedDate": "2026-07-10T02:59:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000E5xHqET1",
+      "Name": "SHP6700849",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 280.0,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 881.33,
+      "bos__Carrier_Rate__c": 722.4,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000e9IVaFcJ",
+          "bos__Scheduled_Date__c": "2026-07-09",
+          "bos__Arrival_Time__c": "2026-07-09T19:41:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000VKX2imbC",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-10T10:41:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Auto parts",
+          "bos__Weight__c": 29000.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 22.0
+        }
+      ],
+      "CreatedDate": "2026-07-08T13:41:00.000+0000",
+      "LastModifiedDate": "2026-07-10T11:33:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000ak2RfC7x",
+      "Name": "SHP6700862",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 268.7,
+      "bos__Customer__c": "0011I000003YEB6g03",
+      "bos__Carrier__c": "0011I00000GZqOfSSX",
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Customer_Rate__c": 860.27,
+      "bos__Carrier_Rate__c": 741.61,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I000001BEpDpjh",
+          "bos__Scheduled_Date__c": "2026-07-09",
+          "bos__Arrival_Time__c": "2026-07-09T11:42:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000aYMisuWf",
+          "bos__Scheduled_Date__c": "2026-07-09",
+          "bos__Arrival_Time__c": "2026-07-09T21:42:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Dairy products",
+          "bos__Weight__c": 34700.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 27.0
+        }
+      ],
+      "CreatedDate": "2026-07-06T10:42:00.000+0000",
+      "LastModifiedDate": "2026-07-09T23:09:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000udoxsTen": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Ridgeline Materials"
+    },
+    "0011I00000OrJJdyEO": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Delta Prime, L.L.C.",
+      "bos__MC_Number__c": "884201",
+      "bos__DOT_Number__c": "2551377"
+    },
+    "0011I00000FhwqVTqa": {
+      "type": "Location",
+      "Name": "Houston Distribution Ctr",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77064"
+    },
+    "0011I000008gxvqAAF": {
+      "type": "Location",
+      "Name": "McKinney Fulfillment Ctr",
+      "bos__City__c": "McKinney",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75071"
+    },
+    "0011I000003UEgxs3o": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Metroplex Ridge Logistics, Inc.",
+      "bos__MC_Number__c": "856920",
+      "bos__DOT_Number__c": "2489013"
+    },
+    "0011I00000e9IVaFcJ": {
+      "type": "Location",
+      "Name": "Fort Worth Yard",
+      "bos__City__c": "Fort Worth",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76102"
+    },
+    "0011I00000VKX2imbC": {
+      "type": "Location",
+      "Name": "Houston Distribution Ctr",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77008"
+    },
+    "0011I000003YEB6g03": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Gulf Coast Foods"
+    },
+    "0011I00000GZqOfSSX": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Bay Area Cold Carriers, LLC",
+      "bos__MC_Number__c": "1067712",
+      "bos__DOT_Number__c": "2974885"
+    },
+    "0011I000001BEpDpjh": {
+      "type": "Location",
+      "Name": "Midlothian Cold Storage",
+      "bos__City__c": "Midlothian",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76065"
+    },
+    "0011I00000aYMisuWf": {
+      "type": "Location",
+      "Name": "Baytown Distribution Ctr",
+      "bos__City__c": "Baytown",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77520"
+    }
+  }
+}

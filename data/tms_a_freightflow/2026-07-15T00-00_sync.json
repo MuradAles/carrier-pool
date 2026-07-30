@@ -1,0 +1,89 @@
+{
+  "syncedAt": "2026-07-15T00:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127411534,
+      "status": "Completed",
+      "mileage": 307.7,
+      "totalSell": 642.48,
+      "totalBuy": 553.86,
+      "customer": {
+        "customerId": 880970,
+        "name": "Trinity Paper Mills"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 21900.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "BAYTOWN",
+          "state": "TX",
+          "zipCode": "77521",
+          "estimatedReadyDateTime": "2026-07-14T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-14T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-14T10:16:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "MCKINNEY",
+          "state": "TX",
+          "zipCode": "75071",
+          "estimatedReadyDateTime": "2026-07-14T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-14T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-14T18:16:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-11T03:16:00-05:00",
+      "lastModifiedDate": "2026-07-14T19:09:00-05:00"
+    },
+    {
+      "shipmentId": 127411681,
+      "status": "Completed",
+      "mileage": 96.3,
+      "totalSell": 269.31,
+      "totalBuy": 228.23,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 833136,
+        "name": "TRINITY RIVER LOGISTICS INC",
+        "mcNumber": "843276",
+        "dotNumber": "2410558",
+        "phoneNumber": "+18175550231"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 37800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75212",
+          "estimatedReadyDateTime": "2026-07-14T09:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-14T18:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-14T11:50:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "WACO",
+          "state": "TX",
+          "zipCode": "76705",
+          "estimatedReadyDateTime": "2026-07-14T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-14T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-14T18:50:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-13T00:50:00-05:00",
+      "lastModifiedDate": "2026-07-14T19:18:00-05:00"
+    }
+  ]
+}

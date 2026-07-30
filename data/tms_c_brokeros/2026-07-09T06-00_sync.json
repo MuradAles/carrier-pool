@@ -1,0 +1,202 @@
+{
+  "synced_at": "2026-07-09T11:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000ANPchmkG",
+      "Name": "SHP6700693",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 302.9,
+      "bos__Customer__c": "0011I00000mtOsE3o8",
+      "bos__Carrier__c": "0011I00000PwVPlrXG",
+      "bos__Equipment_Type__c": "Flatbed",
+      "bos__Customer_Rate__c": 982.9,
+      "bos__Carrier_Rate__c": 832.97,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000H3Yf3nw9",
+          "bos__Scheduled_Date__c": "2026-07-08",
+          "bos__Arrival_Time__c": "2026-07-08T06:35:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000hQrzBv26",
+          "bos__Scheduled_Date__c": "2026-07-08",
+          "bos__Arrival_Time__c": "2026-07-08T21:35:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Concrete pipe",
+          "bos__Weight__c": 35500.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 27.0
+        }
+      ],
+      "CreatedDate": "2026-07-04T20:35:00.000+0000",
+      "LastModifiedDate": "2026-07-08T22:08:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000axHqwlqC",
+      "Name": "SHP6700706",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 154.4,
+      "bos__Customer__c": "0011I000003YEB6g03",
+      "bos__Carrier__c": "0011I0000051gR8MJj",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 533.73,
+      "bos__Carrier_Rate__c": 460.11,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000HPcBsGqH",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-08T01:15:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000004WcVcwYS",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-09T04:15:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Packaged foods",
+          "bos__Weight__c": 36100.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 28.0
+        }
+      ],
+      "CreatedDate": "2026-07-07T01:15:00.000+0000",
+      "LastModifiedDate": "2026-07-09T05:41:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000UHBoUxTa",
+      "Name": "SHP6700719",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 342.0,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I00000cTcnCyJT",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 1076.48,
+      "bos__Carrier_Rate__c": 882.36,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000lUISlFtW",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-07T22:40:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000008gxvqAAF",
+          "bos__Scheduled_Date__c": "2026-07-08",
+          "bos__Arrival_Time__c": "2026-07-08T12:40:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Auto parts",
+          "bos__Weight__c": 37400.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 29.0
+        }
+      ],
+      "CreatedDate": "2026-07-04T19:40:00.000+0000",
+      "LastModifiedDate": "2026-07-08T15:06:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000mtOsE3o8": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Bluebonnet Grocery Co"
+    },
+    "0011I00000PwVPlrXG": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Ironclad Flatbed Services LLC",
+      "bos__MC_Number__c": "1201884",
+      "bos__DOT_Number__c": "3350219"
+    },
+    "0011I00000H3Yf3nw9": {
+      "type": "Location",
+      "Name": "Dallas Cold Storage",
+      "bos__City__c": "Dallas",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75201"
+    },
+    "0011I00000hQrzBv26": {
+      "type": "Location",
+      "Name": "San Antonio Freight Terminal",
+      "bos__City__c": "San Antonio",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78205"
+    },
+    "0011I000003YEB6g03": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Gulf Coast Foods"
+    },
+    "0011I0000051gR8MJj": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Guadalupe Valley Freight, LLC",
+      "bos__MC_Number__c": "701558",
+      "bos__DOT_Number__c": "1802996"
+    },
+    "0011I00000HPcBsGqH": {
+      "type": "Location",
+      "Name": "Tomball Fulfillment Ctr",
+      "bos__City__c": "Tomball",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77375"
+    },
+    "0011I000004WcVcwYS": {
+      "type": "Location",
+      "Name": "Austin Distribution Ctr",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78704"
+    },
+    "0011I00000G5WZFEQb": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Pecos Industrial Supply"
+    },
+    "0011I00000cTcnCyJT": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Espinoza Brothers Trucking Co.",
+      "bos__MC_Number__c": "789003",
+      "bos__DOT_Number__c": "2044117"
+    },
+    "0011I00000lUISlFtW": {
+      "type": "Location",
+      "Name": "San Antonio Logistics Park",
+      "bos__City__c": "San Antonio",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78251"
+    },
+    "0011I000008gxvqAAF": {
+      "type": "Location",
+      "Name": "McKinney Fulfillment Ctr",
+      "bos__City__c": "McKinney",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75071"
+    }
+  }
+}

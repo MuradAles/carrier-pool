@@ -1,0 +1,126 @@
+{
+  "synced_at": "2026-07-15 06:00:00",
+  "loads": [
+    {
+      "load_num": "HD-2026-005006",
+      "status_code": 90,
+      "customer_code": "C-0059",
+      "customer_name": "Brazos Steel Works",
+      "carrier_ref": 67232,
+      "equip": "V",
+      "weight_kg": 8300.8,
+      "dist_km": 449.3,
+      "pu_city": "Grand Prairie",
+      "pu_state": "TX",
+      "pu_zip": "75050",
+      "pu_date": "2026-07-13",
+      "pu_departed_at": "2026-07-13 19:00:00",
+      "del_city": "Houston",
+      "del_state": "TX",
+      "del_zip": "77015",
+      "del_date": "2026-07-14",
+      "del_arrived_at": "2026-07-14 08:00:00",
+      "entered_at": "2026-07-11 10:00:00",
+      "updated_at": "2026-07-14 09:03:00"
+    },
+    {
+      "load_num": "HD-2026-005011",
+      "status_code": 90,
+      "customer_code": "C-0066",
+      "customer_name": "Hill Country Dairy",
+      "carrier_ref": 66988,
+      "equip": "V",
+      "weight_kg": 11385.2,
+      "dist_km": 257.0,
+      "pu_city": "Austin",
+      "pu_state": "TX",
+      "pu_zip": "78753",
+      "pu_date": "2026-07-14",
+      "pu_departed_at": "2026-07-14 16:05:00",
+      "del_city": "The Woodlands",
+      "del_state": "TX",
+      "del_zip": "77380",
+      "del_date": "2026-07-15",
+      "del_arrived_at": "2026-07-15 02:05:00",
+      "entered_at": "2026-07-12 07:05:00",
+      "updated_at": "2026-07-15 03:17:00"
+    }
+  ],
+  "carriers": [
+    {
+      "carrier_id": 67232,
+      "carrier_name": "SAN MARCOS SHIPPING CO",
+      "mc_no": "995631",
+      "dot_no": "2803466",
+      "home_city": "San Marcos",
+      "home_state": "TX",
+      "phone": "(512) 555-0421"
+    }
+  ],
+  "rates": [
+    {
+      "rate_id": 910348,
+      "load_num": "HD-2026-005006",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 496.81,
+      "created_at": "2026-07-14 09:03:00"
+    },
+    {
+      "rate_id": 910349,
+      "load_num": "HD-2026-005006",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 109.05,
+      "created_at": "2026-07-14 09:03:00"
+    },
+    {
+      "rate_id": 910350,
+      "load_num": "HD-2026-005006",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 628.28,
+      "created_at": "2026-07-14 09:03:00"
+    },
+    {
+      "rate_id": 910351,
+      "load_num": "HD-2026-005006",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 110.87,
+      "created_at": "2026-07-14 09:03:00"
+    },
+    {
+      "rate_id": 910352,
+      "load_num": "HD-2026-005011",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 340.48,
+      "created_at": "2026-07-15 03:17:00"
+    },
+    {
+      "rate_id": 910353,
+      "load_num": "HD-2026-005011",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 74.74,
+      "created_at": "2026-07-15 03:17:00"
+    },
+    {
+      "rate_id": 910354,
+      "load_num": "HD-2026-005011",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 409.41,
+      "created_at": "2026-07-15 03:17:00"
+    },
+    {
+      "rate_id": 910355,
+      "load_num": "HD-2026-005011",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 72.25,
+      "created_at": "2026-07-15 03:17:00"
+    }
+  ]
+}

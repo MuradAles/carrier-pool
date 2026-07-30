@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-07T00:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127402240,
+      "status": "En Route",
+      "mileage": 280.9,
+      "totalSell": 589.44,
+      "totalBuy": 456.58,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 18800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "MCKINNEY",
+          "state": "TX",
+          "zipCode": "75071",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": null
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "CYPRESS",
+          "state": "TX",
+          "zipCode": "77433",
+          "estimatedReadyDateTime": "2026-07-07T12:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T21:00:00-05:00",
+          "actualDepartureDateTime": null
+        }
+      ],
+      "createdDate": "2026-07-04T03:28:00-05:00",
+      "lastModifiedDate": "2026-07-06T22:34:00-05:00"
+    },
+    {
+      "shipmentId": 127400710,
+      "status": "Completed",
+      "mileage": 250.0,
+      "totalSell": 518.7,
+      "totalBuy": 455.0,
+      "customer": {
+        "customerId": 880970,
+        "name": "Trinity Paper Mills"
+      },
+      "carrier": {
+        "carrierMasterId": 830683,
+        "name": "LONE STAR COLD LINES LLC",
+        "mcNumber": "902114",
+        "dotNumber": "2338907",
+        "phoneNumber": "+18175550118"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 25100.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78249",
+          "estimatedReadyDateTime": "2026-07-05T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-05T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-05T16:44:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "PASADENA",
+          "state": "TX",
+          "zipCode": "77505",
+          "estimatedReadyDateTime": "2026-07-06T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T04:44:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-02T07:44:00-05:00",
+      "lastModifiedDate": "2026-07-06T06:46:00-05:00"
+    },
+    {
+      "shipmentId": 127400898,
+      "status": "Completed",
+      "mileage": 250.3,
+      "totalSell": 564.93,
+      "totalBuy": 463.06,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 834323,
+        "name": "COMANCHE PEAK TRUCKING",
+        "mcNumber": "1288402",
+        "dotNumber": "3560117",
+        "phoneNumber": "+18175550307"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 33100.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "ROCKWALL",
+          "state": "TX",
+          "zipCode": "75087",
+          "estimatedReadyDateTime": "2026-07-05T11:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-05T20:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-05T13:15:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "CYPRESS",
+          "state": "TX",
+          "zipCode": "77429",
+          "estimatedReadyDateTime": "2026-07-06T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T02:15:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-04T02:15:00-05:00",
+      "lastModifiedDate": "2026-07-06T04:28:00-05:00"
+    }
+  ]
+}

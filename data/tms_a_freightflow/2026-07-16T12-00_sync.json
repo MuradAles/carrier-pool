@@ -1,0 +1,77 @@
+{
+  "syncedAt": "2026-07-16T12:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127413245,
+      "status": "Booking",
+      "mileage": 217.3,
+      "totalSell": 548.73,
+      "totalBuy": null,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": null,
+      "equipment": "48 ft Flatbed",
+      "weightTotal": 25100.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75241",
+          "estimatedReadyDateTime": "2026-07-17T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-17T17:00:00-05:00",
+          "actualDepartureDateTime": null
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78744",
+          "estimatedReadyDateTime": "2026-07-18T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-18T17:00:00-05:00",
+          "actualDepartureDateTime": null
+        }
+      ],
+      "createdDate": "2026-07-16T08:20:00-05:00",
+      "lastModifiedDate": "2026-07-16T08:20:00-05:00"
+    },
+    {
+      "shipmentId": 127413326,
+      "status": "Booking",
+      "mileage": 160.0,
+      "totalSell": 421.02,
+      "totalBuy": null,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": null,
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 36400.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "CONROE",
+          "state": "TX",
+          "zipCode": "77304",
+          "estimatedReadyDateTime": "2026-07-17T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-17T17:00:00-05:00",
+          "actualDepartureDateTime": null
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78701",
+          "estimatedReadyDateTime": "2026-07-18T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-18T17:00:00-05:00",
+          "actualDepartureDateTime": null
+        }
+      ],
+      "createdDate": "2026-07-16T08:03:00-05:00",
+      "lastModifiedDate": "2026-07-16T08:03:00-05:00"
+    }
+  ]
+}

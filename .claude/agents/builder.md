@@ -49,6 +49,28 @@ api/         FastAPI routes. Thin — validate, delegate, serialize.
 If an adapter starts growing scoring rules, or a route starts writing SQL, the layering is
 wrong — fix it rather than working around it.
 
+## Frontend (Phase 8)
+
+Two screens, React 19 + Vite + TypeScript. **README:101 — "visual polish counts for nothing."**
+Spend the effort on making the numbers legible, not on the CSS.
+
+- **Types come from the real API responses.** Hand-write them in one `types.ts` to match what
+  FastAPI actually returns; don't infer from what you expect it to return. If a field is
+  nullable in the API it is nullable in the type.
+- **No router, no state library, no component framework.** Two screens is `useState` on which
+  load is selected. Adding React Router here is the same mistake as turning three adapters
+  into a plugin framework.
+- **Never compute a displayed number in the browser.** Scores, rates per mile, confidence
+  labels, and reasons all arrive finished from the API. A percentage the frontend calculates
+  is a second source of truth, and it will eventually disagree with the score — which is the
+  one bug `CLAUDE.md` calls the worst possible.
+- **Show provenance, not just answers.** Every estimate renders its tier, its load count, and
+  its confidence. A low-confidence estimate is labeled in the UI, never quietly styled the
+  same as a high-confidence one.
+- **Render reasons as the API ordered them.** Don't re-sort, don't truncate to the top three,
+  don't drop a zero-score carrier from the list.
+- Loading and error states on every fetch. A blank panel is indistinguishable from a bug.
+
 ## Before reporting done
 
 - Run it. Import the module, hit the endpoint, execute the query — don't report code you never

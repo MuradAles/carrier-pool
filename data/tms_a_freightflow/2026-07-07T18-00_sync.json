@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-07T18:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127401659,
+      "status": "Completed",
+      "mileage": 211.7,
+      "totalSell": 471.83,
+      "totalBuy": 421.28,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 21700.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77029",
+          "estimatedReadyDateTime": "2026-07-06T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T17:49:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "NEW BRAUNFELS",
+          "state": "TX",
+          "zipCode": "78132",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T01:49:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-04T06:49:00-05:00",
+      "lastModifiedDate": "2026-07-07T04:14:00-05:00"
+    },
+    {
+      "shipmentId": 127401790,
+      "status": "Completed",
+      "mileage": 88.8,
+      "totalSell": 246.16,
+      "totalBuy": 205.13,
+      "customer": {
+        "customerId": 880970,
+        "name": "Trinity Paper Mills"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 41300.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78724",
+          "estimatedReadyDateTime": "2026-07-06T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T16:52:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78216",
+          "estimatedReadyDateTime": "2026-07-06T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T21:52:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-04T14:52:00-05:00",
+      "lastModifiedDate": "2026-07-07T00:15:00-05:00"
+    },
+    {
+      "shipmentId": 127401932,
+      "status": "Completed",
+      "mileage": 267.1,
+      "totalSell": 592.97,
+      "totalBuy": 494.14,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 35200.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "IRVING",
+          "state": "TX",
+          "zipCode": "75061",
+          "estimatedReadyDateTime": "2026-07-06T07:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T16:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T09:37:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "KATY",
+          "state": "TX",
+          "zipCode": "77494",
+          "estimatedReadyDateTime": "2026-07-06T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T22:37:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-05T05:37:00-05:00",
+      "lastModifiedDate": "2026-07-07T00:54:00-05:00"
+    }
+  ]
+}

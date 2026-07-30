@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-14T00:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127410483,
+      "status": "Completed",
+      "mileage": 248.8,
+      "totalSell": 545.47,
+      "totalBuy": 470.23,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 832550,
+        "name": "PINEY WOODS CARTAGE LLC",
+        "mcNumber": "1120674",
+        "dotNumber": "3102885",
+        "phoneNumber": "+19365550196"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 24400.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "CYPRESS",
+          "state": "TX",
+          "zipCode": "77433",
+          "estimatedReadyDateTime": "2026-07-13T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T01:29:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "GRAND PRAIRIE",
+          "state": "TX",
+          "zipCode": "75051",
+          "estimatedReadyDateTime": "2026-07-13T10:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T19:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T12:29:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-10T22:29:00-05:00",
+      "lastModifiedDate": "2026-07-13T14:25:00-05:00"
+    },
+    {
+      "shipmentId": 127410591,
+      "status": "Completed",
+      "mileage": 292.0,
+      "totalSell": 562.51,
+      "totalBuy": 502.24,
+      "customer": {
+        "customerId": 880970,
+        "name": "Trinity Paper Mills"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 24500.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "FRISCO",
+          "state": "TX",
+          "zipCode": "75034",
+          "estimatedReadyDateTime": "2026-07-12T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T21:15:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "KATY",
+          "state": "TX",
+          "zipCode": "77450",
+          "estimatedReadyDateTime": "2026-07-13T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T10:15:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-10T21:15:00-05:00",
+      "lastModifiedDate": "2026-07-13T11:56:00-05:00"
+    },
+    {
+      "shipmentId": 127410731,
+      "status": "Completed",
+      "mileage": 180.3,
+      "totalSell": 437.74,
+      "totalBuy": 358.8,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 835013,
+        "name": "SILVERADO EXPRESS LLC",
+        "mcNumber": "1391775",
+        "dotNumber": "3812260",
+        "phoneNumber": "+19725550348"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 33300.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78247",
+          "estimatedReadyDateTime": "2026-07-12T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T19:18:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "WACO",
+          "state": "TX",
+          "zipCode": "76712",
+          "estimatedReadyDateTime": "2026-07-12T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T05:18:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-09T14:18:00-05:00",
+      "lastModifiedDate": "2026-07-13T06:54:00-05:00"
+    }
+  ]
+}

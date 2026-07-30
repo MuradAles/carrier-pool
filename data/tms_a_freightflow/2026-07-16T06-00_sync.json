@@ -1,0 +1,41 @@
+{
+  "syncedAt": "2026-07-16T06:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127413097,
+      "status": "Booking",
+      "mileage": 187.2,
+      "totalSell": 435.17,
+      "totalBuy": null,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": null,
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 24800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78247",
+          "estimatedReadyDateTime": "2026-07-17T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-17T17:00:00-05:00",
+          "actualDepartureDateTime": null
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "WACO",
+          "state": "TX",
+          "zipCode": "76701",
+          "estimatedReadyDateTime": "2026-07-18T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-18T17:00:00-05:00",
+          "actualDepartureDateTime": null
+        }
+      ],
+      "createdDate": "2026-07-15T21:11:00-05:00",
+      "lastModifiedDate": "2026-07-15T21:11:00-05:00"
+    }
+  ]
+}

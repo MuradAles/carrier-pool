@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-07T06:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127401008,
+      "status": "Completed",
+      "mileage": 282.3,
+      "totalSell": 582.96,
+      "totalBuy": 494.03,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 35700.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77032",
+          "estimatedReadyDateTime": "2026-07-06T12:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T21:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T14:54:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "LEWISVILLE",
+          "state": "TX",
+          "zipCode": "75067",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T01:54:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-05T12:54:00-05:00",
+      "lastModifiedDate": "2026-07-07T04:14:00-05:00"
+    },
+    {
+      "shipmentId": 127401124,
+      "status": "Completed",
+      "mileage": 160.2,
+      "totalSell": 419.09,
+      "totalBuy": 349.24,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 832028,
+        "name": "BLUEBONNET FREIGHT SYSTEMS",
+        "mcNumber": "655318",
+        "dotNumber": "1740092",
+        "phoneNumber": "+18305550172"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 30200.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "CONROE",
+          "state": "TX",
+          "zipCode": "77304",
+          "estimatedReadyDateTime": "2026-07-05T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-05T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-05T21:29:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78744",
+          "estimatedReadyDateTime": "2026-07-05T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-05T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T23:29:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-03T20:29:00-05:00",
+      "lastModifiedDate": "2026-07-07T01:27:00-05:00"
+    },
+    {
+      "shipmentId": 127401261,
+      "status": "Completed",
+      "mileage": 198.0,
+      "totalSell": 426.61,
+      "totalBuy": 374.22,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 20700.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78223",
+          "estimatedReadyDateTime": "2026-07-05T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-05T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-05T23:53:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "WACO",
+          "state": "TX",
+          "zipCode": "76712",
+          "estimatedReadyDateTime": "2026-07-06T09:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T18:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T11:53:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-03T13:53:00-05:00",
+      "lastModifiedDate": "2026-07-06T12:18:00-05:00"
+    }
+  ]
+}

@@ -129,6 +129,349 @@ than silent.
 
 ---
 
+## D5 — Experience is a saturating count, not a shrunk rate
+
+**The problem.** PRD §8 applied one formula — `adjusted = (observed × n + lane_avg × k)/(n + k)`
+— to both lane experience and on-time. That formula shrinks a **rate** toward a prior. On-time
+is a rate and fits perfectly. Lane experience is a **count**, and shrinking a count toward "the
+lane average count" means a carrier with zero loads on the lane scores like an average one.
+Backwards: the signal would reward absence of evidence.
+
+**Decision.** Split them.
+
+- **Lane experience** = `n / (n + k)`, `k = 5`. 1 load → 0.17, 5 → 0.50, 20 → 0.80, 50 → 0.91.
+  Monotonic, saturating, zero at zero.
+- **On-time** = the shrinkage formula, toward the lane's average on-time rate, `k = 5`.
+
+**Why this keeps the invariant.** `CLAUDE.md`'s "2-for-2 must not beat 164-for-200" is an
+on-time framing, and on-time still uses shrinkage. Under the saturating curve, 2 loads (0.29)
+also cannot outscore 200 loads (0.98) on experience. Both readings hold.
+
+---
+
+## D6 — Equipment filters at every tier; the walk has a fourth rung
+
+**Decision.** Equipment is a hard filter at all three tiers, so the walk is
+`ZIP3+equip → METRO+equip → REGION+equip → REGION, any equipment`. The last rung exists so a
+rare equipment type still gets an answer instead of nothing; it is always reported as such and
+is automatically **low** confidence.
+
+A load whose own equipment is `UNKNOWN` skips the filter entirely and its provenance line reads
+"all equipment types" — consistent with invariant 5: `UNKNOWN` neither rewards nor punishes, so
+it must not silently become a dry-van query.
+
+**Rejected:** equipment as a scoring penalty rather than a filter. It lets a flatbed lane's
+prices contaminate a reefer estimate, and the contamination is invisible in the output.
+
+---
+
+## D7 — On-time is a day-granular comparison
+
+**The constraint.** The three schemas do not agree on precision. TMS B gives `del_date` (date
+only) against `del_arrived_at` (timestamp). TMS A gives an estimated window on the last drop
+plus `actualDepartureDateTime`. TMS C gives `bos__Scheduled_Date__c` (date) plus
+`bos__Arrival_Time__c`.
+
+**Decision.** On-time means **delivered on or before the scheduled delivery date**. The only
+definition all three formats can support honestly.
+
+**Rejected:** hour-level on-time using A's and C's timestamps. It would make on-time mean
+something different per broker, which is worse than a coarse metric that means one thing.
+
+---
+
+## D8 — Ingestion runs in the FastAPI lifespan, before serving
+
+**Decision.** On startup the backend bootstraps the schema and runs the full chronological
+ingest **synchronously**, before accepting requests. `POST /api/admin/ingest` remains as the
+manual replay path.
+
+**Why.** `docker compose up` is the graded entry point, and the UI must never be briefly and
+inexplicably empty. 132 small files is a few seconds, and ingestion is idempotent on
+`broker_id + sync_file`, so a container restart re-runs it for free.
+
+**Rejected:** a separate one-shot `ingest` compose service. Cleaner separation, but it adds a
+service and an ordering dependency to the one command a reviewer is guaranteed to run.
+
+**Rejected:** background-task ingestion at startup. The API would answer requests against a
+half-loaded database — the failure mode is wrong answers, not slow ones.
+
+---
+
+## D9 — All three brokers get equal fixture depth
+
+**The budget.** Per broker: 44 files, less 4 reserved for day 11, is 40 history files at ≤3
+loads = 120 load-appearances. One full-lifecycle load costs 6, two correction loads cost 3
+each, and ~5 deliberately empty syncs forgo ~15. That leaves **≈93 distinct history loads per
+broker**.
+
+**Decision.** All three brokers get a rich lane (25+ loads), a thin lane (1–2), a veteran
+carrier (20+), and cold-start carriers — rather than making one broker a showcase and thinning
+the other two.
+
+**Why it fits.** The requirements overlap instead of stacking: a veteran's 20 loads *are* the
+rich lane's loads, and the suburb-scatter scenario is expressed *within* the rich lane rather
+than beside it. 93 loads funds all of it with slack.
+
+**What stays broker-specific.** Correction flavors are format-bound and cannot be duplicated:
+A restates `totalBuy`, B appends a negative `ADJUSTMENT` (including the rate-only case where
+the `loads` array does not mention the load), C silently restates `bos__Carrier_Rate__c`.
+Likewise the messy edges live where their schema allows them — null equipment and the `kg`
+line item are TMS C, the 3-stop load is A or C.
+
+**Why symmetry is worth the tightness.** Tenant isolation is the headline claim. Proving it
+with three comparably-rich brokers — where A's numbers must not move when B and C load — is a
+stronger demonstration than proving it against two thin ones.
+
+---
+
+## D10 — The 1.2 road factor wins over the "Dallas→Houston ≈ 240 mi" acceptance number
+
+**The conflict.** `CLAUDE.md` invariant 7 and PRD §3 fix distance as *Haversine × 1.2*.
+`TASKS.md` G2 states the acceptance criterion as *Dallas→Houston ≈ 240 mi*. With real
+coordinates these cannot both hold: the great-circle distance between downtown Dallas and
+downtown Houston is **225.8 mi**, so ×1.2 yields **271.0 mi**. The actual I-45 drive is ~239 mi
+— a real-world road factor of ~1.06 for that unusually straight pair. Interstate 45 is close to
+a straight line; 1.2 is calibrated for typical, less direct pairs.
+
+**Decision.** Keep `ROAD_FACTOR = 1.2` and real coordinates. Treat G2's "≈ 240" as the number
+that gives, and record the ~13% overstatement on straight corridor pairs as a known limitation.
+
+**Why.** The factor is a hard invariant; the mileage figure is an illustrative check written
+before the coordinates existed. Bending the invariant to hit one pair would make every other
+pair worse, and it would be a silent, undocumented change to a rule the reviewer can read.
+
+**Why it is safe downstream — with one exception.** Nothing in the product compares our miles
+to a real odometer. Rate-per-mile is computed against the same miles the fixtures were
+generated from, so $/mi stays inside the plausible $1.50–$3.50 band, and lane and carrier
+comparisons stay honest because the scale factor cancels in every ratio.
+
+**The exception is deadhead, and it does not cancel.** PRD §8 sets *absolute* thresholds — full
+credit ≤50 mi, zero credit ≥250 mi. Their counterparty is not another output of `road_miles`;
+it is a pair of constants. A uniform scale factor cancels against a ratio, never against a
+constant. So the effective policy is stricter than the stated one:
+
+| Stated threshold | Fires at haversine | ≈ true road miles (r≈1.06) |
+|---|---|---|
+| 250 mi (zero credit) | 208.3 | **220.8** |
+| 50 mi (full credit) | 41.7 | **44.2** |
+
+A truck genuinely 221 road miles out gets zero credit under a rule that says 250; one genuinely
+48 road miles away loses full credit under a rule that says 50. The bias is one-directional —
+deadhead is always scored **more pessimistically** than the stated policy. Measured across all
+192 (carrier, day-11 load) pairs in the fixture, 85 (44%) would change credit by more than 0.02
+at r=1.06, and 45 cross a zero- or full-credit boundary.
+
+No day-11 answer changes: scenario 7's `FAR` carrier sits at 264.8 mi (233.9 at r=1.06 → credit
+0.080, worth 1.6 points) against a 15.8-point margin, so `NEAR` still wins. This is recorded as
+a documentation limit rather than fixed, because changing `ROAD_FACTOR` would break a stated
+invariant for the benefit of one term in one signal.
+
+**Corrected claim.** The earlier wording here — "every number that matters is a ratio or a
+comparison in which it cancels" — was too strong and listed deadhead among the safe consumers.
+It isn't one.
+
+**Rejected:** setting `ROAD_FACTOR = 1.06`. Hits 239.4 for Dallas→Houston and breaks the stated
+invariant, while under-estimating genuinely indirect pairs — trading a documented uniform bias
+for an undocumented non-uniform one.
+
+**Rejected:** nudging coordinates until ×1.2 lands on 240. Fabricated geography that would then
+corrupt every other distance and every deadhead calculation involving Dallas or Houston.
+
+**Rejected:** a hardcoded real-mileage matrix for known city pairs. Accurate for the pairs in
+it, but it is a second source of truth for distance sitting next to `road_miles`, and the two
+would disagree the moment a load used a city pair the matrix missed.
+
+---
+
+## D11 — An unrecognized zip on a recognized city keeps its own `zip3`
+
+**The problem.** `resolve_place(city, state, zip)` matches on zip first and falls back to
+city/state. The fallback originally returned the city's *canonical* table row, so a Houston load
+with an unlisted zip resolved to Houston 77002 and took `zip3 = 770` — the table's zip, not the
+load's. The metro tier would still be right, but the **ZIP3 tier key would be silently wrong**,
+and invariant 6 requires every answer to name the tier it used. A wrong key at the narrowest
+tier is a wrong answer wearing a correct-looking label.
+
+**Decision.** On the city/state fallback, keep the city's `lat`/`lon`/`metro` but carry the
+**load's own zip**, so `zip3` derives from what the load actually said.
+
+**Why.** The coordinates are an approximation either way — city centroid is the best we have
+offline. The zip is not an approximation; it arrived in the data. Discarding known-good input in
+favor of a table default is the kind of quiet substitution that makes a tier report untrue.
+
+**Rejected:** geo-nulling the whole load when the zip is unknown. It throws away a usable metro
+match, and PRD §7's whole point is that the metro tier catches what the zip3 tier misses.
+
+---
+
+## D12 — The reference scorer pins two shapes PRD §8 left open
+
+**The gap.** PRD §8 fixes the five signal weights (0.35 / 0.20 / 0.15 / 0.20 / 0.10) and D5 fixes
+both cold-start formulas, but it never says *how* recency decays or *how* deadhead interpolates
+between "full credit ≤50 mi" and "zero ≥250 mi". `data/TRACEABILITY.md` cannot state an expected
+top carrier without committing to something, because a different decay shape can reorder two
+close carriers.
+
+**Decision.** The traceability table pins these and discloses them at its top; Phase 6 implements
+**these exact shapes**, so the table stays the independent check on the code rather than a
+restatement of it:
+
+```
+recency   = exp(-days_since_last_lane_load / 30)
+deadhead  = clamp((250 - miles_from_last_delivery) / 200, 0, 1)
+equipment = 1 if the carrier has hauled it, else 0;  0.5 if the LOAD's equipment is UNKNOWN
+```
+
+The `0.5` for an `UNKNOWN` load is invariant 5 expressed as a number: `UNKNOWN` must neither
+reward nor punish, and both 1 and 0 would do one or the other.
+
+**Why it matters that this is written down.** The table is generated *before* the scorer exists,
+so it is a real prediction. If Phase 6 silently picks a different curve, every expected score in
+a 1,479-line document becomes wrong and the end-to-end check starts asserting fiction. Every
+scenario is built with a ≥5-point margin, so rank, tier, counts and price survive a different
+curve — but the absolute scores do not, and H1 should assert the former.
+
+**Rejected:** leaving the shapes to Phase 6 and regenerating the table afterwards from whatever
+the code does. That is the failure `CLAUDE.md` invariant 2 warns about one level up: a check
+derived from the thing it checks cannot fail.
+
+---
+
+## D13 — Each broker gets a distinct rate band, so a tenant leak moves the money
+
+**What the first generation produced.** On the rich lane `750→774` dry van, broker_a and broker_c
+had an *identical* median of $1.8200/mi, and the three-broker pooled median was also $1.8200. A
+repository layer that forgot `broker_id` would have returned broker_a the same price estimate it
+should have returned anyway. The leak would have been silent in the headline number, betrayed
+only by the load count (36 instead of 12).
+
+**Decision.** Separate the three brokers' rate bands so every lane's median, p25 and p75 differ
+across brokers by a wide margin, and add a **validator assertion** that each broker's
+accepted-tier median differs from every other broker's and from the pooled median by ≥0.15 $/mi.
+
+**Why.** D4 names rate leakage as *the* commercial harm the tenant boundary exists to prevent.
+Fixtures in which that leak is arithmetically invisible cannot demonstrate the boundary holds —
+they can only fail to contradict it. The assertion matters more than the regeneration, because it
+stops a future re-seed from quietly re-colliding the bands.
+
+**On realism:** separated bands are *more* realistic, not less. Brokers genuinely pay different
+rates on the same lane — different contract terms, volumes and carrier relationships.
+
+---
+
+## D14 — `TASKS.md`'s intra-metro sanity bound was specified against the wrong unit
+
+**What happened.** `unit-tester` was asked to assert that any two places in the same metro are
+under ~75 mi apart, as a cheap way to catch a transposed coordinate in 180 hand-entered rows. The
+test failed on five pairs, worst being McKinney 75071 ↔ Cleburne 76031 at 88.0 road mi.
+
+**It was the bound that was wrong.** The 75 figure was calibrated on straight-line distance and
+then asserted against `road_miles`, which is the same number × 1.2. Straight-line maxima are DFW
+73.3 / HOU 65.2 / SAT 57.3 / AUS 57.2 — all under 75. The road-mile image of that bound is 90.
+McKinney and Cleburne are genuinely both DFW (Collin and Johnson counties), at opposite corners.
+
+**Decision.** Correct the bound to 90.0 road miles, with the reasoning in the test. Keep the
+tighter typo-catcher that actually does the work: every row is nearest to its own metro anchor
+(passes for all 157 big-metro rows) and sits within 60 road mi of it (actual maxima DFW 54.3,
+HOU 49.1, SAT 39.5, AUS 35.1).
+
+**Recorded because the distinction is easy to abuse.** A loosened tolerance and a corrected
+specification look identical in a diff. This one is a correction: the evidence was gathered
+before the number moved, the failing pairs were verified as real geography rather than typos, and
+a strictly tighter independent check was added in the same change. `unit-tester` left the test
+red and escalated rather than widening it, which is why the distinction is checkable at all.
+
+**Also noted for Phase 3:** `resolve_place(city, None, zip)` returns `None`, because the
+city/state fallback requires both. All three TMS schemas carry state (`pu_state`, `state`,
+`bos__State__c`), so no adapter hits it — but an adapter that dropped state would silently
+geo-null every load rather than failing loudly.
+
+---
+
+## D15 — A heterogeneous equipment pool caps confidence at medium
+
+**The problem.** D6 drops the equipment filter for a load whose own equipment is `UNKNOWN`, so
+the estimate is drawn from every equipment type at once. PRD §9 sets confidence from tier and
+load count alone, so day-11 load `SHP6701577` (Irving 75061 → Pearland 77584, 293.4 mi) matches
+31 loads at `METRO DFW→HOU` and is labelled **high**.
+
+Those 31 loads are two disjoint clusters with an empty gap between them:
+
+```
+mixed   n=31   p25 2.4800   median 2.5300   p75 2.6700     spread 0.19
+dry van n=23   p25 2.4800   median 2.5100   p75 2.5400     spread 0.06
+reefer  n= 8   p25 2.8100   median 2.8450   p75 2.8900     spread 0.08
+```
+
+The reported p75 of **2.6700 → $783.38 is a rate no carrier has ever been paid on this lane** —
+it falls in the 0.27 $/mi gap between the highest dry van (2.54) and the lowest reefer (2.81).
+A high-confidence range whose upper bound sits in an empty interval is exactly the failure
+invariant 6 exists to prevent: a wrong number wearing a correct-looking label.
+
+**Decision.** Cap confidence at **medium** when the accepted pool is heterogeneous in
+equipment — which is precisely and only the D6 filter-skip case. The provenance line names the
+mix ("31 loads: 23 dry van, 8 reefer").
+
+**Rejected:** capping *every* unfiltered estimate at medium. Slightly simpler, but it punishes
+the tier rather than the actual defect. A pool that happens to be all one equipment type
+despite the filter being off is not less trustworthy than a filtered one.
+
+**Rejected:** returning the estimate without a range. Hides the problem instead of labelling
+it, and the range is the honest part — it is the *label* that was lying.
+
+**Rejected:** splitting the estimate per equipment type and returning both. Better information,
+but the load's equipment is genuinely unknown, so the system would be inventing a distinction
+the broker has not made. Deferred as a Phase 5 follow-up if the UI can present it clearly.
+
+---
+
+## D16 — TMS C on-time compares in Central, not UTC
+
+**The problem.** D7 defines on-time as *"delivered on or before the scheduled delivery date"* — a
+date comparison. For TMS C the two sides of that comparison live in different calendars:
+`bos__Scheduled_Date__c` is a bare local **Central** date, while `bos__Arrival_Time__c` is
+**UTC**. Nothing in the provided schema says so; `example_sync.jsonc` annotates the arrival as
+"ISO datetime" and leaves the scheduled date unqualified. Worse, `CLAUDE.md`'s Time row said
+"C is already UTC", which reads as licence to compare the UTC date directly.
+
+TMS A and B don't have this problem: A carries `-05:00`, so its date component *is* the Central
+date, and B is naive Central on both sides.
+
+**Decision.** Convert `bos__Arrival_Time__c` back to Central before comparing dates. Recorded as
+a dedicated On-time row in `CLAUDE.md`'s normalization table, so the adapter can't guess.
+
+**What was at stake.** 14 of 96 broker_c last-stop arrivals flip verdict between the two
+readings — any delivery at or after 19:00 Central rolls into the next UTC day. `SHP6700394`
+arrives `2026-07-07T04:22:00+0000` against a scheduled `2026-07-06`: late under UTC, on-time
+under Central. Seven of twelve broker_c carriers get a different count, one swinging 25 points:
+
+```
+Metroplex Ridge (V1)   UTC 18/22   Central 21/22
+Espinoza Bros   (V3)   UTC  6/16   Central 10/16
+Delta Prime     (M1)   UTC  8/11   Central 10/11
+Guadalupe Vly  (FAR)   UTC  5/8    Central  7/8
+Trinity Bay    (M2)    UTC  8/9    Central  9/9
+Montgomery Cty (NEAR)  UTC  2/6    Central  3/6
+Frio Line      (C3)    UTC  1/2    Central  2/2
+```
+
+**Why Central.** It is what the generator means, it matches the numbers already in
+`TRACEABILITY.md`, and it is the only reading under which all three TMSs agree on what "on time"
+means — which is D7's whole argument for a coarse metric in the first place. A definition that
+silently differs per broker is worse than a coarse one.
+
+**Why this was escalated rather than decided in-flight.** No day-11 winner changes under either
+reading and every margin stays above 5 points, so nothing was broken — but the on-time column
+and every absolute score in broker_c's rankings depend on it. An adapter picking silently is
+exactly how a wrong number acquires a correct-looking label.
+
+**Rejected:** treating the bare date as UTC midnight. Consistent with the old `CLAUDE.md`
+wording and needs no new rule, but it means a load delivered at 8pm Central on its scheduled day
+is recorded late. That is wrong in the domain, not just inconvenient.
+
+---
+
 ## Honest limitations
 
 *To be filled as they're found — including what `breaker` attacked and could not break.*

@@ -1,0 +1,190 @@
+{
+  "synced_at": "2026-07-13T23:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO9000000FXiWGtZ",
+      "Name": "SHP6701252",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 273.0,
+      "bos__Customer__c": "0011I00000W6ArWecE",
+      "bos__Carrier__c": "0011I00000cTcnCyJT",
+      "bos__Equipment_Type__c": "Flatbed",
+      "bos__Customer_Rate__c": 840.84,
+      "bos__Carrier_Rate__c": 750.75,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000vIKLodCt",
+          "bos__Scheduled_Date__c": "2026-07-12",
+          "bos__Arrival_Time__c": "2026-07-13T01:38:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000ljFeuX4q",
+          "bos__Scheduled_Date__c": "2026-07-12",
+          "bos__Arrival_Time__c": "2026-07-13T15:38:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Roofing shingles",
+          "bos__Weight__c": 31100.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 24.0
+        }
+      ],
+      "CreatedDate": "2026-07-10T14:38:00.000+0000",
+      "LastModifiedDate": "2026-07-13T16:05:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000b2I5PofP",
+      "Name": "SHP6701265",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 156.0,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I00000GZqOfSSX",
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Customer_Rate__c": 610.27,
+      "bos__Carrier_Rate__c": 508.56,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000nQKCqPBE",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T10:20:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000LkRi1Ia0",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T18:20:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Dairy products",
+          "bos__Weight__c": 23700.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 18.0
+        }
+      ],
+      "CreatedDate": "2026-07-10T11:20:00.000+0000",
+      "LastModifiedDate": "2026-07-13T19:10:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000JtWJ89Yt",
+      "Name": "SHP6701278",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 176.5,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I00000cTcnCyJT",
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Customer_Rate__c": 589.54,
+      "bos__Carrier_Rate__c": 517.14,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000HPduV8YZ",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T07:10:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000j9rcvX7V",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T17:10:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Frozen poultry",
+          "bos__Weight__c": 30000.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 23.0
+        }
+      ],
+      "CreatedDate": "2026-07-12T08:10:00.000+0000",
+      "LastModifiedDate": "2026-07-13T19:38:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000W6ArWecE": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Silverleaf Distributors"
+    },
+    "0011I00000cTcnCyJT": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Espinoza Brothers Trucking Co.",
+      "bos__MC_Number__c": "789003",
+      "bos__DOT_Number__c": "2044117"
+    },
+    "0011I00000vIKLodCt": {
+      "type": "Location",
+      "Name": "Houston Cold Storage",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77049"
+    },
+    "0011I00000ljFeuX4q": {
+      "type": "Location",
+      "Name": "Burleson Warehouse",
+      "bos__City__c": "Burleson",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76028"
+    },
+    "0011I00000G5WZFEQb": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Pecos Industrial Supply"
+    },
+    "0011I00000GZqOfSSX": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Bay Area Cold Carriers, LLC",
+      "bos__MC_Number__c": "1067712",
+      "bos__DOT_Number__c": "2974885"
+    },
+    "0011I00000nQKCqPBE": {
+      "type": "Location",
+      "Name": "Austin Logistics Park",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78723"
+    },
+    "0011I00000LkRi1Ia0": {
+      "type": "Location",
+      "Name": "Houston Cold Storage",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77041"
+    },
+    "0011I00000HPduV8YZ": {
+      "type": "Location",
+      "Name": "Austin Cold Storage",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78753"
+    },
+    "0011I00000j9rcvX7V": {
+      "type": "Location",
+      "Name": "Houston Warehouse",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77020"
+    }
+  }
+}

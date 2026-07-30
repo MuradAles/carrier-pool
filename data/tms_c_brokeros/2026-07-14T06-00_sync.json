@@ -1,0 +1,201 @@
+{
+  "synced_at": "2026-07-14T11:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000QuLjuxvC",
+      "Name": "SHP6701330",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 273.9,
+      "bos__Customer__c": "0011I00000W6ArWecE",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 751.58,
+      "bos__Carrier_Rate__c": 671.05,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000vIKLodCt",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T13:39:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000A9pYTXfA",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T22:39:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Packaged foods",
+          "bos__Weight__c": 35300.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 27.0
+        }
+      ],
+      "CreatedDate": "2026-07-10T03:39:00.000+0000",
+      "LastModifiedDate": "2026-07-14T00:37:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000GRXleWR7",
+      "Name": "SHP6701343",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 306.6,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I00000cTcnCyJT",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 933.42,
+      "bos__Carrier_Rate__c": 791.03,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000AXx4f44P",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T15:50:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000NdrVbMsH",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-14T05:50:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Retail apparel",
+          "bos__Weight__c": 9300.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 7.0
+        },
+        {
+          "bos__Commodity__c": "Auto parts",
+          "bos__Weight__c": 6800.0,
+          "bos__Weight_Units__c": "kg",
+          "bos__Pallet_Count__c": 12.0
+        }
+      ],
+      "CreatedDate": "2026-07-10T09:50:00.000+0000",
+      "LastModifiedDate": "2026-07-14T06:32:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000XezFyB8k",
+      "Name": "SHP6701356",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 154.8,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 499.32,
+      "bos__Carrier_Rate__c": 445.82,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000LkRi1Ia0",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T15:33:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000c4iJOCwC",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-14T03:33:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Paper goods",
+          "bos__Weight__c": 38100.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 29.0
+        }
+      ],
+      "CreatedDate": "2026-07-11T08:33:00.000+0000",
+      "LastModifiedDate": "2026-07-14T05:19:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000W6ArWecE": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Silverleaf Distributors"
+    },
+    "0011I000003UEgxs3o": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Metroplex Ridge Logistics, Inc.",
+      "bos__MC_Number__c": "856920",
+      "bos__DOT_Number__c": "2489013"
+    },
+    "0011I00000vIKLodCt": {
+      "type": "Location",
+      "Name": "Houston Cold Storage",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77049"
+    },
+    "0011I00000A9pYTXfA": {
+      "type": "Location",
+      "Name": "Rockwall Fulfillment Ctr",
+      "bos__City__c": "Rockwall",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75087"
+    },
+    "0011I00000udoxsTen": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Ridgeline Materials"
+    },
+    "0011I00000cTcnCyJT": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Espinoza Brothers Trucking Co.",
+      "bos__MC_Number__c": "789003",
+      "bos__DOT_Number__c": "2044117"
+    },
+    "0011I00000AXx4f44P": {
+      "type": "Location",
+      "Name": "San Antonio Fulfillment Ctr",
+      "bos__City__c": "San Antonio",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78223"
+    },
+    "0011I00000NdrVbMsH": {
+      "type": "Location",
+      "Name": "Dallas Fulfillment Ctr",
+      "bos__City__c": "Dallas",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75207"
+    },
+    "0011I00000G5WZFEQb": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Pecos Industrial Supply"
+    },
+    "0011I00000LkRi1Ia0": {
+      "type": "Location",
+      "Name": "Houston Cold Storage",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77041"
+    },
+    "0011I00000c4iJOCwC": {
+      "type": "Location",
+      "Name": "Pflugerville Warehouse",
+      "bos__City__c": "Pflugerville",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78660"
+    }
+  }
+}

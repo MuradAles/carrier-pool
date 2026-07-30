@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-12T18:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127408786,
+      "status": "Completed",
+      "mileage": 217.8,
+      "totalSell": 526.9,
+      "totalBuy": 470.45,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "48 ft Flatbed",
+      "weightTotal": 31500.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78218",
+          "estimatedReadyDateTime": "2026-07-12T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T05:13:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77060",
+          "estimatedReadyDateTime": "2026-07-12T11:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T20:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T13:13:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-10T04:13:00-05:00",
+      "lastModifiedDate": "2026-07-12T14:36:00-05:00"
+    },
+    {
+      "shipmentId": 127408998,
+      "status": "Completed",
+      "mileage": 95.0,
+      "totalSell": 308.27,
+      "totalBuy": 261.25,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 833820,
+        "name": "GULF COAST DRAYAGE LLC",
+        "mcNumber": "1005991",
+        "dotNumber": "2887431",
+        "phoneNumber": "+17135550264"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 35000.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78205",
+          "estimatedReadyDateTime": "2026-07-11T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-11T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-11T22:52:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78724",
+          "estimatedReadyDateTime": "2026-07-12T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T07:52:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-09T14:52:00-05:00",
+      "lastModifiedDate": "2026-07-12T08:12:00-05:00"
+    },
+    {
+      "shipmentId": 127409097,
+      "status": "Completed",
+      "mileage": 153.2,
+      "totalSell": 444.4,
+      "totalBuy": 396.79,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 29000.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "CYPRESS",
+          "state": "TX",
+          "zipCode": "77429",
+          "estimatedReadyDateTime": "2026-07-12T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T01:04:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "TEMPLE",
+          "state": "TX",
+          "zipCode": "76504",
+          "estimatedReadyDateTime": "2026-07-12T10:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T19:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T12:04:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-08T23:04:00-05:00",
+      "lastModifiedDate": "2026-07-12T12:56:00-05:00"
+    }
+  ]
+}

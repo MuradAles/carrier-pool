@@ -1,0 +1,197 @@
+{
+  "synced_at": "2026-07-08T23:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000atvP51AQ",
+      "Name": "SHP6700615",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 289.5,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 871.1,
+      "bos__Carrier_Rate__c": 738.22,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000ofz9o5kw",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-08T01:32:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000003Zovd6Bm",
+          "bos__Scheduled_Date__c": "2026-07-08",
+          "bos__Arrival_Time__c": "2026-07-08T15:32:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Auto parts",
+          "bos__Weight__c": 32300.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 25.0
+        }
+      ],
+      "CreatedDate": "2026-07-06T02:32:00.000+0000",
+      "LastModifiedDate": "2026-07-08T16:14:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000Oh52gPSH",
+      "Name": "SHP6700628",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 273.2,
+      "bos__Customer__c": "0011I00000mtOsE3o8",
+      "bos__Carrier__c": "0011I00000gutMK6yx",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 816.59,
+      "bos__Carrier_Rate__c": 669.34,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000baZebHr1",
+          "bos__Scheduled_Date__c": "2026-07-08",
+          "bos__Arrival_Time__c": "2026-07-08T10:57:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000VKX2imbC",
+          "bos__Scheduled_Date__c": "2026-07-08",
+          "bos__Arrival_Time__c": "2026-07-08T19:57:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Packaged foods",
+          "bos__Weight__c": 25300.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 19.0
+        }
+      ],
+      "CreatedDate": "2026-07-07T03:57:00.000+0000",
+      "LastModifiedDate": "2026-07-08T21:18:00.000+0000"
+    },
+    {
+      "Id": "a0jO90000071dycRpN",
+      "Name": "SHP6700641",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 300.5,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": "0011I00000UC2QUNMU",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 897.11,
+      "bos__Carrier_Rate__c": 760.26,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000bKkKLtkx",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-08T02:44:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000WPCB1aa5",
+          "bos__Scheduled_Date__c": "2026-07-08",
+          "bos__Arrival_Time__c": "2026-07-08T16:44:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Retail apparel",
+          "bos__Weight__c": 29600.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 23.0
+        }
+      ],
+      "CreatedDate": "2026-07-06T21:44:00.000+0000",
+      "LastModifiedDate": "2026-07-08T17:42:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000xdkp9sXL": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Texan Home Goods"
+    },
+    "0011I000003UEgxs3o": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Metroplex Ridge Logistics, Inc.",
+      "bos__MC_Number__c": "856920",
+      "bos__DOT_Number__c": "2489013"
+    },
+    "0011I00000ofz9o5kw": {
+      "type": "Location",
+      "Name": "Fort Worth Cross Dock",
+      "bos__City__c": "Fort Worth",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76106"
+    },
+    "0011I000003Zovd6Bm": {
+      "type": "Location",
+      "Name": "Houston Cross Dock",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77002"
+    },
+    "0011I00000mtOsE3o8": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Bluebonnet Grocery Co"
+    },
+    "0011I00000gutMK6yx": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Trinity Bay Transport Co.",
+      "bos__MC_Number__c": "1015228",
+      "bos__DOT_Number__c": "2901744"
+    },
+    "0011I00000baZebHr1": {
+      "type": "Location",
+      "Name": "Garland Distribution Ctr",
+      "bos__City__c": "Garland",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75040"
+    },
+    "0011I00000VKX2imbC": {
+      "type": "Location",
+      "Name": "Houston Distribution Ctr",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77008"
+    },
+    "0011I00000UC2QUNMU": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Brazos Bend Carriers, Inc.",
+      "bos__MC_Number__c": "973318",
+      "bos__DOT_Number__c": "2718550"
+    },
+    "0011I00000bKkKLtkx": {
+      "type": "Location",
+      "Name": "Flower Mound Warehouse",
+      "bos__City__c": "Flower Mound",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75028"
+    },
+    "0011I00000WPCB1aa5": {
+      "type": "Location",
+      "Name": "Houston Fulfillment Ctr",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77015"
+    }
+  }
+}

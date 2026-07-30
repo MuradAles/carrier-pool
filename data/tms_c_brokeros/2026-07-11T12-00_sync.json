@@ -1,0 +1,202 @@
+{
+  "synced_at": "2026-07-11T17:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000uoVH2Ojo",
+      "Name": "SHP6700992",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 303.8,
+      "bos__Customer__c": "0011I000003YEB6g03",
+      "bos__Carrier__c": "0011I00000gutMK6yx",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 914.13,
+      "bos__Carrier_Rate__c": 774.69,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000qiuXguZB",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-10T11:47:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000008YlOgjh8",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-10T21:47:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Auto parts",
+          "bos__Weight__c": 33700.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 26.0
+        }
+      ],
+      "CreatedDate": "2026-07-09T09:47:00.000+0000",
+      "LastModifiedDate": "2026-07-11T00:14:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000kirpPqEy",
+      "Name": "SHP6701005",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 152.3,
+      "bos__Customer__c": "0011I00000W6ArWecE",
+      "bos__Carrier__c": "0011I0000051gR8MJj",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 544.62,
+      "bos__Carrier_Rate__c": 453.85,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000HPcBsGqH",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-11T02:12:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000002Jd0n8DL",
+          "bos__Scheduled_Date__c": "2026-07-11",
+          "bos__Arrival_Time__c": "2026-07-11T10:12:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Bottled water",
+          "bos__Weight__c": 26500.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 20.0
+        }
+      ],
+      "CreatedDate": "2026-07-09T18:12:00.000+0000",
+      "LastModifiedDate": "2026-07-11T11:48:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000qHPCBPz8",
+      "Name": "SHP6701018",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 219.8,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I00000cTcnCyJT",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 710.61,
+      "bos__Carrier_Rate__c": 582.47,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I000006hpyLo1n",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-10T10:46:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000QueAhTJs",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-10T22:46:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 22000.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 17.0
+        }
+      ],
+      "CreatedDate": "2026-07-07T02:46:00.000+0000",
+      "LastModifiedDate": "2026-07-10T23:27:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I000003YEB6g03": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Gulf Coast Foods"
+    },
+    "0011I00000gutMK6yx": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Trinity Bay Transport Co.",
+      "bos__MC_Number__c": "1015228",
+      "bos__DOT_Number__c": "2901744"
+    },
+    "0011I00000qiuXguZB": {
+      "type": "Location",
+      "Name": "Alvin Fulfillment Ctr",
+      "bos__City__c": "Alvin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77511"
+    },
+    "0011I000008YlOgjh8": {
+      "type": "Location",
+      "Name": "Arlington Cross Dock",
+      "bos__City__c": "Arlington",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76010"
+    },
+    "0011I00000W6ArWecE": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Silverleaf Distributors"
+    },
+    "0011I0000051gR8MJj": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Guadalupe Valley Freight, LLC",
+      "bos__MC_Number__c": "701558",
+      "bos__DOT_Number__c": "1802996"
+    },
+    "0011I00000HPcBsGqH": {
+      "type": "Location",
+      "Name": "Tomball Fulfillment Ctr",
+      "bos__City__c": "Tomball",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77375"
+    },
+    "0011I000002Jd0n8DL": {
+      "type": "Location",
+      "Name": "Austin Distribution Ctr",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78744"
+    },
+    "0011I00000G5WZFEQb": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Pecos Industrial Supply"
+    },
+    "0011I00000cTcnCyJT": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Espinoza Brothers Trucking Co.",
+      "bos__MC_Number__c": "789003",
+      "bos__DOT_Number__c": "2044117"
+    },
+    "0011I000006hpyLo1n": {
+      "type": "Location",
+      "Name": "Austin Warehouse",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78724"
+    },
+    "0011I00000QueAhTJs": {
+      "type": "Location",
+      "Name": "Dallas Warehouse",
+      "bos__City__c": "Dallas",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75220"
+    }
+  }
+}

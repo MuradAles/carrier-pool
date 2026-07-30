@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-15T12:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127412069,
+      "status": "Completed",
+      "mileage": 263.7,
+      "totalSell": 553.88,
+      "totalBuy": 469.39,
+      "customer": {
+        "customerId": 881930,
+        "name": "Cowtown Auto Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 18800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77041",
+          "estimatedReadyDateTime": "2026-07-15T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-15T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-15T00:08:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "IRVING",
+          "state": "TX",
+          "zipCode": "75061",
+          "estimatedReadyDateTime": "2026-07-15T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-15T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-15T07:08:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-13T18:08:00-05:00",
+      "lastModifiedDate": "2026-07-15T09:31:00-05:00"
+    },
+    {
+      "shipmentId": 127412254,
+      "status": "Completed",
+      "mileage": 279.0,
+      "totalSell": 566.37,
+      "totalBuy": 488.25,
+      "customer": {
+        "customerId": 881930,
+        "name": "Cowtown Auto Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 833136,
+        "name": "TRINITY RIVER LOGISTICS INC",
+        "mcNumber": "843276",
+        "dotNumber": "2410558",
+        "phoneNumber": "+18175550231"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 20700.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75243",
+          "estimatedReadyDateTime": "2026-07-14T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-14T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-14T21:35:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77002",
+          "estimatedReadyDateTime": "2026-07-15T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-15T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-15T06:35:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-13T11:35:00-05:00",
+      "lastModifiedDate": "2026-07-15T08:34:00-05:00"
+    },
+    {
+      "shipmentId": 127412409,
+      "status": "Completed",
+      "mileage": 186.7,
+      "totalSell": 430.49,
+      "totalBuy": 352.86,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 833820,
+        "name": "GULF COAST DRAYAGE LLC",
+        "mcNumber": "1005991",
+        "dotNumber": "2887431",
+        "phoneNumber": "+17135550264"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 26500.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78753",
+          "estimatedReadyDateTime": "2026-07-14T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-14T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-14T16:43:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "PASADENA",
+          "state": "TX",
+          "zipCode": "77502",
+          "estimatedReadyDateTime": "2026-07-15T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-15T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-15T04:43:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-11T06:43:00-05:00",
+      "lastModifiedDate": "2026-07-15T06:58:00-05:00"
+    }
+  ]
+}

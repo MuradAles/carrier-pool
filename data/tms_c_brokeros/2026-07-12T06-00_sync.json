@@ -1,0 +1,197 @@
+{
+  "synced_at": "2026-07-12T11:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000G4rRVp0F",
+      "Name": "SHP6700914",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 267.8,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I00000GZqOfSSX",
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Customer_Rate__c": 918.07,
+      "bos__Carrier_Rate__c": 752.52,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000j4jYXhGW",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-10T10:06:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000WLSo7OMs",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-10T22:06:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Frozen poultry",
+          "bos__Weight__c": 21900.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 17.0
+        }
+      ],
+      "CreatedDate": "2026-07-08T09:06:00.000+0000",
+      "LastModifiedDate": "2026-07-10T18:51:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000eAhpXUt8",
+      "Name": "SHP6701070",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 277.5,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I00000PwVPlrXG",
+      "bos__Equipment_Type__c": "Flatbed",
+      "bos__Customer_Rate__c": 854.69,
+      "bos__Carrier_Rate__c": 763.12,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000xaCG7Svm",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-10T22:52:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000ILhbcB4I",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-11T13:52:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Rebar bundles",
+          "bos__Weight__c": 34000.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 26.0
+        }
+      ],
+      "CreatedDate": "2026-07-09T17:52:00.000+0000",
+      "LastModifiedDate": "2026-07-11T16:12:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000mqLXj6QV",
+      "Name": "SHP6701083",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 273.7,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 796.91,
+      "bos__Carrier_Rate__c": 686.99,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I000002IJ5iQYJ",
+          "bos__Scheduled_Date__c": "2026-07-11",
+          "bos__Arrival_Time__c": "2026-07-11T04:53:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000dyTXm92R",
+          "bos__Scheduled_Date__c": "2026-07-11",
+          "bos__Arrival_Time__c": "2026-07-11T19:53:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 37600.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 29.0
+        }
+      ],
+      "CreatedDate": "2026-07-07T18:53:00.000+0000",
+      "LastModifiedDate": "2026-07-11T21:36:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000G5WZFEQb": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Pecos Industrial Supply"
+    },
+    "0011I00000GZqOfSSX": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Bay Area Cold Carriers, LLC",
+      "bos__MC_Number__c": "1067712",
+      "bos__DOT_Number__c": "2974885"
+    },
+    "0011I00000j4jYXhGW": {
+      "type": "Location",
+      "Name": "Fort Worth Logistics Park",
+      "bos__City__c": "Fort Worth",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76155"
+    },
+    "0011I00000WLSo7OMs": {
+      "type": "Location",
+      "Name": "Houston Distribution Ctr",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77032"
+    },
+    "0011I00000udoxsTen": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Ridgeline Materials"
+    },
+    "0011I00000PwVPlrXG": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Ironclad Flatbed Services LLC",
+      "bos__MC_Number__c": "1201884",
+      "bos__DOT_Number__c": "3350219"
+    },
+    "0011I00000xaCG7Svm": {
+      "type": "Location",
+      "Name": "Frisco Cross Dock",
+      "bos__City__c": "Frisco",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75034"
+    },
+    "0011I00000ILhbcB4I": {
+      "type": "Location",
+      "Name": "Lockhart Warehouse",
+      "bos__City__c": "Lockhart",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78644"
+    },
+    "0011I000003UEgxs3o": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Metroplex Ridge Logistics, Inc.",
+      "bos__MC_Number__c": "856920",
+      "bos__DOT_Number__c": "2489013"
+    },
+    "0011I000002IJ5iQYJ": {
+      "type": "Location",
+      "Name": "Coppell Logistics Park",
+      "bos__City__c": "Coppell",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75019"
+    },
+    "0011I00000dyTXm92R": {
+      "type": "Location",
+      "Name": "Katy Cold Storage",
+      "bos__City__c": "Katy",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77449"
+    }
+  }
+}

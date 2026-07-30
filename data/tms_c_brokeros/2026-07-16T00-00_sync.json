@@ -1,0 +1,123 @@
+{
+  "synced_at": "2026-07-16T05:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000Pe4PRTiG",
+      "Name": "SHP6701512",
+      "bos__Load_Status__c": "Ready to Book",
+      "bos__Distance_Miles__c": 313.3,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": null,
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 935.33,
+      "bos__Carrier_Rate__c": null,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000xaCG7Svm",
+          "bos__Scheduled_Date__c": "2026-07-17",
+          "bos__Arrival_Time__c": null
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000004diwJUk8",
+          "bos__Scheduled_Date__c": "2026-07-18",
+          "bos__Arrival_Time__c": null
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 38200.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 29.0
+        }
+      ],
+      "CreatedDate": "2026-07-15T19:25:00.000+0000",
+      "LastModifiedDate": "2026-07-15T19:25:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000ktYClT5a",
+      "Name": "SHP6701525",
+      "bos__Load_Status__c": "Ready to Book",
+      "bos__Distance_Miles__c": 274.6,
+      "bos__Customer__c": "0011I000003YEB6g03",
+      "bos__Carrier__c": null,
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Customer_Rate__c": 910.52,
+      "bos__Carrier_Rate__c": null,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000ofz9o5kw",
+          "bos__Scheduled_Date__c": "2026-07-17",
+          "bos__Arrival_Time__c": null
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000LkRi1Ia0",
+          "bos__Scheduled_Date__c": "2026-07-18",
+          "bos__Arrival_Time__c": null
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Frozen poultry",
+          "bos__Weight__c": 36600.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 28.0
+        }
+      ],
+      "CreatedDate": "2026-07-15T23:14:00.000+0000",
+      "LastModifiedDate": "2026-07-15T23:14:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000xdkp9sXL": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Texan Home Goods"
+    },
+    "0011I00000xaCG7Svm": {
+      "type": "Location",
+      "Name": "Frisco Cross Dock",
+      "bos__City__c": "Frisco",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75034"
+    },
+    "0011I000004diwJUk8": {
+      "type": "Location",
+      "Name": "Missouri City Logistics Park",
+      "bos__City__c": "Missouri City",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77459"
+    },
+    "0011I000003YEB6g03": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Gulf Coast Foods"
+    },
+    "0011I00000ofz9o5kw": {
+      "type": "Location",
+      "Name": "Fort Worth Cross Dock",
+      "bos__City__c": "Fort Worth",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76106"
+    },
+    "0011I00000LkRi1Ia0": {
+      "type": "Location",
+      "Name": "Houston Cold Storage",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77041"
+    }
+  }
+}

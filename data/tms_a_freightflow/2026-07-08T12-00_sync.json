@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-08T12:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127402942,
+      "status": "Completed",
+      "mileage": 292.5,
+      "totalSell": 635.19,
+      "totalBuy": 520.65,
+      "customer": {
+        "customerId": 881930,
+        "name": "Cowtown Auto Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 833136,
+        "name": "TRINITY RIVER LOGISTICS INC",
+        "mcNumber": "843276",
+        "dotNumber": "2410558",
+        "phoneNumber": "+18175550231"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 23700.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "MISSOURI CITY",
+          "state": "TX",
+          "zipCode": "77459",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T07:42:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75243",
+          "estimatedReadyDateTime": "2026-07-07T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T21:42:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-04T23:42:00-05:00",
+      "lastModifiedDate": "2026-07-07T22:32:00-05:00"
+    },
+    {
+      "shipmentId": 127403026,
+      "status": "Completed",
+      "mileage": 255.6,
+      "totalSell": 552.1,
+      "totalBuy": 460.08,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 31100.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "GRAND PRAIRIE",
+          "state": "TX",
+          "zipCode": "75051",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T04:42:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "KATY",
+          "state": "TX",
+          "zipCode": "77449",
+          "estimatedReadyDateTime": "2026-07-07T11:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T20:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T13:42:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-03T22:42:00-05:00",
+      "lastModifiedDate": "2026-07-07T15:20:00-05:00"
+    },
+    {
+      "shipmentId": 127403186,
+      "status": "Completed",
+      "mileage": 319.1,
+      "totalSell": 756.65,
+      "totalBuy": 663.73,
+      "customer": {
+        "customerId": 881930,
+        "name": "Cowtown Auto Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 830683,
+        "name": "LONE STAR COLD LINES LLC",
+        "mcNumber": "902114",
+        "dotNumber": "2338907",
+        "phoneNumber": "+18175550118"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 33500.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "GRAPEVINE",
+          "state": "TX",
+          "zipCode": "76051",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T07:27:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "ALVIN",
+          "state": "TX",
+          "zipCode": "77511",
+          "estimatedReadyDateTime": "2026-07-07T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T16:27:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-05T22:27:00-05:00",
+      "lastModifiedDate": "2026-07-07T18:37:00-05:00"
+    }
+  ]
+}

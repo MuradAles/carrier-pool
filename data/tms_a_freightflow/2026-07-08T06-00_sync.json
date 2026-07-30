@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-08T06:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127402541,
+      "status": "Completed",
+      "mileage": 270.9,
+      "totalSell": 585.14,
+      "totalBuy": 487.62,
+      "customer": {
+        "customerId": 881930,
+        "name": "Cowtown Auto Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 836263,
+        "name": "BRAZOS VALLEY CARRIERS",
+        "mcNumber": "964120",
+        "dotNumber": "2705884",
+        "phoneNumber": "+19795550412"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 37800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "IRVING",
+          "state": "TX",
+          "zipCode": "75063",
+          "estimatedReadyDateTime": "2026-07-06T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T20:15:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77041",
+          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T10:15:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-04T20:15:00-05:00",
+      "lastModifiedDate": "2026-07-07T12:12:00-05:00"
+    },
+    {
+      "shipmentId": 127402653,
+      "status": "Completed",
+      "mileage": 277.6,
+      "totalSell": 674.07,
+      "totalBuy": 591.29,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 830683,
+        "name": "LONE STAR COLD LINES LLC",
+        "mcNumber": "902114",
+        "dotNumber": "2338907",
+        "phoneNumber": "+18175550118"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 23300.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "FORT WORTH",
+          "state": "TX",
+          "zipCode": "76140",
+          "estimatedReadyDateTime": "2026-07-06T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T23:36:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77029",
+          "estimatedReadyDateTime": "2026-07-07T09:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T18:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T11:36:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-03T11:36:00-05:00",
+      "lastModifiedDate": "2026-07-07T13:26:00-05:00"
+    },
+    {
+      "shipmentId": 127402832,
+      "status": "Completed",
+      "mileage": 302.2,
+      "totalSell": 725.28,
+      "totalBuy": 604.4,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 835654,
+        "name": "ALAMO CHILL TRANSPORT",
+        "mcNumber": "1402883",
+        "dotNumber": "3844519",
+        "phoneNumber": "+12105550381"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 22900.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "CARROLLTON",
+          "state": "TX",
+          "zipCode": "75006",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T01:09:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "PEARLAND",
+          "state": "TX",
+          "zipCode": "77584",
+          "estimatedReadyDateTime": "2026-07-07T10:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T19:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T12:09:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-05T18:09:00-05:00",
+      "lastModifiedDate": "2026-07-07T13:13:00-05:00"
+    }
+  ]
+}

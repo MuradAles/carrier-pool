@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-11T00:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127406456,
+      "status": "Completed",
+      "mileage": 277.4,
+      "totalSell": 674.3,
+      "totalBuy": 691.44,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 830683,
+        "name": "LONE STAR COLD LINES LLC",
+        "mcNumber": "902114",
+        "dotNumber": "2338907",
+        "phoneNumber": "+18175550118"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 21900.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "FORT WORTH",
+          "state": "TX",
+          "zipCode": "76140",
+          "estimatedReadyDateTime": "2026-07-10T07:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T16:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T09:16:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77049",
+          "estimatedReadyDateTime": "2026-07-10T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T17:16:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-09T01:16:00-05:00",
+      "lastModifiedDate": "2026-07-10T17:55:00-05:00"
+    },
+    {
+      "shipmentId": 127406580,
+      "status": "Completed",
+      "mileage": 236.7,
+      "totalSell": 545.35,
+      "totalBuy": 454.46,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 38200.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78219",
+          "estimatedReadyDateTime": "2026-07-09T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T20:12:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "CHANNELVIEW",
+          "state": "TX",
+          "zipCode": "77530",
+          "estimatedReadyDateTime": "2026-07-10T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T05:12:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-06T12:12:00-05:00",
+      "lastModifiedDate": "2026-07-10T07:17:00-05:00"
+    },
+    {
+      "shipmentId": 127406737,
+      "status": "Completed",
+      "mileage": 178.5,
+      "totalSell": 403.76,
+      "totalBuy": 348.07,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 26900.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "WACO",
+          "state": "TX",
+          "zipCode": "76712",
+          "estimatedReadyDateTime": "2026-07-09T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T21:00:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77064",
+          "estimatedReadyDateTime": "2026-07-09T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T12:00:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-08T14:00:00-05:00",
+      "lastModifiedDate": "2026-07-10T14:11:00-05:00"
+    }
+  ]
+}

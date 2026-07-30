@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-10T06:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127403721,
+      "status": "Completed",
+      "mileage": 274.4,
+      "totalSell": 547.43,
+      "totalBuy": 480.2,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 830683,
+        "name": "LONE STAR COLD LINES LLC",
+        "mcNumber": "902114",
+        "dotNumber": "2338907",
+        "phoneNumber": "+18175550118"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 34400.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "FLOWER MOUND",
+          "state": "TX",
+          "zipCode": "75028",
+          "estimatedReadyDateTime": "2026-07-08T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-08T06:22:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "CYPRESS",
+          "state": "TX",
+          "zipCode": "77433",
+          "estimatedReadyDateTime": "2026-07-08T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-08T16:22:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-07T03:22:00-05:00",
+      "lastModifiedDate": "2026-07-10T03:49:00-05:00"
+    },
+    {
+      "shipmentId": 127405348,
+      "status": "Completed",
+      "mileage": 291.8,
+      "totalSell": 721.33,
+      "totalBuy": 601.11,
+      "customer": {
+        "customerId": 880970,
+        "name": "Trinity Paper Mills"
+      },
+      "carrier": {
+        "carrierMasterId": 832028,
+        "name": "BLUEBONNET FREIGHT SYSTEMS",
+        "mcNumber": "655318",
+        "dotNumber": "1740092",
+        "phoneNumber": "+18305550172"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 27600.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75235",
+          "estimatedReadyDateTime": "2026-07-09T10:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T19:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T12:21:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78233",
+          "estimatedReadyDateTime": "2026-07-09T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T20:21:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-08T00:21:00-05:00",
+      "lastModifiedDate": "2026-07-09T22:09:00-05:00"
+    },
+    {
+      "shipmentId": 127405513,
+      "status": "Completed",
+      "mileage": 297.8,
+      "totalSell": 699.36,
+      "totalBuy": 613.47,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 30500.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75235",
+          "estimatedReadyDateTime": "2026-07-09T06:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T15:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T08:30:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78218",
+          "estimatedReadyDateTime": "2026-07-09T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T21:30:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-08T05:30:00-05:00",
+      "lastModifiedDate": "2026-07-09T22:41:00-05:00"
+    }
+  ]
+}

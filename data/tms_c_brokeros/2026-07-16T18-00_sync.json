@@ -1,0 +1,65 @@
+{
+  "synced_at": "2026-07-16T23:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000RE5kFMEU",
+      "Name": "SHP6701577",
+      "bos__Load_Status__c": "Ready to Book",
+      "bos__Distance_Miles__c": 293.4,
+      "bos__Customer__c": "0011I00000W6ArWecE",
+      "bos__Carrier__c": null,
+      "bos__Equipment_Type__c": null,
+      "bos__Customer_Rate__c": 875.92,
+      "bos__Carrier_Rate__c": null,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000RH9jMa0t",
+          "bos__Scheduled_Date__c": "2026-07-17",
+          "bos__Arrival_Time__c": null
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000sHDLHMHl",
+          "bos__Scheduled_Date__c": "2026-07-18",
+          "bos__Arrival_Time__c": null
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Palletized dry goods",
+          "bos__Weight__c": 29200.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 22.0
+        }
+      ],
+      "CreatedDate": "2026-07-16T14:39:00.000+0000",
+      "LastModifiedDate": "2026-07-16T14:39:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000W6ArWecE": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Silverleaf Distributors"
+    },
+    "0011I00000RH9jMa0t": {
+      "type": "Location",
+      "Name": "Irving Freight Terminal",
+      "bos__City__c": "Irving",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75061"
+    },
+    "0011I00000sHDLHMHl": {
+      "type": "Location",
+      "Name": "Pearland Distribution Ctr",
+      "bos__City__c": "Pearland",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77584"
+    }
+  }
+}

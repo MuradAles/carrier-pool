@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-12T06:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127406456,
+      "status": "Completed",
+      "mileage": 277.4,
+      "totalSell": 674.3,
+      "totalBuy": 571.44,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 830683,
+        "name": "LONE STAR COLD LINES LLC",
+        "mcNumber": "902114",
+        "dotNumber": "2338907",
+        "phoneNumber": "+18175550118"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 21900.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "FORT WORTH",
+          "state": "TX",
+          "zipCode": "76140",
+          "estimatedReadyDateTime": "2026-07-10T07:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T16:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T09:16:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77049",
+          "estimatedReadyDateTime": "2026-07-10T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T17:16:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-09T01:16:00-05:00",
+      "lastModifiedDate": "2026-07-12T03:49:00-05:00"
+    },
+    {
+      "shipmentId": 127408149,
+      "status": "Completed",
+      "mileage": 264.7,
+      "totalSell": 587.74,
+      "totalBuy": 481.75,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 35800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "GARLAND",
+          "state": "TX",
+          "zipCode": "75040",
+          "estimatedReadyDateTime": "2026-07-11T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-11T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-11T06:14:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "BROOKSHIRE",
+          "state": "TX",
+          "zipCode": "77423",
+          "estimatedReadyDateTime": "2026-07-11T11:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-11T20:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-11T13:14:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-07T23:14:00-05:00",
+      "lastModifiedDate": "2026-07-11T15:39:00-05:00"
+    },
+    {
+      "shipmentId": 127408229,
+      "status": "Completed",
+      "mileage": 310.3,
+      "totalSell": 761.6,
+      "totalBuy": 645.42,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 35000.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "LEWISVILLE",
+          "state": "TX",
+          "zipCode": "75067",
+          "estimatedReadyDateTime": "2026-07-11T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-11T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-11T10:17:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "PASADENA",
+          "state": "TX",
+          "zipCode": "77505",
+          "estimatedReadyDateTime": "2026-07-11T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-11T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-11T22:17:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-08T09:17:00-05:00",
+      "lastModifiedDate": "2026-07-12T00:30:00-05:00"
+    }
+  ]
+}

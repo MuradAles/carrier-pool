@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-11T06:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127406865,
+      "status": "Completed",
+      "mileage": 160.0,
+      "totalSell": 424.8,
+      "totalBuy": 360.0,
+      "customer": {
+        "customerId": 880970,
+        "name": "Trinity Paper Mills"
+      },
+      "carrier": {
+        "carrierMasterId": 832550,
+        "name": "PINEY WOODS CARTAGE LLC",
+        "mcNumber": "1120674",
+        "dotNumber": "3102885",
+        "phoneNumber": "+19365550196"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 41300.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "CONROE",
+          "state": "TX",
+          "zipCode": "77304",
+          "estimatedReadyDateTime": "2026-07-10T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T19:19:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78701",
+          "estimatedReadyDateTime": "2026-07-11T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-11T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-11T00:19:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-07T14:19:00-05:00",
+      "lastModifiedDate": "2026-07-11T01:04:00-05:00"
+    },
+    {
+      "shipmentId": 127407077,
+      "status": "Completed",
+      "mileage": 292.8,
+      "totalSell": 611.37,
+      "totalBuy": 527.04,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 37700.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "COPPELL",
+          "state": "TX",
+          "zipCode": "75019",
+          "estimatedReadyDateTime": "2026-07-10T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T07:58:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "SUGAR LAND",
+          "state": "TX",
+          "zipCode": "77478",
+          "estimatedReadyDateTime": "2026-07-10T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T21:58:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-08T03:58:00-05:00",
+      "lastModifiedDate": "2026-07-10T23:07:00-05:00"
+    },
+    {
+      "shipmentId": 127407181,
+      "status": "Completed",
+      "mileage": 286.7,
+      "totalSell": 592.03,
+      "totalBuy": 501.72,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 35200.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "GARLAND",
+          "state": "TX",
+          "zipCode": "75040",
+          "estimatedReadyDateTime": "2026-07-10T11:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T20:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T13:07:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "SUGAR LAND",
+          "state": "TX",
+          "zipCode": "77479",
+          "estimatedReadyDateTime": "2026-07-11T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-11T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-11T02:07:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-09T11:07:00-05:00",
+      "lastModifiedDate": "2026-07-11T02:38:00-05:00"
+    }
+  ]
+}

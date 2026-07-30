@@ -1,0 +1,130 @@
+{
+  "synced_at": "2026-07-06T05:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000lx3Wo8PZ",
+      "Name": "SHP6700511",
+      "bos__Load_Status__c": "Quotes Requested",
+      "bos__Distance_Miles__c": 289.9,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": null,
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 809.68,
+      "bos__Carrier_Rate__c": null,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000oaLLo1aM",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": null
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000009V6sGGIQ",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": null
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 42600.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 33.0
+        }
+      ],
+      "CreatedDate": "2026-07-04T09:26:00.000+0000",
+      "LastModifiedDate": "2026-07-04T09:34:00.000+0000"
+    },
+    {
+      "Id": "a0jO9000009ffadhEV",
+      "Name": "SHP6700303",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 300.4,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 945.54,
+      "bos__Carrier_Rate__c": 775.03,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000bKkKLtkx",
+          "bos__Scheduled_Date__c": "2026-07-05",
+          "bos__Arrival_Time__c": "2026-07-05T07:25:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000vlY5WjSZ",
+          "bos__Scheduled_Date__c": "2026-07-05",
+          "bos__Arrival_Time__c": "2026-07-05T19:25:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Plastic resin totes",
+          "bos__Weight__c": 27900.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 21.0
+        }
+      ],
+      "CreatedDate": "2026-07-02T02:25:00.000+0000",
+      "LastModifiedDate": "2026-07-05T20:27:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000G5WZFEQb": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Pecos Industrial Supply"
+    },
+    "0011I00000oaLLo1aM": {
+      "type": "Location",
+      "Name": "Richardson Distribution Ctr",
+      "bos__City__c": "Richardson",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75080"
+    },
+    "0011I000009V6sGGIQ": {
+      "type": "Location",
+      "Name": "Stafford Freight Terminal",
+      "bos__City__c": "Stafford",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77477"
+    },
+    "0011I00000xdkp9sXL": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Texan Home Goods"
+    },
+    "0011I000003UEgxs3o": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Metroplex Ridge Logistics, Inc.",
+      "bos__MC_Number__c": "856920",
+      "bos__DOT_Number__c": "2489013"
+    },
+    "0011I00000bKkKLtkx": {
+      "type": "Location",
+      "Name": "Flower Mound Warehouse",
+      "bos__City__c": "Flower Mound",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75028"
+    },
+    "0011I00000vlY5WjSZ": {
+      "type": "Location",
+      "Name": "Sugar Land Yard",
+      "bos__City__c": "Sugar Land",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77478"
+    }
+  }
+}

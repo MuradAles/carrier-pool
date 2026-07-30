@@ -1,0 +1,180 @@
+{
+  "synced_at": "2026-07-09 12:00:00",
+  "loads": [
+    {
+      "load_num": "HD-2026-004634",
+      "status_code": 90,
+      "customer_code": "C-0066",
+      "customer_name": "Hill Country Dairy",
+      "carrier_ref": 66803,
+      "equip": "V",
+      "weight_kg": 13290.3,
+      "dist_km": 422.5,
+      "pu_city": "Katy",
+      "pu_state": "TX",
+      "pu_zip": "77450",
+      "pu_date": "2026-07-09",
+      "pu_departed_at": "2026-07-09 00:24:00",
+      "del_city": "Dallas",
+      "del_state": "TX",
+      "del_zip": "75201",
+      "del_date": "2026-07-09",
+      "del_arrived_at": "2026-07-09 08:24:00",
+      "entered_at": "2026-07-06 20:24:00",
+      "updated_at": "2026-07-09 09:24:00"
+    },
+    {
+      "load_num": "HD-2026-004641",
+      "status_code": 90,
+      "customer_code": "C-0059",
+      "customer_name": "Brazos Steel Works",
+      "carrier_ref": 67280,
+      "equip": "V",
+      "weight_kg": 13698.5,
+      "dist_km": 126.8,
+      "pu_city": "Austin",
+      "pu_state": "TX",
+      "pu_zip": "78704",
+      "pu_date": "2026-07-08",
+      "pu_departed_at": "2026-07-08 17:50:00",
+      "del_city": "San Antonio",
+      "del_state": "TX",
+      "del_zip": "78216",
+      "del_date": "2026-07-08",
+      "del_arrived_at": "2026-07-08 22:50:00",
+      "entered_at": "2026-07-06 08:50:00",
+      "updated_at": "2026-07-08 23:37:00"
+    },
+    {
+      "load_num": "HD-2026-004650",
+      "status_code": 90,
+      "customer_code": "C-0052",
+      "customer_name": "Capitol Office Products",
+      "carrier_ref": 67154,
+      "equip": "V",
+      "weight_kg": 10931.6,
+      "dist_km": 301.3,
+      "pu_city": "San Antonio",
+      "pu_state": "TX",
+      "pu_zip": "78233",
+      "pu_date": "2026-07-08",
+      "pu_departed_at": "2026-07-08 11:50:00",
+      "del_city": "Waco",
+      "del_state": "TX",
+      "del_zip": "76701",
+      "del_date": "2026-07-08",
+      "del_arrived_at": "2026-07-08 22:50:00",
+      "entered_at": "2026-07-06 09:50:00",
+      "updated_at": "2026-07-09 00:57:00"
+    }
+  ],
+  "carriers": [
+    {
+      "carrier_id": 67154,
+      "carrier_name": "TWIN OAKS TRUCKING LLC",
+      "mc_no": "1408112",
+      "dot_no": "3860447",
+      "home_city": "Katy",
+      "home_state": "TX",
+      "phone": "(281) 555-0356"
+    }
+  ],
+  "rates": [
+    {
+      "rate_id": 910134,
+      "load_num": "HD-2026-004634",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 452.03,
+      "created_at": "2026-07-09 09:24:00"
+    },
+    {
+      "rate_id": 910135,
+      "load_num": "HD-2026-004634",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 99.22,
+      "created_at": "2026-07-09 09:24:00"
+    },
+    {
+      "rate_id": 910136,
+      "load_num": "HD-2026-004634",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 552.9,
+      "created_at": "2026-07-09 09:24:00"
+    },
+    {
+      "rate_id": 910137,
+      "load_num": "HD-2026-004634",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 97.57,
+      "created_at": "2026-07-09 09:24:00"
+    },
+    {
+      "rate_id": 910138,
+      "load_num": "HD-2026-004641",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 175.76,
+      "created_at": "2026-07-08 23:37:00"
+    },
+    {
+      "rate_id": 910139,
+      "load_num": "HD-2026-004641",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 38.58,
+      "created_at": "2026-07-08 23:37:00"
+    },
+    {
+      "rate_id": 910140,
+      "load_num": "HD-2026-004641",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 211.34,
+      "created_at": "2026-07-08 23:37:00"
+    },
+    {
+      "rate_id": 910141,
+      "load_num": "HD-2026-004641",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 37.29,
+      "created_at": "2026-07-08 23:37:00"
+    },
+    {
+      "rate_id": 910142,
+      "load_num": "HD-2026-004650",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 363.8,
+      "created_at": "2026-07-09 00:57:00"
+    },
+    {
+      "rate_id": 910143,
+      "load_num": "HD-2026-004650",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 79.86,
+      "created_at": "2026-07-09 00:57:00"
+    },
+    {
+      "rate_id": 910144,
+      "load_num": "HD-2026-004650",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 460.08,
+      "created_at": "2026-07-09 00:57:00"
+    },
+    {
+      "rate_id": 910145,
+      "load_num": "HD-2026-004650",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 81.19,
+      "created_at": "2026-07-09 00:57:00"
+    }
+  ]
+}

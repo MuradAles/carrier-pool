@@ -1,0 +1,65 @@
+{
+  "synced_at": "2026-07-16T11:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000r8rMVzYT",
+      "Name": "SHP6701538",
+      "bos__Load_Status__c": "Ready to Book",
+      "bos__Distance_Miles__c": 187.2,
+      "bos__Customer__c": "0011I00000W6ArWecE",
+      "bos__Carrier__c": null,
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 596.42,
+      "bos__Carrier_Rate__c": null,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000o6tadJSU",
+          "bos__Scheduled_Date__c": "2026-07-17",
+          "bos__Arrival_Time__c": null
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000gev95zmc",
+          "bos__Scheduled_Date__c": "2026-07-18",
+          "bos__Arrival_Time__c": null
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Auto parts",
+          "bos__Weight__c": 19800.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 15.0
+        }
+      ],
+      "CreatedDate": "2026-07-16T01:04:00.000+0000",
+      "LastModifiedDate": "2026-07-16T01:04:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000W6ArWecE": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Silverleaf Distributors"
+    },
+    "0011I00000o6tadJSU": {
+      "type": "Location",
+      "Name": "San Antonio Cold Storage",
+      "bos__City__c": "San Antonio",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78233"
+    },
+    "0011I00000gev95zmc": {
+      "type": "Location",
+      "Name": "Waco Freight Terminal",
+      "bos__City__c": "Waco",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76701"
+    }
+  }
+}

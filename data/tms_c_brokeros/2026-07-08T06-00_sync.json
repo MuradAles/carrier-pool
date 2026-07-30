@@ -1,0 +1,197 @@
+{
+  "synced_at": "2026-07-08T11:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000EnOvwi9B",
+      "Name": "SHP6700537",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 294.3,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": "0011I00000OrJJdyEO",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 886.43,
+      "bos__Carrier_Rate__c": 738.69,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000mIVAJrQo",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-07T11:03:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000EyZAjDg1",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-08T02:03:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Paper goods",
+          "bos__Weight__c": 39200.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 30.0
+        }
+      ],
+      "CreatedDate": "2026-07-05T08:03:00.000+0000",
+      "LastModifiedDate": "2026-07-08T03:46:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000GTsCjExU",
+      "Name": "SHP6700550",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 229.8,
+      "bos__Customer__c": "0011I000003YEB6g03",
+      "bos__Carrier__c": "0011I00000GZqOfSSX",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 762.57,
+      "bos__Carrier_Rate__c": 625.06,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000my2KMX5O",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-07T16:48:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000FrhKEQTd",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-08T06:48:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Plastic resin totes",
+          "bos__Weight__c": 24200.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 19.0
+        }
+      ],
+      "CreatedDate": "2026-07-04T15:48:00.000+0000",
+      "LastModifiedDate": "2026-07-08T07:32:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000ziCWYhkY",
+      "Name": "SHP6700563",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 217.2,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": "0011I00000cTcnCyJT",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 716.76,
+      "bos__Carrier_Rate__c": 597.3,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I000001RXLrAAd",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-07T18:13:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000oI9JMcTq",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-08T02:13:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Bottled water",
+          "bos__Weight__c": 25900.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 20.0
+        }
+      ],
+      "CreatedDate": "2026-07-05T08:13:00.000+0000",
+      "LastModifiedDate": "2026-07-08T03:30:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000xdkp9sXL": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Texan Home Goods"
+    },
+    "0011I00000OrJJdyEO": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Delta Prime, L.L.C.",
+      "bos__MC_Number__c": "884201",
+      "bos__DOT_Number__c": "2551377"
+    },
+    "0011I00000mIVAJrQo": {
+      "type": "Location",
+      "Name": "Arlington Cross Dock",
+      "bos__City__c": "Arlington",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76018"
+    },
+    "0011I00000EyZAjDg1": {
+      "type": "Location",
+      "Name": "Friendswood Cross Dock",
+      "bos__City__c": "Friendswood",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77546"
+    },
+    "0011I000003YEB6g03": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Gulf Coast Foods"
+    },
+    "0011I00000GZqOfSSX": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Bay Area Cold Carriers, LLC",
+      "bos__MC_Number__c": "1067712",
+      "bos__DOT_Number__c": "2974885"
+    },
+    "0011I00000my2KMX5O": {
+      "type": "Location",
+      "Name": "San Antonio Cross Dock",
+      "bos__City__c": "San Antonio",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78210"
+    },
+    "0011I00000FrhKEQTd": {
+      "type": "Location",
+      "Name": "Pearland Freight Terminal",
+      "bos__City__c": "Pearland",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77581"
+    },
+    "0011I00000cTcnCyJT": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Espinoza Brothers Trucking Co.",
+      "bos__MC_Number__c": "789003",
+      "bos__DOT_Number__c": "2044117"
+    },
+    "0011I000001RXLrAAd": {
+      "type": "Location",
+      "Name": "San Antonio Freight Terminal",
+      "bos__City__c": "San Antonio",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78245"
+    },
+    "0011I00000oI9JMcTq": {
+      "type": "Location",
+      "Name": "Waco Cold Storage",
+      "bos__City__c": "Waco",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76705"
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "syncedAt": "2026-07-15T18:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127412514,
+      "status": "Completed",
+      "mileage": 295.3,
+      "totalSell": 742.15,
+      "totalBuy": 608.32,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 830683,
+        "name": "LONE STAR COLD LINES LLC",
+        "mcNumber": "902114",
+        "dotNumber": "2338907",
+        "phoneNumber": "+18175550118"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 27700.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78210",
+          "estimatedReadyDateTime": "2026-07-14T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-14T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-14T21:42:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "ARLINGTON",
+          "state": "TX",
+          "zipCode": "76011",
+          "estimatedReadyDateTime": "2026-07-14T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-14T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-15T12:42:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-13T20:42:00-05:00",
+      "lastModifiedDate": "2026-07-15T14:33:00-05:00"
+    },
+    {
+      "shipmentId": 127412693,
+      "status": "Completed",
+      "mileage": 223.3,
+      "totalSell": 523.24,
+      "totalBuy": 451.07,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 35800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77015",
+          "estimatedReadyDateTime": "2026-07-15T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-15T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-15T05:24:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "SCHERTZ",
+          "state": "TX",
+          "zipCode": "78154",
+          "estimatedReadyDateTime": "2026-07-15T09:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-15T18:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-15T11:24:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-13T02:24:00-05:00",
+      "lastModifiedDate": "2026-07-15T13:08:00-05:00"
+    }
+  ]
+}

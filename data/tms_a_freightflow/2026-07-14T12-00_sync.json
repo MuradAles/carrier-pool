@@ -1,0 +1,89 @@
+{
+  "syncedAt": "2026-07-14T12:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127411249,
+      "status": "Completed",
+      "mileage": 297.7,
+      "totalSell": 617.66,
+      "totalBuy": 541.81,
+      "customer": {
+        "customerId": 880970,
+        "name": "Trinity Paper Mills"
+      },
+      "carrier": {
+        "carrierMasterId": 832028,
+        "name": "BLUEBONNET FREIGHT SYSTEMS",
+        "mcNumber": "655318",
+        "dotNumber": "1740092",
+        "phoneNumber": "+18305550172"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 29000.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77060",
+          "estimatedReadyDateTime": "2026-07-13T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T20:59:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "DENTON",
+          "state": "TX",
+          "zipCode": "76201",
+          "estimatedReadyDateTime": "2026-07-14T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-14T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-14T07:59:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-10T16:59:00-05:00",
+      "lastModifiedDate": "2026-07-14T09:24:00-05:00"
+    },
+    {
+      "shipmentId": 127411455,
+      "status": "Completed",
+      "mileage": 215.2,
+      "totalSell": 502.92,
+      "totalBuy": 441.16,
+      "customer": {
+        "customerId": 880970,
+        "name": "Trinity Paper Mills"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 28600.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "NAVASOTA",
+          "state": "TX",
+          "zipCode": "77868",
+          "estimatedReadyDateTime": "2026-07-13T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T17:00:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "IRVING",
+          "state": "TX",
+          "zipCode": "75038",
+          "estimatedReadyDateTime": "2026-07-14T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-14T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-14T04:00:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-12T10:00:00-05:00",
+      "lastModifiedDate": "2026-07-14T05:24:00-05:00"
+    }
+  ]
+}

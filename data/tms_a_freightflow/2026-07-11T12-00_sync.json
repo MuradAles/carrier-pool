@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-11T12:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127407330,
+      "status": "Completed",
+      "mileage": 269.9,
+      "totalSell": 550.17,
+      "totalBuy": 491.22,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 30700.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "FORT WORTH",
+          "state": "TX",
+          "zipCode": "76102",
+          "estimatedReadyDateTime": "2026-07-10T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T16:19:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77041",
+          "estimatedReadyDateTime": "2026-07-11T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-11T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-11T02:19:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-09T14:19:00-05:00",
+      "lastModifiedDate": "2026-07-11T03:16:00-05:00"
+    },
+    {
+      "shipmentId": 127407452,
+      "status": "Completed",
+      "mileage": 170.6,
+      "totalSell": 480.79,
+      "totalBuy": 394.09,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 832028,
+        "name": "BLUEBONNET FREIGHT SYSTEMS",
+        "mcNumber": "655318",
+        "dotNumber": "1740092",
+        "phoneNumber": "+18305550172"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 21900.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "HUMBLE",
+          "state": "TX",
+          "zipCode": "77338",
+          "estimatedReadyDateTime": "2026-07-10T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T18:03:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78724",
+          "estimatedReadyDateTime": "2026-07-10T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-11T05:03:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-07T18:03:00-05:00",
+      "lastModifiedDate": "2026-07-11T05:50:00-05:00"
+    },
+    {
+      "shipmentId": 127407629,
+      "status": "Completed",
+      "mileage": 209.1,
+      "totalSell": 473.07,
+      "totalBuy": 422.38,
+      "customer": {
+        "customerId": 881930,
+        "name": "Cowtown Auto Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 28500.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "HUTTO",
+          "state": "TX",
+          "zipCode": "78634",
+          "estimatedReadyDateTime": "2026-07-10T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T05:12:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "RICHARDSON",
+          "state": "TX",
+          "zipCode": "75080",
+          "estimatedReadyDateTime": "2026-07-10T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T16:12:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-06T21:12:00-05:00",
+      "lastModifiedDate": "2026-07-10T17:33:00-05:00"
+    }
+  ]
+}

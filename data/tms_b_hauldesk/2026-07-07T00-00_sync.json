@@ -1,0 +1,148 @@
+{
+  "synced_at": "2026-07-07 00:00:00",
+  "loads": [
+    {
+      "load_num": "HD-2026-004506",
+      "status_code": 40,
+      "customer_code": "C-0059",
+      "customer_name": "Brazos Steel Works",
+      "carrier_ref": 66803,
+      "equip": "V",
+      "weight_kg": 18234.4,
+      "dist_km": 488.6,
+      "pu_city": "Flower Mound",
+      "pu_state": "TX",
+      "pu_zip": "75028",
+      "pu_date": "2026-07-07",
+      "pu_departed_at": null,
+      "del_city": "Sugar Land",
+      "del_state": "TX",
+      "del_zip": "77479",
+      "del_date": "2026-07-07",
+      "del_arrived_at": null,
+      "entered_at": "2026-07-03 22:02:00",
+      "updated_at": "2026-07-06 22:34:00"
+    },
+    {
+      "load_num": "HD-2026-004437",
+      "status_code": 90,
+      "customer_code": "C-0038",
+      "customer_name": "Gulf Harbor Chemicals",
+      "carrier_ref": 67024,
+      "equip": "V",
+      "weight_kg": 10659.4,
+      "dist_km": 288.4,
+      "pu_city": "Houston",
+      "pu_state": "TX",
+      "pu_zip": "77015",
+      "pu_date": "2026-07-06",
+      "pu_departed_at": "2026-07-06 03:15:00",
+      "del_city": "Lockhart",
+      "del_state": "TX",
+      "del_zip": "78644",
+      "del_date": "2026-07-06",
+      "del_arrived_at": "2026-07-06 08:15:00",
+      "entered_at": "2026-07-03 18:15:00",
+      "updated_at": "2026-07-06 09:38:00"
+    },
+    {
+      "load_num": "HD-2026-004444",
+      "status_code": 90,
+      "customer_code": "C-0066",
+      "customer_name": "Hill Country Dairy",
+      "carrier_ref": 67064,
+      "equip": "R",
+      "weight_kg": 12972.8,
+      "dist_km": 312.7,
+      "pu_city": "Austin",
+      "pu_state": "TX",
+      "pu_zip": "78701",
+      "pu_date": "2026-07-05",
+      "pu_departed_at": "2026-07-05 22:00:00",
+      "del_city": "Deer Park",
+      "del_state": "TX",
+      "del_zip": "77536",
+      "del_date": "2026-07-06",
+      "del_arrived_at": "2026-07-06 04:00:00",
+      "entered_at": "2026-07-04 13:00:00",
+      "updated_at": "2026-07-06 04:37:00"
+    }
+  ],
+  "carriers": [
+    {
+      "carrier_id": 67024,
+      "carrier_name": "CROSSROADS FREIGHTWAYS INC",
+      "mc_no": "926733",
+      "dot_no": "2664190",
+      "home_city": "Temple",
+      "home_state": "TX",
+      "phone": "(254) 555-0248"
+    }
+  ],
+  "rates": [
+    {
+      "rate_id": 910025,
+      "load_num": "HD-2026-004437",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 340.91,
+      "created_at": "2026-07-06 09:38:00"
+    },
+    {
+      "rate_id": 910026,
+      "load_num": "HD-2026-004437",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 74.83,
+      "created_at": "2026-07-06 09:38:00"
+    },
+    {
+      "rate_id": 910027,
+      "load_num": "HD-2026-004437",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 409.92,
+      "created_at": "2026-07-06 09:38:00"
+    },
+    {
+      "rate_id": 910028,
+      "load_num": "HD-2026-004437",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 72.34,
+      "created_at": "2026-07-06 09:38:00"
+    },
+    {
+      "rate_id": 910029,
+      "load_num": "HD-2026-004444",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 411.06,
+      "created_at": "2026-07-06 04:37:00"
+    },
+    {
+      "rate_id": 910030,
+      "load_num": "HD-2026-004444",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 90.23,
+      "created_at": "2026-07-06 04:37:00"
+    },
+    {
+      "rate_id": 910031,
+      "load_num": "HD-2026-004444",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 494.28,
+      "created_at": "2026-07-06 04:37:00"
+    },
+    {
+      "rate_id": 910032,
+      "load_num": "HD-2026-004444",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 87.22,
+      "created_at": "2026-07-06 04:37:00"
+    }
+  ]
+}

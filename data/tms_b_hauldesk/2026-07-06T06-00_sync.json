@@ -1,6 +1,157 @@
 {
   "synced_at": "2026-07-06 06:00:00",
-  "loads": [],
-  "carriers": [],
-  "rates": []
+  "loads": [
+    {
+      "load_num": "HD-2026-004506",
+      "status_code": 20,
+      "customer_code": "C-0059",
+      "customer_name": "Brazos Steel Works",
+      "carrier_ref": null,
+      "equip": "V",
+      "weight_kg": 18234.4,
+      "dist_km": 488.6,
+      "pu_city": "Flower Mound",
+      "pu_state": "TX",
+      "pu_zip": "75028",
+      "pu_date": "2026-07-07",
+      "pu_departed_at": null,
+      "del_city": "Sugar Land",
+      "del_state": "TX",
+      "del_zip": "77479",
+      "del_date": "2026-07-07",
+      "del_arrived_at": null,
+      "entered_at": "2026-07-03 22:02:00",
+      "updated_at": "2026-07-06 04:40:00"
+    },
+    {
+      "load_num": "HD-2026-004410",
+      "status_code": 90,
+      "customer_code": "C-0059",
+      "customer_name": "Brazos Steel Works",
+      "carrier_ref": 66856,
+      "equip": "V",
+      "weight_kg": 9797.6,
+      "dist_km": 335.9,
+      "pu_city": "Katy",
+      "pu_state": "TX",
+      "pu_zip": "77449",
+      "pu_date": "2026-07-05",
+      "pu_departed_at": "2026-07-05 08:35:00",
+      "del_city": "San Antonio",
+      "del_state": "TX",
+      "del_zip": "78249",
+      "del_date": "2026-07-05",
+      "del_arrived_at": "2026-07-05 20:35:00",
+      "entered_at": "2026-07-03 04:35:00",
+      "updated_at": "2026-07-05 20:57:00"
+    },
+    {
+      "load_num": "HD-2026-004419",
+      "status_code": 90,
+      "customer_code": "C-0052",
+      "customer_name": "Capitol Office Products",
+      "carrier_ref": 66803,
+      "equip": "V",
+      "weight_kg": 13335.6,
+      "dist_km": 229.0,
+      "pu_city": "Dallas",
+      "pu_state": "TX",
+      "pu_zip": "75241",
+      "pu_date": "2026-07-05",
+      "pu_departed_at": "2026-07-05 12:01:00",
+      "del_city": "Belton",
+      "del_state": "TX",
+      "del_zip": "76513",
+      "del_date": "2026-07-05",
+      "del_arrived_at": "2026-07-05 18:01:00",
+      "entered_at": "2026-07-02 01:01:00",
+      "updated_at": "2026-07-05 18:57:00"
+    }
+  ],
+  "carriers": [
+    {
+      "carrier_id": 66856,
+      "carrier_name": "DELTA PRIME LLC",
+      "mc_no": "884201",
+      "dot_no": "2551377",
+      "home_city": "Seguin",
+      "home_state": "TX",
+      "phone": "(830) 555-0144"
+    },
+    {
+      "carrier_id": 66803,
+      "carrier_name": "NORTH TEXAS LINE HAUL INC",
+      "mc_no": "812445",
+      "dot_no": "2260118",
+      "home_city": "Denton",
+      "home_state": "TX",
+      "phone": "(940) 555-0117"
+    }
+  ],
+  "rates": [
+    {
+      "rate_id": 910005,
+      "load_num": "HD-2026-004410",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 400.46,
+      "created_at": "2026-07-05 20:57:00"
+    },
+    {
+      "rate_id": 910006,
+      "load_num": "HD-2026-004410",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 87.9,
+      "created_at": "2026-07-05 20:57:00"
+    },
+    {
+      "rate_id": 910007,
+      "load_num": "HD-2026-004410",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 506.43,
+      "created_at": "2026-07-05 20:57:00"
+    },
+    {
+      "rate_id": 910008,
+      "load_num": "HD-2026-004410",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 89.37,
+      "created_at": "2026-07-05 20:57:00"
+    },
+    {
+      "rate_id": 910009,
+      "load_num": "HD-2026-004419",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 298.72,
+      "created_at": "2026-07-05 18:57:00"
+    },
+    {
+      "rate_id": 910010,
+      "load_num": "HD-2026-004419",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 65.57,
+      "created_at": "2026-07-05 18:57:00"
+    },
+    {
+      "rate_id": 910011,
+      "load_num": "HD-2026-004419",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 365.38,
+      "created_at": "2026-07-05 18:57:00"
+    },
+    {
+      "rate_id": 910012,
+      "load_num": "HD-2026-004419",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 64.48,
+      "created_at": "2026-07-05 18:57:00"
+    }
+  ]
 }

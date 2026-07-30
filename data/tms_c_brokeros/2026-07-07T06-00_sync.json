@@ -1,0 +1,190 @@
+{
+  "synced_at": "2026-07-07T11:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000cqiHi3TZ",
+      "Name": "SHP6700394",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 169.4,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I0000051gR8MJj",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 587.08,
+      "bos__Carrier_Rate__c": 514.98,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000lYHaYeAF",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-06T22:22:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000002Jd0n8DL",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-07T04:22:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Bottled water",
+          "bos__Weight__c": 38100.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 29.0
+        }
+      ],
+      "CreatedDate": "2026-07-03T15:22:00.000+0000",
+      "LastModifiedDate": "2026-07-07T05:06:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000LJhQ0DPF",
+      "Name": "SHP6700407",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 165.0,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 605.91,
+      "bos__Carrier_Rate__c": 496.65,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000kgXNbdpb",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-06T11:34:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000STKR3Or8",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-06T18:34:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Auto parts",
+          "bos__Weight__c": 21800.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 17.0
+        }
+      ],
+      "CreatedDate": "2026-07-05T12:34:00.000+0000",
+      "LastModifiedDate": "2026-07-06T19:08:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000y3zOPQTn",
+      "Name": "SHP6700420",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 93.0,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 333.31,
+      "bos__Carrier_Rate__c": 297.6,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000WPCB1aa5",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-06T15:43:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000wHYNk71X",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-06T23:43:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Bottled water",
+          "bos__Weight__c": 34000.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 26.0
+        }
+      ],
+      "CreatedDate": "2026-07-03T13:43:00.000+0000",
+      "LastModifiedDate": "2026-07-07T01:29:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000udoxsTen": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Ridgeline Materials"
+    },
+    "0011I0000051gR8MJj": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Guadalupe Valley Freight, LLC",
+      "bos__MC_Number__c": "701558",
+      "bos__DOT_Number__c": "1802996"
+    },
+    "0011I00000lYHaYeAF": {
+      "type": "Location",
+      "Name": "Spring Freight Terminal",
+      "bos__City__c": "Spring",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77373"
+    },
+    "0011I000002Jd0n8DL": {
+      "type": "Location",
+      "Name": "Austin Distribution Ctr",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78744"
+    },
+    "0011I00000xdkp9sXL": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Texan Home Goods"
+    },
+    "0011I000003UEgxs3o": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Metroplex Ridge Logistics, Inc.",
+      "bos__MC_Number__c": "856920",
+      "bos__DOT_Number__c": "2489013"
+    },
+    "0011I00000kgXNbdpb": {
+      "type": "Location",
+      "Name": "Katy Yard",
+      "bos__City__c": "Katy",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77494"
+    },
+    "0011I00000STKR3Or8": {
+      "type": "Location",
+      "Name": "New Braunfels Cross Dock",
+      "bos__City__c": "New Braunfels",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78130"
+    },
+    "0011I00000WPCB1aa5": {
+      "type": "Location",
+      "Name": "Houston Fulfillment Ctr",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77015"
+    },
+    "0011I00000wHYNk71X": {
+      "type": "Location",
+      "Name": "Brenham Cold Storage",
+      "bos__City__c": "Brenham",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77833"
+    }
+  }
+}

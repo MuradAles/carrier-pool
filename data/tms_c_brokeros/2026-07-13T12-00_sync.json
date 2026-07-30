@@ -1,0 +1,202 @@
+{
+  "synced_at": "2026-07-13T17:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000pvjIZnQN",
+      "Name": "SHP6701213",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 158.9,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I0000051gR8MJj",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 541.92,
+      "bos__Carrier_Rate__c": 467.17,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000XeJQhFES",
+          "bos__Scheduled_Date__c": "2026-07-12",
+          "bos__Arrival_Time__c": "2026-07-13T01:48:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000Q9AHooRD",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T10:48:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Auto parts",
+          "bos__Weight__c": 35800.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 28.0
+        }
+      ],
+      "CreatedDate": "2026-07-10T20:48:00.000+0000",
+      "LastModifiedDate": "2026-07-13T12:03:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000pBdbhI8x",
+      "Name": "SHP6701226",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 287.4,
+      "bos__Customer__c": "0011I00000mtOsE3o8",
+      "bos__Carrier__c": "0011I00000AeH66aph",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 826.79,
+      "bos__Carrier_Rate__c": 712.75,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000bKkKLtkx",
+          "bos__Scheduled_Date__c": "2026-07-12",
+          "bos__Arrival_Time__c": "2026-07-12T20:47:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000mzySzM3w",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T10:47:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 26100.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 20.0
+        }
+      ],
+      "CreatedDate": "2026-07-11T12:47:00.000+0000",
+      "LastModifiedDate": "2026-07-13T13:14:00.000+0000"
+    },
+    {
+      "Id": "a0jO9000001U4aFC0A",
+      "Name": "SHP6701239",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 249.9,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": "0011I00000PQmUyB11",
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Customer_Rate__c": 914.63,
+      "bos__Carrier_Rate__c": 749.7,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000NdrVbMsH",
+          "bos__Scheduled_Date__c": "2026-07-12",
+          "bos__Arrival_Time__c": "2026-07-12T18:33:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000wrCs1DdF",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T05:33:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Fresh produce",
+          "bos__Weight__c": 40600.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 31.0
+        }
+      ],
+      "CreatedDate": "2026-07-10T19:33:00.000+0000",
+      "LastModifiedDate": "2026-07-13T06:52:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000udoxsTen": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Ridgeline Materials"
+    },
+    "0011I0000051gR8MJj": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Guadalupe Valley Freight, LLC",
+      "bos__MC_Number__c": "701558",
+      "bos__DOT_Number__c": "1802996"
+    },
+    "0011I00000XeJQhFES": {
+      "type": "Location",
+      "Name": "The Woodlands Freight Terminal",
+      "bos__City__c": "The Woodlands",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77381"
+    },
+    "0011I00000Q9AHooRD": {
+      "type": "Location",
+      "Name": "Austin Yard",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78758"
+    },
+    "0011I00000mtOsE3o8": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Bluebonnet Grocery Co"
+    },
+    "0011I00000AeH66aph": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Hillsboro Freight Partners LLC",
+      "bos__MC_Number__c": "1310669",
+      "bos__DOT_Number__c": "3618402"
+    },
+    "0011I00000bKkKLtkx": {
+      "type": "Location",
+      "Name": "Flower Mound Warehouse",
+      "bos__City__c": "Flower Mound",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75028"
+    },
+    "0011I00000mzySzM3w": {
+      "type": "Location",
+      "Name": "Katy Cross Dock",
+      "bos__City__c": "Katy",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77450"
+    },
+    "0011I00000xdkp9sXL": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Texan Home Goods"
+    },
+    "0011I00000PQmUyB11": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Frio Line Refrigerated LLC",
+      "bos__MC_Number__c": "1379942",
+      "bos__DOT_Number__c": "3805663"
+    },
+    "0011I00000NdrVbMsH": {
+      "type": "Location",
+      "Name": "Dallas Fulfillment Ctr",
+      "bos__City__c": "Dallas",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75207"
+    },
+    "0011I00000wrCs1DdF": {
+      "type": "Location",
+      "Name": "Cypress Cold Storage",
+      "bos__City__c": "Cypress",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77433"
+    }
+  }
+}

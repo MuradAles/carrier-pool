@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-07T12:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127402240,
+      "status": "Delivered",
+      "mileage": 280.9,
+      "totalSell": 589.44,
+      "totalBuy": 456.58,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 18800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "MCKINNEY",
+          "state": "TX",
+          "zipCode": "75071",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T05:28:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "CYPRESS",
+          "state": "TX",
+          "zipCode": "77433",
+          "estimatedReadyDateTime": "2026-07-07T12:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T21:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T14:28:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-04T03:28:00-05:00",
+      "lastModifiedDate": "2026-07-06T16:00:00-05:00"
+    },
+    {
+      "shipmentId": 127401432,
+      "status": "Completed",
+      "mileage": 205.1,
+      "totalSell": 479.93,
+      "totalBuy": 399.94,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 832550,
+        "name": "PINEY WOODS CARTAGE LLC",
+        "mcNumber": "1120674",
+        "dotNumber": "3102885",
+        "phoneNumber": "+19365550196"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 43000.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "NAVASOTA",
+          "state": "TX",
+          "zipCode": "77868",
+          "estimatedReadyDateTime": "2026-07-06T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T16:02:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75201",
+          "estimatedReadyDateTime": "2026-07-06T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T22:02:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-03T11:02:00-05:00",
+      "lastModifiedDate": "2026-07-06T22:55:00-05:00"
+    },
+    {
+      "shipmentId": 127401600,
+      "status": "Completed",
+      "mileage": 112.4,
+      "totalSell": 297.27,
+      "totalBuy": 256.27,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 833820,
+        "name": "GULF COAST DRAYAGE LLC",
+        "mcNumber": "1005991",
+        "dotNumber": "2887431",
+        "phoneNumber": "+17135550264"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 31800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77049",
+          "estimatedReadyDateTime": "2026-07-06T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T23:57:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "BRYAN",
+          "state": "TX",
+          "zipCode": "77803",
+          "estimatedReadyDateTime": "2026-07-07T06:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T15:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T08:57:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-03T15:57:00-05:00",
+      "lastModifiedDate": "2026-07-07T11:26:00-05:00"
+    }
+  ]
+}

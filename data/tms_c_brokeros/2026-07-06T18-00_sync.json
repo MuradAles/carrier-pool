@@ -1,0 +1,183 @@
+{
+  "synced_at": "2026-07-06T23:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000a9f8IDmX",
+      "Name": "SHP6700342",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 310.2,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 922.97,
+      "bos__Carrier_Rate__c": 809.62,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000kTBqOqWw",
+          "bos__Scheduled_Date__c": "2026-07-05",
+          "bos__Arrival_Time__c": "2026-07-06T00:09:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000008gxvqAAF",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-06T13:09:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 31200.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 24.0
+        }
+      ],
+      "CreatedDate": "2026-07-02T18:09:00.000+0000",
+      "LastModifiedDate": "2026-07-06T13:52:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000lx3Wo8PZ",
+      "Name": "SHP6700511",
+      "bos__Load_Status__c": "Booked",
+      "bos__Distance_Miles__c": 289.9,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 809.68,
+      "bos__Carrier_Rate__c": 671.19,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000oaLLo1aM",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": null
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000009V6sGGIQ",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": null
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 42600.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 33.0
+        }
+      ],
+      "CreatedDate": "2026-07-04T09:26:00.000+0000",
+      "LastModifiedDate": "2026-07-06T21:37:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000ggTslGLB",
+      "Name": "SHP6700355",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 282.4,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 788.74,
+      "bos__Carrier_Rate__c": 691.88,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000RH9jMa0t",
+          "bos__Scheduled_Date__c": "2026-07-05",
+          "bos__Arrival_Time__c": "2026-07-05T19:32:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000Vd66fOO9",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-06T08:32:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Auto parts",
+          "bos__Weight__c": 42600.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 33.0
+        }
+      ],
+      "CreatedDate": "2026-07-03T17:32:00.000+0000",
+      "LastModifiedDate": "2026-07-06T09:49:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000xdkp9sXL": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Texan Home Goods"
+    },
+    "0011I000003UEgxs3o": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Metroplex Ridge Logistics, Inc.",
+      "bos__MC_Number__c": "856920",
+      "bos__DOT_Number__c": "2489013"
+    },
+    "0011I00000kTBqOqWw": {
+      "type": "Location",
+      "Name": "Sugar Land Fulfillment Ctr",
+      "bos__City__c": "Sugar Land",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77479"
+    },
+    "0011I000008gxvqAAF": {
+      "type": "Location",
+      "Name": "McKinney Fulfillment Ctr",
+      "bos__City__c": "McKinney",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75071"
+    },
+    "0011I00000G5WZFEQb": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Pecos Industrial Supply"
+    },
+    "0011I00000oaLLo1aM": {
+      "type": "Location",
+      "Name": "Richardson Distribution Ctr",
+      "bos__City__c": "Richardson",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75080"
+    },
+    "0011I000009V6sGGIQ": {
+      "type": "Location",
+      "Name": "Stafford Freight Terminal",
+      "bos__City__c": "Stafford",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77477"
+    },
+    "0011I00000RH9jMa0t": {
+      "type": "Location",
+      "Name": "Irving Freight Terminal",
+      "bos__City__c": "Irving",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75061"
+    },
+    "0011I00000Vd66fOO9": {
+      "type": "Location",
+      "Name": "Rosenberg Fulfillment Ctr",
+      "bos__City__c": "Rosenberg",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77471"
+    }
+  }
+}

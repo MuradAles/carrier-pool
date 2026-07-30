@@ -1,0 +1,140 @@
+{
+  "syncedAt": "2026-07-13T12:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127409634,
+      "status": "Completed",
+      "mileage": 317.2,
+      "totalSell": 727.53,
+      "totalBuy": 596.34,
+      "customer": {
+        "customerId": 881930,
+        "name": "Cowtown Auto Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 833136,
+        "name": "TRINITY RIVER LOGISTICS INC",
+        "mcNumber": "843276",
+        "dotNumber": "2410558",
+        "phoneNumber": "+18175550231"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 41900.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "LEAGUE CITY",
+          "state": "TX",
+          "zipCode": "77573",
+          "estimatedReadyDateTime": "2026-07-12T13:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T22:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T15:05:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "COPPELL",
+          "state": "TX",
+          "zipCode": "75019",
+          "estimatedReadyDateTime": "2026-07-13T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T00:05:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-11T10:05:00-05:00",
+      "lastModifiedDate": "2026-07-13T02:32:00-05:00"
+    },
+    {
+      "shipmentId": 127409806,
+      "status": "Completed",
+      "mileage": 156.2,
+      "totalSell": 401.81,
+      "totalBuy": 340.52,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 832028,
+        "name": "BLUEBONNET FREIGHT SYSTEMS",
+        "mcNumber": "655318",
+        "dotNumber": "1740092",
+        "phoneNumber": "+18305550172"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 39200.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "TOMBALL",
+          "state": "TX",
+          "zipCode": "77375",
+          "estimatedReadyDateTime": "2026-07-13T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T00:33:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78745",
+          "estimatedReadyDateTime": "2026-07-13T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T05:33:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-10T22:33:00-05:00",
+      "lastModifiedDate": "2026-07-13T06:25:00-05:00"
+    },
+    {
+      "shipmentId": 127409944,
+      "status": "Completed",
+      "mileage": 308.7,
+      "totalSell": 708.04,
+      "totalBuy": 580.36,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 833136,
+        "name": "TRINITY RIVER LOGISTICS INC",
+        "mcNumber": "843276",
+        "dotNumber": "2410558",
+        "phoneNumber": "+18175550231"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 20900.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75201",
+          "estimatedReadyDateTime": "2026-07-12T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T17:03:00-05:00"
+        },
+        {
+          "stopType": "Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78741",
+          "estimatedReadyDateTime": "2026-07-12T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T22:33:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78210",
+          "estimatedReadyDateTime": "2026-07-13T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T04:03:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-10T10:03:00-05:00",
+      "lastModifiedDate": "2026-07-13T06:20:00-05:00"
+    }
+  ]
+}

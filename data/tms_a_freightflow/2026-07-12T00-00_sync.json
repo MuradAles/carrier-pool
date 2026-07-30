@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-12T00:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127407677,
+      "status": "Completed",
+      "mileage": 271.1,
+      "totalSell": 611.88,
+      "totalBuy": 501.54,
+      "customer": {
+        "customerId": 881930,
+        "name": "Cowtown Auto Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 36900.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "FORT WORTH",
+          "state": "TX",
+          "zipCode": "76155",
+          "estimatedReadyDateTime": "2026-07-10T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T19:54:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77094",
+          "estimatedReadyDateTime": "2026-07-11T07:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-11T16:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-11T09:54:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-09T16:54:00-05:00",
+      "lastModifiedDate": "2026-07-11T10:22:00-05:00"
+    },
+    {
+      "shipmentId": 127407838,
+      "status": "Completed",
+      "mileage": 279.3,
+      "totalSell": 556.81,
+      "totalBuy": 497.15,
+      "customer": {
+        "customerId": 880970,
+        "name": "Trinity Paper Mills"
+      },
+      "carrier": {
+        "carrierMasterId": 833820,
+        "name": "GULF COAST DRAYAGE LLC",
+        "mcNumber": "1005991",
+        "dotNumber": "2887431",
+        "phoneNumber": "+17135550264"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 25100.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "IRVING",
+          "state": "TX",
+          "zipCode": "75061",
+          "estimatedReadyDateTime": "2026-07-10T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T16:42:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77049",
+          "estimatedReadyDateTime": "2026-07-11T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-11T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-11T04:42:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-09T10:42:00-05:00",
+      "lastModifiedDate": "2026-07-11T05:08:00-05:00"
+    },
+    {
+      "shipmentId": 127408026,
+      "status": "Completed",
+      "mileage": 279.0,
+      "totalSell": 684.78,
+      "totalBuy": 580.32,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 830683,
+        "name": "LONE STAR COLD LINES LLC",
+        "mcNumber": "902114",
+        "dotNumber": "2338907",
+        "phoneNumber": "+18175550118"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 39200.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "FORT WORTH",
+          "state": "TX",
+          "zipCode": "76140",
+          "estimatedReadyDateTime": "2026-07-10T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T17:16:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77015",
+          "estimatedReadyDateTime": "2026-07-11T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-11T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-11T03:16:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-07T05:16:00-05:00",
+      "lastModifiedDate": "2026-07-11T03:38:00-05:00"
+    }
+  ]
+}

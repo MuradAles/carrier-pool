@@ -1,0 +1,68 @@
+{
+  "synced_at": "2026-07-16 00:00:00",
+  "loads": [
+    {
+      "load_num": "HD-2026-005053",
+      "status_code": 20,
+      "customer_code": "C-0038",
+      "customer_name": "Gulf Harbor Chemicals",
+      "carrier_ref": null,
+      "equip": "V",
+      "weight_kg": 16737.6,
+      "dist_km": 448.5,
+      "pu_city": "Frisco",
+      "pu_state": "TX",
+      "pu_zip": "75034",
+      "pu_date": "2026-07-17",
+      "pu_departed_at": null,
+      "del_city": "Cypress",
+      "del_state": "TX",
+      "del_zip": "77433",
+      "del_date": "2026-07-18",
+      "del_arrived_at": null,
+      "entered_at": "2026-07-15 18:03:00",
+      "updated_at": "2026-07-15 18:03:00"
+    },
+    {
+      "load_num": "HD-2026-005063",
+      "status_code": 20,
+      "customer_code": "C-0059",
+      "customer_name": "Brazos Steel Works",
+      "carrier_ref": null,
+      "equip": "R",
+      "weight_kg": 9071.9,
+      "dist_km": 441.8,
+      "pu_city": "North Richland Hills",
+      "pu_state": "TX",
+      "pu_zip": "76180",
+      "pu_date": "2026-07-17",
+      "pu_departed_at": null,
+      "del_city": "Houston",
+      "del_state": "TX",
+      "del_zip": "77084",
+      "del_date": "2026-07-18",
+      "del_arrived_at": null,
+      "entered_at": "2026-07-15 17:31:00",
+      "updated_at": "2026-07-15 17:31:00"
+    }
+  ],
+  "carriers": [],
+  "rates": [
+    {
+      "rate_id": 910376,
+      "load_num": "HD-2026-005053",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 707.06,
+      "created_at": "2026-07-15 18:03:00"
+    },
+    {
+      "rate_id": 910377,
+      "load_num": "HD-2026-005063",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 787.1,
+      "created_at": "2026-07-15 17:31:00"
+    }
+  ]
+}

@@ -172,9 +172,14 @@ Three tiers, narrow to wide. Queries walk outward until they hit a minimum sampl
 
 | Tier | Key | Example |
 |---|---|---|
-| 1 `ZIP3` | 3-digit zip pair | `750 → 774` |
-| 2 `METRO` | metro cluster pair | `DFW → HOU` |
-| 3 `REGION` | triangle-wide, equipment only | `TX_TRIANGLE`, dry van |
+| 1 `ZIP3` | 3-digit zip pair + equipment | `750 → 774`, dry van |
+| 2 `METRO` | metro cluster pair + equipment | `DFW → HOU`, dry van |
+| 3 `REGION` | triangle-wide + equipment | `TX_TRIANGLE`, dry van |
+| 4 `REGION_ANY` | triangle-wide, no equipment filter | `TX_TRIANGLE`, all equipment |
+
+Equipment filters at **every** tier; the fourth rung exists so a rare equipment type still gets
+an answer, and it is always low confidence. A load whose own equipment is `UNKNOWN` skips the
+filter and says so in its provenance (`DECISIONS.md` D6).
 
 Metro clusters are assigned by the geo table — every zip in the DFW area maps to `DFW`
 regardless of city name or (in principle) state. This is what makes Grand Prairie→Katy and
@@ -198,15 +203,17 @@ five signals, each 0–1.
 | On-time | 0.10 | Actual vs. scheduled delivery, shrunk |
 
 ### Cold start
-Raw rates on tiny samples are noise — 2-for-2 is not better than 164-for-200. Both experience
-and on-time use shrinkage toward the lane average:
+Raw rates on tiny samples are noise — 2-for-2 is not better than 164-for-200. Two different
+corrections, because the two signals are different kinds of number (see `DECISIONS.md` D5):
 
 ```
-adjusted = (observed × n + lane_average × k) / (n + k)      k = 5
+experience = n / (n + k)                                    k = 5   # a count, saturating
+on_time    = (observed × n + lane_average × k) / (n + k)    k = 5   # a rate, shrunk
 ```
 
-A carrier with 2 loads sits near the lane average and climbs as evidence accumulates. A good new
-carrier still surfaces; it just cannot leapfrog a proven one on 2 data points.
+A carrier with 2 loads sits at 0.29 on experience and near the lane average on on-time, then
+climbs as evidence accumulates. A good new carrier still surfaces; it just cannot leapfrog a
+proven one on 2 data points.
 
 ### Reasoning
 Every ranked carrier returns plain-language reasons, generated from the same numbers that drove
@@ -228,7 +235,7 @@ Same tier walk. From completed/covered loads on the matched tier, take carrier r
 
 - **Point estimate** = median × load miles
 - **Range** = p25 → p75 × load miles
-- **Confidence** = high (≥15 loads) / medium (5–14) / low (<5, or REGION tier)
+- **Confidence** = high (≥15 loads) / medium (5–14) / low (<5, or the `REGION`/`REGION_ANY` tiers)
 
 Always returned with: which tier, how many loads backed it, the date range they span, and the
 equipment filter. A low-confidence estimate is labeled as such rather than hidden — the broker

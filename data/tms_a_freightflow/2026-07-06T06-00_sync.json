@@ -1,4 +1,125 @@
 {
   "syncedAt": "2026-07-06T06:00:00-05:00",
-  "loads": []
+  "loads": [
+    {
+      "shipmentId": 127400170,
+      "status": "Completed",
+      "mileage": 214.1,
+      "totalSell": 560.85,
+      "totalBuy": 475.3,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "48 ft Flatbed",
+      "weightTotal": 30100.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75228",
+          "estimatedReadyDateTime": "2026-07-05T13:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-05T22:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-05T15:21:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78753",
+          "estimatedReadyDateTime": "2026-07-06T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T02:21:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-03T15:21:00-05:00",
+      "lastModifiedDate": "2026-07-06T02:59:00-05:00"
+    },
+    {
+      "shipmentId": 127402240,
+      "status": "Booking",
+      "mileage": 280.9,
+      "totalSell": 589.44,
+      "totalBuy": null,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": null,
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 18800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "MCKINNEY",
+          "state": "TX",
+          "zipCode": "75071",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": null
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "CYPRESS",
+          "state": "TX",
+          "zipCode": "77433",
+          "estimatedReadyDateTime": "2026-07-07T12:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T21:00:00-05:00",
+          "actualDepartureDateTime": null
+        }
+      ],
+      "createdDate": "2026-07-04T03:28:00-05:00",
+      "lastModifiedDate": "2026-07-06T04:40:00-05:00"
+    },
+    {
+      "shipmentId": 127400279,
+      "status": "Completed",
+      "mileage": 247.3,
+      "totalSell": 579.48,
+      "totalBuy": 499.55,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 25200.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78249",
+          "estimatedReadyDateTime": "2026-07-05T07:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-05T16:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-05T09:17:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "CLEBURNE",
+          "state": "TX",
+          "zipCode": "76031",
+          "estimatedReadyDateTime": "2026-07-05T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-05T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-05T16:17:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-02T09:17:00-05:00",
+      "lastModifiedDate": "2026-07-05T16:43:00-05:00"
+    }
+  ]
 }

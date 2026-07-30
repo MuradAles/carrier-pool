@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-09T06:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127404143,
+      "status": "Completed",
+      "mileage": 266.4,
+      "totalSell": 559.02,
+      "totalBuy": 458.21,
+      "customer": {
+        "customerId": 881930,
+        "name": "Cowtown Auto Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 32600.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77094",
+          "estimatedReadyDateTime": "2026-07-08T06:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T15:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-08T08:14:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75235",
+          "estimatedReadyDateTime": "2026-07-08T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-08T20:14:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-06T07:14:00-05:00",
+      "lastModifiedDate": "2026-07-08T21:58:00-05:00"
+    },
+    {
+      "shipmentId": 127404289,
+      "status": "Completed",
+      "mileage": 314.0,
+      "totalSell": 672.96,
+      "totalBuy": 590.32,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 833136,
+        "name": "TRINITY RIVER LOGISTICS INC",
+        "mcNumber": "843276",
+        "dotNumber": "2410558",
+        "phoneNumber": "+18175550231"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 25900.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "GRAPEVINE",
+          "state": "TX",
+          "zipCode": "76051",
+          "estimatedReadyDateTime": "2026-07-08T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-08T07:30:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "FRIENDSWOOD",
+          "state": "TX",
+          "zipCode": "77546",
+          "estimatedReadyDateTime": "2026-07-08T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-08T16:30:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-06T21:30:00-05:00",
+      "lastModifiedDate": "2026-07-08T18:20:00-05:00"
+    },
+    {
+      "shipmentId": 127404457,
+      "status": "Completed",
+      "mileage": 165.4,
+      "totalSell": 416.81,
+      "totalBuy": 372.15,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 832028,
+        "name": "BLUEBONNET FREIGHT SYSTEMS",
+        "mcNumber": "655318",
+        "dotNumber": "1740092",
+        "phoneNumber": "+18305550172"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 18200.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "THE WOODLANDS",
+          "state": "TX",
+          "zipCode": "77380",
+          "estimatedReadyDateTime": "2026-07-07T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T21:19:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78704",
+          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-08T23:19:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-04T18:19:00-05:00",
+      "lastModifiedDate": "2026-07-09T00:17:00-05:00"
+    }
+  ]
+}

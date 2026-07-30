@@ -1,0 +1,190 @@
+{
+  "synced_at": "2026-07-10T11:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO9000006Ag2iVHT",
+      "Name": "SHP6700654",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 276.6,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": "0011I00000GZqOfSSX",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 818.18,
+      "bos__Carrier_Rate__c": 705.33,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000rdoEPuwg",
+          "bos__Scheduled_Date__c": "2026-07-08",
+          "bos__Arrival_Time__c": "2026-07-08T11:55:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000kgXNbdpb",
+          "bos__Scheduled_Date__c": "2026-07-08",
+          "bos__Arrival_Time__c": "2026-07-08T21:55:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 18100.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 14.0
+        }
+      ],
+      "CreatedDate": "2026-07-06T12:55:00.000+0000",
+      "LastModifiedDate": "2026-07-10T08:49:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000FXe0GVIB",
+      "Name": "SHP6700810",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 83.6,
+      "bos__Customer__c": "0011I00000mtOsE3o8",
+      "bos__Carrier__c": "0011I00000gutMK6yx",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 318.01,
+      "bos__Carrier_Rate__c": 265.01,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000amN9VP6L",
+          "bos__Scheduled_Date__c": "2026-07-09",
+          "bos__Arrival_Time__c": "2026-07-09T07:26:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000thHRKcsj",
+          "bos__Scheduled_Date__c": "2026-07-09",
+          "bos__Arrival_Time__c": "2026-07-09T17:26:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Auto parts",
+          "bos__Weight__c": 19900.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 15.0
+        }
+      ],
+      "CreatedDate": "2026-07-05T21:26:00.000+0000",
+      "LastModifiedDate": "2026-07-09T18:20:00.000+0000"
+    },
+    {
+      "Id": "a0jO9000009NQEM2aT",
+      "Name": "SHP6700823",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 279.0,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": "0011I00000GZqOfSSX",
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Customer_Rate__c": 884.32,
+      "bos__Carrier_Rate__c": 789.57,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000F7Dg8pDs",
+          "bos__Scheduled_Date__c": "2026-07-09",
+          "bos__Arrival_Time__c": "2026-07-09T05:03:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000WPCB1aa5",
+          "bos__Scheduled_Date__c": "2026-07-09",
+          "bos__Arrival_Time__c": "2026-07-09T14:03:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Frozen dough",
+          "bos__Weight__c": 38000.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 29.0
+        }
+      ],
+      "CreatedDate": "2026-07-05T22:03:00.000+0000",
+      "LastModifiedDate": "2026-07-09T14:48:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000xdkp9sXL": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Texan Home Goods"
+    },
+    "0011I00000GZqOfSSX": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Bay Area Cold Carriers, LLC",
+      "bos__MC_Number__c": "1067712",
+      "bos__DOT_Number__c": "2974885"
+    },
+    "0011I00000rdoEPuwg": {
+      "type": "Location",
+      "Name": "Carrollton Yard",
+      "bos__City__c": "Carrollton",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75006"
+    },
+    "0011I00000kgXNbdpb": {
+      "type": "Location",
+      "Name": "Katy Yard",
+      "bos__City__c": "Katy",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77494"
+    },
+    "0011I00000mtOsE3o8": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Bluebonnet Grocery Co"
+    },
+    "0011I00000gutMK6yx": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Trinity Bay Transport Co.",
+      "bos__MC_Number__c": "1015228",
+      "bos__DOT_Number__c": "2901744"
+    },
+    "0011I00000amN9VP6L": {
+      "type": "Location",
+      "Name": "Seguin Logistics Park",
+      "bos__City__c": "Seguin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78155"
+    },
+    "0011I00000thHRKcsj": {
+      "type": "Location",
+      "Name": "Leander Cold Storage",
+      "bos__City__c": "Leander",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78641"
+    },
+    "0011I00000F7Dg8pDs": {
+      "type": "Location",
+      "Name": "Fort Worth Warehouse",
+      "bos__City__c": "Fort Worth",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76140"
+    },
+    "0011I00000WPCB1aa5": {
+      "type": "Location",
+      "Name": "Houston Fulfillment Ctr",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77015"
+    }
+  }
+}

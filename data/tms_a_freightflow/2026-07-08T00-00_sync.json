@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-08T00:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127402090,
+      "status": "Completed",
+      "mileage": 283.4,
+      "totalSell": 615.43,
+      "totalBuy": 504.45,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 833820,
+        "name": "GULF COAST DRAYAGE LLC",
+        "mcNumber": "1005991",
+        "dotNumber": "2887431",
+        "phoneNumber": "+17135550264"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 20500.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "IRVING",
+          "state": "TX",
+          "zipCode": "75038",
+          "estimatedReadyDateTime": "2026-07-07T10:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T19:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T12:55:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77049",
+          "estimatedReadyDateTime": "2026-07-07T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T20:55:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-04T00:55:00-05:00",
+      "lastModifiedDate": "2026-07-07T22:13:00-05:00"
+    },
+    {
+      "shipmentId": 127402240,
+      "status": "Completed",
+      "mileage": 280.9,
+      "totalSell": 589.44,
+      "totalBuy": 483.15,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 18800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "MCKINNEY",
+          "state": "TX",
+          "zipCode": "75071",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T05:28:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "CYPRESS",
+          "state": "TX",
+          "zipCode": "77433",
+          "estimatedReadyDateTime": "2026-07-07T12:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T21:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T14:28:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-04T03:28:00-05:00",
+      "lastModifiedDate": "2026-07-07T22:28:00-05:00"
+    },
+    {
+      "shipmentId": 127402425,
+      "status": "Completed",
+      "mileage": 306.8,
+      "totalSell": 655.02,
+      "totalBuy": 536.9,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 830683,
+        "name": "LONE STAR COLD LINES LLC",
+        "mcNumber": "902114",
+        "dotNumber": "2338907",
+        "phoneNumber": "+18175550118"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 41200.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "MCKINNEY",
+          "state": "TX",
+          "zipCode": "75071",
+          "estimatedReadyDateTime": "2026-07-07T10:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T19:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T12:05:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "SUGAR LAND",
+          "state": "TX",
+          "zipCode": "77478",
+          "estimatedReadyDateTime": "2026-07-07T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T20:05:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-06T02:05:00-05:00",
+      "lastModifiedDate": "2026-07-07T20:30:00-05:00"
+    }
+  ]
+}

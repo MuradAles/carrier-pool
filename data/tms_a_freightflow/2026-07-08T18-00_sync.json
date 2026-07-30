@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-08T18:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127403363,
+      "status": "Completed",
+      "mileage": 307.6,
+      "totalSell": 671.8,
+      "totalBuy": 559.83,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 28400.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "BAYTOWN",
+          "state": "TX",
+          "zipCode": "77521",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T06:09:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "FRISCO",
+          "state": "TX",
+          "zipCode": "75034",
+          "estimatedReadyDateTime": "2026-07-07T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T19:09:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-06T05:09:00-05:00",
+      "lastModifiedDate": "2026-07-07T20:04:00-05:00"
+    },
+    {
+      "shipmentId": 127403429,
+      "status": "Completed",
+      "mileage": 279.6,
+      "totalSell": 538.62,
+      "totalBuy": 480.91,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 833820,
+        "name": "GULF COAST DRAYAGE LLC",
+        "mcNumber": "1005991",
+        "dotNumber": "2887431",
+        "phoneNumber": "+17135550264"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 40600.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "PASADENA",
+          "state": "TX",
+          "zipCode": "77503",
+          "estimatedReadyDateTime": "2026-07-08T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-08T00:49:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75228",
+          "estimatedReadyDateTime": "2026-07-08T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-08T10:49:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-05T16:49:00-05:00",
+      "lastModifiedDate": "2026-07-08T13:04:00-05:00"
+    },
+    {
+      "shipmentId": 127403582,
+      "status": "Completed",
+      "mileage": 313.6,
+      "totalSell": 636.61,
+      "totalBuy": 548.8,
+      "customer": {
+        "customerId": 880970,
+        "name": "Trinity Paper Mills"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 21100.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78249",
+          "estimatedReadyDateTime": "2026-07-07T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-07T19:11:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "GARLAND",
+          "state": "TX",
+          "zipCode": "75040",
+          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-08T05:11:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-05T09:11:00-05:00",
+      "lastModifiedDate": "2026-07-08T06:04:00-05:00"
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-06T18:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127400444,
+      "status": "Completed",
+      "mileage": 269.7,
+      "totalSell": 588.75,
+      "totalBuy": 498.94,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 833136,
+        "name": "TRINITY RIVER LOGISTICS INC",
+        "mcNumber": "843276",
+        "dotNumber": "2410558",
+        "phoneNumber": "+18175550231"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 22700.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "CLEBURNE",
+          "state": "TX",
+          "zipCode": "76031",
+          "estimatedReadyDateTime": "2026-07-06T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T03:47:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "PASADENA",
+          "state": "TX",
+          "zipCode": "77502",
+          "estimatedReadyDateTime": "2026-07-06T10:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T19:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T12:47:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-04T20:47:00-05:00",
+      "lastModifiedDate": "2026-07-06T14:16:00-05:00"
+    },
+    {
+      "shipmentId": 127402240,
+      "status": "Dispatched",
+      "mileage": 280.9,
+      "totalSell": 589.44,
+      "totalBuy": 456.58,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 18800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "MCKINNEY",
+          "state": "TX",
+          "zipCode": "75071",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": null
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "CYPRESS",
+          "state": "TX",
+          "zipCode": "77433",
+          "estimatedReadyDateTime": "2026-07-07T12:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T21:00:00-05:00",
+          "actualDepartureDateTime": null
+        }
+      ],
+      "createdDate": "2026-07-04T03:28:00-05:00",
+      "lastModifiedDate": "2026-07-06T16:37:00-05:00"
+    },
+    {
+      "shipmentId": 127400557,
+      "status": "Completed",
+      "mileage": 277.2,
+      "totalSell": 645.77,
+      "totalBuy": 576.58,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 835654,
+        "name": "ALAMO CHILL TRANSPORT",
+        "mcNumber": "1402883",
+        "dotNumber": "3844519",
+        "phoneNumber": "+12105550381"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 24500.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75212",
+          "estimatedReadyDateTime": "2026-07-06T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T03:31:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "STAFFORD",
+          "state": "TX",
+          "zipCode": "77477",
+          "estimatedReadyDateTime": "2026-07-06T11:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-06T20:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-06T13:31:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-02T21:31:00-05:00",
+      "lastModifiedDate": "2026-07-06T14:34:00-05:00"
+    }
+  ]
+}

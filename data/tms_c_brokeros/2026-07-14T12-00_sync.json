@@ -1,0 +1,132 @@
+{
+  "synced_at": "2026-07-14T17:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000pSaL7NrN",
+      "Name": "SHP6701369",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 312.7,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I0000051gR8MJj",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 984.26,
+      "bos__Carrier_Rate__c": 806.77,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000j9rcvX7V",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-14T00:07:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000002NPPrE8c",
+          "bos__Scheduled_Date__c": "2026-07-14",
+          "bos__Arrival_Time__c": "2026-07-14T12:07:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Plastic resin totes",
+          "bos__Weight__c": 37300.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 29.0
+        }
+      ],
+      "CreatedDate": "2026-07-11T18:07:00.000+0000",
+      "LastModifiedDate": "2026-07-14T13:31:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000E5BWES1G",
+      "Name": "SHP6701382",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 207.9,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I00000OrJJdyEO",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 655.97,
+      "bos__Carrier_Rate__c": 565.49,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000lKzKkyNn",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T10:53:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000xzPd0DFq",
+          "bos__Scheduled_Date__c": "2026-07-13",
+          "bos__Arrival_Time__c": "2026-07-13T18:53:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Paper goods",
+          "bos__Weight__c": 34900.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 27.0
+        }
+      ],
+      "CreatedDate": "2026-07-10T02:53:00.000+0000",
+      "LastModifiedDate": "2026-07-13T19:15:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000udoxsTen": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Ridgeline Materials"
+    },
+    "0011I0000051gR8MJj": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Guadalupe Valley Freight, LLC",
+      "bos__MC_Number__c": "701558",
+      "bos__DOT_Number__c": "1802996"
+    },
+    "0011I00000j9rcvX7V": {
+      "type": "Location",
+      "Name": "Houston Warehouse",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77020"
+    },
+    "0011I000002NPPrE8c": {
+      "type": "Location",
+      "Name": "Denton Cold Storage",
+      "bos__City__c": "Denton",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76201"
+    },
+    "0011I00000OrJJdyEO": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Delta Prime, L.L.C.",
+      "bos__MC_Number__c": "884201",
+      "bos__DOT_Number__c": "2551377"
+    },
+    "0011I00000lKzKkyNn": {
+      "type": "Location",
+      "Name": "Dallas Warehouse",
+      "bos__City__c": "Dallas",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75228"
+    },
+    "0011I00000xzPd0DFq": {
+      "type": "Location",
+      "Name": "Cedar Park Freight Terminal",
+      "bos__City__c": "Cedar Park",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78613"
+    }
+  }
+}

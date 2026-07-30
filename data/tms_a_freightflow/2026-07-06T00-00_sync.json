@@ -1,0 +1,83 @@
+{
+  "syncedAt": "2026-07-06T00:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127402240,
+      "status": "Quoting",
+      "mileage": 280.9,
+      "totalSell": 589.44,
+      "totalBuy": null,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": null,
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 18800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "MCKINNEY",
+          "state": "TX",
+          "zipCode": "75071",
+          "estimatedReadyDateTime": "2026-07-07T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T14:00:00-05:00",
+          "actualDepartureDateTime": null
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "CYPRESS",
+          "state": "TX",
+          "zipCode": "77433",
+          "estimatedReadyDateTime": "2026-07-07T12:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T21:00:00-05:00",
+          "actualDepartureDateTime": null
+        }
+      ],
+      "createdDate": "2026-07-04T03:28:00-05:00",
+      "lastModifiedDate": "2026-07-04T03:36:00-05:00"
+    },
+    {
+      "shipmentId": 127400052,
+      "status": "Completed",
+      "mileage": 225.3,
+      "totalSell": 476.92,
+      "totalBuy": 425.82,
+      "customer": {
+        "customerId": 883699,
+        "name": "Alamo Building Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 832028,
+        "name": "BLUEBONNET FREIGHT SYSTEMS",
+        "mcNumber": "655318",
+        "dotNumber": "1740092",
+        "phoneNumber": "+18305550172"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 40200.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78744",
+          "estimatedReadyDateTime": "2026-07-04T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-04T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-04T18:28:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75207",
+          "estimatedReadyDateTime": "2026-07-05T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-05T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-05T06:28:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-02T13:28:00-05:00",
+      "lastModifiedDate": "2026-07-05T08:54:00-05:00"
+    }
+  ]
+}

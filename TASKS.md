@@ -3,9 +3,16 @@
 Execution plan for `PRD.md`. Ordered by dependency — each phase needs the one above it.
 
 **Legend:** `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked
-**Agents:** `data-gen` · `builder` · `unit-tester` · `integration-tester` · `breaker` · `reviewer` · `stack-docs`
+**Agents:** `orchestrator` (runs a whole phase) · `data-gen` · `builder` · `unit-tester` ·
+`integration-tester` · `breaker` · `reviewer` · `stack-docs`
 
-Status: **Phase 0 complete** except F2 (blocked on Docker). Phases 1–11 not started.
+Phases are handed to `orchestrator` one at a time; the per-task `Agent` column below is who it
+dispatches.
+
+Status: **Phases 0 and 1 complete.** F2 cleared — Docker is up, Postgres 16.14 healthy.
+150 tests passing (130 unit + 22 data-integrity, minus overlap). Phase 2 ready to start.
+
+One item deferred to the user: the TMS C on-time timezone rule (see Phase 1 follow-ups).
 
 ---
 
@@ -22,6 +29,12 @@ Cheap now, expensive later. Nothing below should start until D1–D4 are settled
 | [x] D3 | **`sync_events` grain** | — | Split into `sync_files` + per-entity `sync_events`; PRD §5 updated |
 | [x] D4 | **Scope of the bonus pool** | — | Build it, last, off the critical path. Boundary + threat model written |
 | [x] F3 | Create `DECISIONS.md`, logging calls as they're made | — | D1–D4 recorded |
+| [x] D5 | **Cold-start formula per signal** | — | Experience saturates, on-time shrinks; PRD §8 amended |
+| [x] D6 | **Equipment filter and the tier walk** | — | Filters at every tier + `REGION_ANY` rung; PRD §7 amended |
+| [x] D7 | **On-time definition** | — | Day-granular, the only cross-format honest one |
+| [x] D8 | **Ingestion trigger** | — | FastAPI lifespan, synchronous, before serving |
+| [x] D9 | **Fixture depth across brokers** | — | All three equally rich; budget arithmetic recorded |
+| [x] F4 | Add `orchestrator`; give `builder` a frontend brief | — | `.claude/agents/` updated, `CLAUDE.md` table current |
 
 ---
 
@@ -31,18 +44,19 @@ Everything downstream reads this data. Get it right before writing logic against
 
 | # | Task | Agent | Depends | Done when |
 |---|---|---|---|---|
-| [ ] G1 | Geo table: ~150 Texas Triangle cities/zips → lat, lon, metro, zip3 | builder | D1 | Covers every city the generator emits; offline; deterministic |
-| [ ] G2 | Haversine × 1.2 road factor | builder | G1 | Dallas→Houston ≈ 240 mi |
-| [ ] G3 | Unit tests for G1/G2 | unit-tester | G2 | Known city pairs assert to expected miles |
-| [ ] DG1 | Generator skeleton: seeded, re-runnable, emits the 132-slot filename grid | data-gen | D1, G1 | Same seed → identical bytes |
-| [ ] DG2 | TMS A writer — nested camelCase, US units, ISO+offset | data-gen | DG1 | Output matches `example_sync.jsonc` shape exactly |
-| [ ] DG3 | TMS B writer — flat tables, kg/km, naive Central, append-only rate rows | data-gen | DG1 | Same |
-| [ ] DG4 | TMS C writer — CRM records, referenced_records, UTC | data-gen | DG1 | Same |
-| [ ] DG5 | Plant scenarios 1–4: lifecycle, corrections (all 3 flavors), lane contrast, carrier contrast | data-gen | DG2-4 | Each is a named block in the script |
-| [ ] DG6 | Plant scenarios 5–8: suburb scatter, cross-TMS carrier, deadhead setup, messy edges | data-gen | DG5, D2 | Same |
-| [ ] DG7 | Day-11 loads — one per behavior demonstrated | data-gen | DG6 | Each maps to a named behavior |
-| [ ] DG8 | **Traceability table** — per day-11 load: behavior proven, supporting history, expected top carrier, arithmetic | data-gen | DG7 | Hand-verifiable without running code |
-| [ ] DG9 | Generate all 132 files and validate | data-gen | DG8 | All parse; filename grid exact; every reference resolves |
+| [x] G1 | Geo table: ~150 Texas Triangle cities/zips → lat, lon, metro, zip3 | builder | D1 | `backend/app/domain/geo.py` — 180 places, 101 cities, DFW 56 / HOU 47 / SAT 29 / AUS 25 / TX_OTHER 23. Every generated stop resolves (0 unresolved, verified from disk) |
+| [x] G2 | Haversine × 1.2 road factor | builder | G1 | `backend/app/domain/distance.py`. **Acceptance text amended by D10** — ×1.2 on real coords gives Dallas→Houston 271 mi, not 240; the invariant wins over the illustrative figure |
+| [x] G3 | Unit tests for G1/G2 | unit-tester | G2 | 130 tests passing in 0.04s. One bound corrected per D14. `reviewer` confirmed they are substantive, not tautological |
+| [x] DG1 | Generator skeleton: seeded, re-runnable, emits the 132-slot filename grid | data-gen | D1, G1 | `backend/scripts/generate_data.py`. 3 consecutive runs byte-identical over 133 files |
+| [x] DG2 | TMS A writer — nested camelCase, US units, ISO+offset | data-gen | DG1 | 44 files; `syncedAt` carries `-05:00` (CDT) |
+| [x] DG3 | TMS B writer — flat tables, kg/km, naive Central, append-only rate rows | data-gen | DG1 | 44 files; naive `synced_at` matches the Central filename; no duplicate `rate_id` |
+| [x] DG4 | TMS C writer — CRM records, referenced_records, UTC | data-gen | DG1 | 44 files; 06:00 Central → `11:00:00.000+0000` = UTC-5; every referenced id resolves |
+| [x] DG5 | Plant scenarios 1–4: lifecycle, corrections (all 3 flavors), lane contrast, carrier contrast | data-gen | DG2-4 | All 4 confirmed present **in the JSON** by `reviewer`, not just in the script: lifecycle `127402240` across 6 files, all 3 correction flavors, per-broker rate bands per D13 |
+| [x] DG6 | Plant scenarios 5–8: suburb scatter, cross-TMS carrier, deadhead setup, messy edges | data-gen | DG5, D2 | All 4 confirmed in the JSON. **Rate-only `ADJUSTMENT` verified**: `HD-2026-004733` gets −120 in a file whose `loads` array holds only three other loads |
+| [x] DG7 | Day-11 loads — one per behavior demonstrated | data-gen | DG6 | 16 loads (5/5/6), all uncovered. All four tier rungs have a fixture: ZIP3 6, METRO 4, REGION 5, REGION_ANY 1 |
+| [x] DG8 | **Traceability table** — per day-11 load: behavior proven, supporting history, expected top carrier, arithmetic | data-gen | DG7 | `data/TRACEABILITY.md`, 1,501 lines. `reviewer` reproduced **all 16 rows** from the JSON with an independent parser — miles, every tier rung, percentiles to 4dp. Brokers A and B exact; C differs only on on-time (the open timezone item) |
+| [x] DG9 | Generate all 132 files and validate | data-gen | DG8 | 132 files, grid exact, byte-identical across runs (`8fcc1679…`). Validator now **reconciles emitted bytes against the plan** — was 8/10 injected corruptions passing, now 0/21 |
+| [x] DG10 | **Corruption harness** — prove the validator actually bites | data-gen | DG9 | `backend/tests/data_integrity/`, 21 named corruption tests + positive control. Verified by mutation: with reconciliation disabled, 21 fail and only the control passes |
 
 ---
 

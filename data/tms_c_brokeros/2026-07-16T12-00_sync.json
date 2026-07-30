@@ -1,0 +1,123 @@
+{
+  "synced_at": "2026-07-16T17:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000ZlapADYm",
+      "Name": "SHP6701551",
+      "bos__Load_Status__c": "Ready to Book",
+      "bos__Distance_Miles__c": 224.0,
+      "bos__Customer__c": "0011I00000mtOsE3o8",
+      "bos__Carrier__c": null,
+      "bos__Equipment_Type__c": "Flatbed",
+      "bos__Customer_Rate__c": 758.6,
+      "bos__Carrier_Rate__c": null,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000TfqUfB4L",
+          "bos__Scheduled_Date__c": "2026-07-17",
+          "bos__Arrival_Time__c": null
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000004WcVcwYS",
+          "bos__Scheduled_Date__c": "2026-07-18",
+          "bos__Arrival_Time__c": null
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Roofing shingles",
+          "bos__Weight__c": 33100.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 25.0
+        }
+      ],
+      "CreatedDate": "2026-07-16T07:59:00.000+0000",
+      "LastModifiedDate": "2026-07-16T07:59:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000Lzwi4yce",
+      "Name": "SHP6701564",
+      "bos__Load_Status__c": "Ready to Book",
+      "bos__Distance_Miles__c": 158.0,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": null,
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 551.86,
+      "bos__Carrier_Rate__c": null,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000B4cupiaS",
+          "bos__Scheduled_Date__c": "2026-07-17",
+          "bos__Arrival_Time__c": null
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000UjBaLspz",
+          "bos__Scheduled_Date__c": "2026-07-18",
+          "bos__Arrival_Time__c": null
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Bottled water",
+          "bos__Weight__c": 19000.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 15.0
+        }
+      ],
+      "CreatedDate": "2026-07-16T09:52:00.000+0000",
+      "LastModifiedDate": "2026-07-16T09:52:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000mtOsE3o8": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Bluebonnet Grocery Co"
+    },
+    "0011I00000TfqUfB4L": {
+      "type": "Location",
+      "Name": "Dallas Logistics Park",
+      "bos__City__c": "Dallas",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75235"
+    },
+    "0011I000004WcVcwYS": {
+      "type": "Location",
+      "Name": "Austin Distribution Ctr",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78704"
+    },
+    "0011I00000G5WZFEQb": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Pecos Industrial Supply"
+    },
+    "0011I00000B4cupiaS": {
+      "type": "Location",
+      "Name": "Conroe Distribution Ctr",
+      "bos__City__c": "Conroe",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77304"
+    },
+    "0011I00000UjBaLspz": {
+      "type": "Location",
+      "Name": "Austin Freight Terminal",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78741"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "synced_at": "2026-07-16 06:00:00",
+  "loads": [
+    {
+      "load_num": "HD-2026-005066",
+      "status_code": 20,
+      "customer_code": "C-0052",
+      "customer_name": "Capitol Office Products",
+      "carrier_ref": null,
+      "equip": "V",
+      "weight_kg": 15785.0,
+      "dist_km": 310.4,
+      "pu_city": "San Antonio",
+      "pu_state": "TX",
+      "pu_zip": "78201",
+      "pu_date": "2026-07-17",
+      "pu_departed_at": null,
+      "del_city": "Waco",
+      "del_state": "TX",
+      "del_zip": "76712",
+      "del_date": "2026-07-18",
+      "del_arrived_at": null,
+      "entered_at": "2026-07-15 23:21:00",
+      "updated_at": "2026-07-15 23:21:00"
+    }
+  ],
+  "carriers": [],
+  "rates": [
+    {
+      "rate_id": 910378,
+      "load_num": "HD-2026-005066",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 528.08,
+      "created_at": "2026-07-15 23:21:00"
+    }
+  ]
+}

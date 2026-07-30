@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-14T06:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127410919,
+      "status": "Completed",
+      "mileage": 292.7,
+      "totalSell": 652.37,
+      "totalBuy": 582.47,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 836824,
+        "name": "IRON HORSE FLATBED CO",
+        "mcNumber": "1177336",
+        "dotNumber": "3288740",
+        "phoneNumber": "+19725550455"
+      },
+      "equipment": "48 ft Flatbed",
+      "weightTotal": 40500.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75212",
+          "estimatedReadyDateTime": "2026-07-12T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T23:19:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78216",
+          "estimatedReadyDateTime": "2026-07-13T10:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T19:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T12:19:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-09T17:19:00-05:00",
+      "lastModifiedDate": "2026-07-13T14:32:00-05:00"
+    },
+    {
+      "shipmentId": 127411030,
+      "status": "Completed",
+      "mileage": 152.4,
+      "totalSell": 431.84,
+      "totalBuy": 385.57,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 830683,
+        "name": "LONE STAR COLD LINES LLC",
+        "mcNumber": "902114",
+        "dotNumber": "2338907",
+        "phoneNumber": "+18175550118"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 33000.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78744",
+          "estimatedReadyDateTime": "2026-07-13T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T07:41:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77084",
+          "estimatedReadyDateTime": "2026-07-13T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T18:41:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-11T02:41:00-05:00",
+      "lastModifiedDate": "2026-07-13T21:01:00-05:00"
+    },
+    {
+      "shipmentId": 127411191,
+      "status": "Completed",
+      "mileage": 237.4,
+      "totalSell": 548.02,
+      "totalBuy": 472.43,
+      "customer": {
+        "customerId": 881930,
+        "name": "Cowtown Auto Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 833136,
+        "name": "TRINITY RIVER LOGISTICS INC",
+        "mcNumber": "843276",
+        "dotNumber": "2410558",
+        "phoneNumber": "+18175550231"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 21800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "DALLAS",
+          "state": "TX",
+          "zipCode": "75243",
+          "estimatedReadyDateTime": "2026-07-13T07:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T16:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T09:10:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78744",
+          "estimatedReadyDateTime": "2026-07-13T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-13T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-13T19:10:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-11T02:10:00-05:00",
+      "lastModifiedDate": "2026-07-13T21:14:00-05:00"
+    }
+  ]
+}

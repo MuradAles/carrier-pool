@@ -1,0 +1,137 @@
+{
+  "synced_at": "2026-07-15T11:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000ggoizbL2",
+      "Name": "SHP6701421",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 161.6,
+      "bos__Customer__c": "0011I00000W6ArWecE",
+      "bos__Carrier__c": "0011I00000qCZ66ktD",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 577.88,
+      "bos__Carrier_Rate__c": 481.57,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000UjBaLspz",
+          "bos__Scheduled_Date__c": "2026-07-14",
+          "bos__Arrival_Time__c": "2026-07-14T22:59:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000rk1RNfWW",
+          "bos__Scheduled_Date__c": "2026-07-15",
+          "bos__Arrival_Time__c": "2026-07-15T07:59:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Packaged foods",
+          "bos__Weight__c": 25400.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 20.0
+        }
+      ],
+      "CreatedDate": "2026-07-11T19:59:00.000+0000",
+      "LastModifiedDate": "2026-07-15T08:48:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000d0zClwuz",
+      "Name": "SHP6701434",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 299.7,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I00000PQmUyB11",
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Customer_Rate__c": 1010.59,
+      "bos__Carrier_Rate__c": 842.16,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000IVMFknNa",
+          "bos__Scheduled_Date__c": "2026-07-14",
+          "bos__Arrival_Time__c": "2026-07-14T15:24:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000BzQ4IyCr",
+          "bos__Scheduled_Date__c": "2026-07-14",
+          "bos__Arrival_Time__c": "2026-07-15T01:24:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Fresh produce",
+          "bos__Weight__c": 24800.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 19.0
+        }
+      ],
+      "CreatedDate": "2026-07-13T13:24:00.000+0000",
+      "LastModifiedDate": "2026-07-15T01:59:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000W6ArWecE": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Silverleaf Distributors"
+    },
+    "0011I00000qCZ66ktD": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Montgomery County Haulers Inc",
+      "bos__MC_Number__c": "1233470",
+      "bos__DOT_Number__c": "3428907"
+    },
+    "0011I00000UjBaLspz": {
+      "type": "Location",
+      "Name": "Austin Freight Terminal",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78741"
+    },
+    "0011I00000rk1RNfWW": {
+      "type": "Location",
+      "Name": "The Woodlands Warehouse",
+      "bos__City__c": "The Woodlands",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77380"
+    },
+    "0011I00000G5WZFEQb": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Pecos Industrial Supply"
+    },
+    "0011I00000PQmUyB11": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Frio Line Refrigerated LLC",
+      "bos__MC_Number__c": "1379942",
+      "bos__DOT_Number__c": "3805663"
+    },
+    "0011I00000IVMFknNa": {
+      "type": "Location",
+      "Name": "Plano Cross Dock",
+      "bos__City__c": "Plano",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75074"
+    },
+    "0011I00000BzQ4IyCr": {
+      "type": "Location",
+      "Name": "Pasadena Cold Storage",
+      "bos__City__c": "Pasadena",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77505"
+    }
+  }
+}

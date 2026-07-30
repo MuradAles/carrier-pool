@@ -1,0 +1,197 @@
+{
+  "synced_at": "2026-07-15T17:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000hXVZV0al",
+      "Name": "SHP6701447",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 277.7,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 814.99,
+      "bos__Carrier_Rate__c": 702.58,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000j9rcvX7V",
+          "bos__Scheduled_Date__c": "2026-07-14",
+          "bos__Arrival_Time__c": "2026-07-14T23:09:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000RH9jMa0t",
+          "bos__Scheduled_Date__c": "2026-07-15",
+          "bos__Arrival_Time__c": "2026-07-15T12:09:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Bottled water",
+          "bos__Weight__c": 31600.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 24.0
+        }
+      ],
+      "CreatedDate": "2026-07-13T17:09:00.000+0000",
+      "LastModifiedDate": "2026-07-15T14:37:00.000+0000"
+    },
+    {
+      "Id": "a0jO9000006Vmk3P9e",
+      "Name": "SHP6701460",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 271.7,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I00000OrJJdyEO",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 841.19,
+      "bos__Carrier_Rate__c": 700.99,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000NdrVbMsH",
+          "bos__Scheduled_Date__c": "2026-07-14",
+          "bos__Arrival_Time__c": "2026-07-14T22:03:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000003Zovd6Bm",
+          "bos__Scheduled_Date__c": "2026-07-15",
+          "bos__Arrival_Time__c": "2026-07-15T11:03:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Retail apparel",
+          "bos__Weight__c": 28300.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 22.0
+        }
+      ],
+      "CreatedDate": "2026-07-13T23:03:00.000+0000",
+      "LastModifiedDate": "2026-07-15T12:39:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000L5No1ox2",
+      "Name": "SHP6701473",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 190.0,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I00000gutMK6yx",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 623.28,
+      "bos__Carrier_Rate__c": 528.2,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I000004WcVcwYS",
+          "bos__Scheduled_Date__c": "2026-07-14",
+          "bos__Arrival_Time__c": "2026-07-15T02:57:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000RFBUmbpg",
+          "bos__Scheduled_Date__c": "2026-07-15",
+          "bos__Arrival_Time__c": "2026-07-15T09:57:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Plastic resin totes",
+          "bos__Weight__c": 22300.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 17.0
+        }
+      ],
+      "CreatedDate": "2026-07-13T20:57:00.000+0000",
+      "LastModifiedDate": "2026-07-15T11:09:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000udoxsTen": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Ridgeline Materials"
+    },
+    "0011I000003UEgxs3o": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Metroplex Ridge Logistics, Inc.",
+      "bos__MC_Number__c": "856920",
+      "bos__DOT_Number__c": "2489013"
+    },
+    "0011I00000j9rcvX7V": {
+      "type": "Location",
+      "Name": "Houston Warehouse",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77020"
+    },
+    "0011I00000RH9jMa0t": {
+      "type": "Location",
+      "Name": "Irving Freight Terminal",
+      "bos__City__c": "Irving",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75061"
+    },
+    "0011I00000OrJJdyEO": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Delta Prime, L.L.C.",
+      "bos__MC_Number__c": "884201",
+      "bos__DOT_Number__c": "2551377"
+    },
+    "0011I00000NdrVbMsH": {
+      "type": "Location",
+      "Name": "Dallas Fulfillment Ctr",
+      "bos__City__c": "Dallas",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75207"
+    },
+    "0011I000003Zovd6Bm": {
+      "type": "Location",
+      "Name": "Houston Cross Dock",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77002"
+    },
+    "0011I00000G5WZFEQb": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Pecos Industrial Supply"
+    },
+    "0011I00000gutMK6yx": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Trinity Bay Transport Co.",
+      "bos__MC_Number__c": "1015228",
+      "bos__DOT_Number__c": "2901744"
+    },
+    "0011I000004WcVcwYS": {
+      "type": "Location",
+      "Name": "Austin Distribution Ctr",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78704"
+    },
+    "0011I00000RFBUmbpg": {
+      "type": "Location",
+      "Name": "Pasadena Yard",
+      "bos__City__c": "Pasadena",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77502"
+    }
+  }
+}

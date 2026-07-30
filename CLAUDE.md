@@ -36,6 +36,7 @@ Python 3.12 + FastAPI + Postgres 16 (plain SQL, no ORM) + React 19/Vite/TypeScri
 | Equipment | → `DRY_VAN` \| `REEFER` \| `FLATBED` \| `UNKNOWN`. A free-text, B `V`/`R`/`F`, C picklist |
 | Money | A/C: totals as given. **B: sum of ALL `rates` line items ever appended** per side (`pay`→carrier, `bill`→customer), including negatives |
 | Time | → UTC. **TMS B naive strings are US Central and must be DST-aware** (July = CDT = UTC-5, not -6). A carries an offset, C is already UTC |
+| On-time | Delivered **on or before the scheduled delivery date** — a date comparison, the only precision all three formats support. **TMS C's bare `bos__Scheduled_Date__c` is a local Central date while `bos__Arrival_Time__c` is UTC** — convert the arrival back to Central before comparing, or every delivery after 19:00 Central reads a day late |
 | Stops | Ordered. First pickup / last drop form the lane; middle stops kept but not lane-forming |
 | Location | city/state/zip → lat, lon, metro, zip3 via the hardcoded table. Unmatched → geo-null: excluded from lane stats, still displayed |
 
@@ -58,6 +59,7 @@ Days 1–10 = 2026-07-06 → 2026-07-15 (history). Day 11 = 2026-07-16 (loads to
 
 | Agent | Use for |
 |---|---|
+| `orchestrator` | Running one whole phase of `TASKS.md` — dispatches the agents below, judges their output, re-dispatches on failure, keeps `DECISIONS.md` and `TASKS.md` current |
 | `data-gen` | Generating or fixing TMS sync fixture files, and the day-11 traceability table |
 | `builder` | Implementing features from `PRD.md` — adapters, ingestion, scoring, API, UI |
 | `unit-tester` | Fast no-DB tests: adapters, normalization math, scoring functions |
@@ -68,3 +70,6 @@ Days 1–10 = 2026-07-06 → 2026-07-15 (history). Day 11 = 2026-07-16 (loads to
 
 Normal loop: `builder` → `unit-tester` → `integration-tester` → `breaker` → `reviewer`.
 Nothing is "done" until `breaker` has genuinely attacked it.
+
+Work is handed over **one phase at a time** to `orchestrator`, which runs that loop internally
+and returns a single phase report.

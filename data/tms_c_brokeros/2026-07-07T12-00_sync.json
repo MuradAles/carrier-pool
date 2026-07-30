@@ -1,0 +1,190 @@
+{
+  "synced_at": "2026-07-07T17:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000lx3Wo8PZ",
+      "Name": "SHP6700511",
+      "bos__Load_Status__c": "Delivered",
+      "bos__Distance_Miles__c": 289.9,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 809.68,
+      "bos__Carrier_Rate__c": 671.19,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000oaLLo1aM",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-07T08:26:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000009V6sGGIQ",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-07T19:26:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 42600.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 33.0
+        }
+      ],
+      "CreatedDate": "2026-07-04T09:26:00.000+0000",
+      "LastModifiedDate": "2026-07-07T15:31:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000S4pdsFSu",
+      "Name": "SHP6700433",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 106.2,
+      "bos__Customer__c": "0011I00000W6ArWecE",
+      "bos__Carrier__c": "0011I00000qCZ66ktD",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 379.78,
+      "bos__Carrier_Rate__c": 316.48,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000j9rcvX7V",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-06T18:12:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000y0fPftWb",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-07T03:12:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Packaged foods",
+          "bos__Weight__c": 20000.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 15.0
+        }
+      ],
+      "CreatedDate": "2026-07-03T09:12:00.000+0000",
+      "LastModifiedDate": "2026-07-07T04:08:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000PtO0nXfk",
+      "Name": "SHP6700446",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 196.0,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I00000OrJJdyEO",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 609.32,
+      "bos__Carrier_Rate__c": 525.28,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000M9myPb5m",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-06T20:38:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000009V6sGGIQ",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-07T05:38:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Retail apparel",
+          "bos__Weight__c": 23900.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 18.0
+        }
+      ],
+      "CreatedDate": "2026-07-04T20:38:00.000+0000",
+      "LastModifiedDate": "2026-07-07T06:12:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000G5WZFEQb": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Pecos Industrial Supply"
+    },
+    "0011I000003UEgxs3o": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Metroplex Ridge Logistics, Inc.",
+      "bos__MC_Number__c": "856920",
+      "bos__DOT_Number__c": "2489013"
+    },
+    "0011I00000oaLLo1aM": {
+      "type": "Location",
+      "Name": "Richardson Distribution Ctr",
+      "bos__City__c": "Richardson",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75080"
+    },
+    "0011I000009V6sGGIQ": {
+      "type": "Location",
+      "Name": "Stafford Freight Terminal",
+      "bos__City__c": "Stafford",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77477"
+    },
+    "0011I00000W6ArWecE": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Silverleaf Distributors"
+    },
+    "0011I00000qCZ66ktD": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Montgomery County Haulers Inc",
+      "bos__MC_Number__c": "1233470",
+      "bos__DOT_Number__c": "3428907"
+    },
+    "0011I00000j9rcvX7V": {
+      "type": "Location",
+      "Name": "Houston Warehouse",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77020"
+    },
+    "0011I00000y0fPftWb": {
+      "type": "Location",
+      "Name": "Bryan Logistics Park",
+      "bos__City__c": "Bryan",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77803"
+    },
+    "0011I00000OrJJdyEO": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Delta Prime, L.L.C.",
+      "bos__MC_Number__c": "884201",
+      "bos__DOT_Number__c": "2551377"
+    },
+    "0011I00000M9myPb5m": {
+      "type": "Location",
+      "Name": "Waco Yard",
+      "bos__City__c": "Waco",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76710"
+    }
+  }
+}

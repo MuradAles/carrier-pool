@@ -1,0 +1,180 @@
+{
+  "synced_at": "2026-07-06 18:00:00",
+  "loads": [
+    {
+      "load_num": "HD-2026-004506",
+      "status_code": 30,
+      "customer_code": "C-0059",
+      "customer_name": "Brazos Steel Works",
+      "carrier_ref": 66803,
+      "equip": "V",
+      "weight_kg": 18234.4,
+      "dist_km": 488.6,
+      "pu_city": "Flower Mound",
+      "pu_state": "TX",
+      "pu_zip": "75028",
+      "pu_date": "2026-07-07",
+      "pu_departed_at": null,
+      "del_city": "Sugar Land",
+      "del_state": "TX",
+      "del_zip": "77479",
+      "del_date": "2026-07-07",
+      "del_arrived_at": null,
+      "entered_at": "2026-07-03 22:02:00",
+      "updated_at": "2026-07-06 16:37:00"
+    },
+    {
+      "load_num": "HD-2026-004425",
+      "status_code": 90,
+      "customer_code": "C-0045",
+      "customer_name": "Red River Grocers",
+      "carrier_ref": 66891,
+      "equip": "V",
+      "weight_kg": 16510.8,
+      "dist_km": 369.2,
+      "pu_city": "La Grange",
+      "pu_state": "TX",
+      "pu_zip": "78945",
+      "pu_date": "2026-07-05",
+      "pu_departed_at": "2026-07-05 19:08:00",
+      "del_city": "Dallas",
+      "del_state": "TX",
+      "del_zip": "75241",
+      "del_date": "2026-07-06",
+      "del_arrived_at": "2026-07-06 05:08:00",
+      "entered_at": "2026-07-03 18:08:00",
+      "updated_at": "2026-07-06 07:11:00"
+    },
+    {
+      "load_num": "HD-2026-004433",
+      "status_code": 90,
+      "customer_code": "C-0045",
+      "customer_name": "Red River Grocers",
+      "carrier_ref": 66891,
+      "equip": "V",
+      "weight_kg": 16964.4,
+      "dist_km": 333.5,
+      "pu_city": "West",
+      "pu_state": "TX",
+      "pu_zip": "76691",
+      "pu_date": "2026-07-05",
+      "pu_departed_at": "2026-07-05 21:05:00",
+      "del_city": "Houston",
+      "del_state": "TX",
+      "del_zip": "77099",
+      "del_date": "2026-07-06",
+      "del_arrived_at": "2026-07-06 03:05:00",
+      "entered_at": "2026-07-04 21:05:00",
+      "updated_at": "2026-07-06 05:30:00"
+    }
+  ],
+  "carriers": [
+    {
+      "carrier_id": 66891,
+      "carrier_name": "MISSION VALLEY TRUCKING LLC",
+      "mc_no": "1043902",
+      "dot_no": "2961540",
+      "home_city": "San Antonio",
+      "home_state": "TX",
+      "phone": "(210) 555-0159"
+    }
+  ],
+  "rates": [
+    {
+      "rate_id": 910013,
+      "load_num": "HD-2026-004506",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 510.52,
+      "created_at": "2026-07-06 16:37:00"
+    },
+    {
+      "rate_id": 910014,
+      "load_num": "HD-2026-004506",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 112.06,
+      "created_at": "2026-07-06 16:37:00"
+    },
+    {
+      "rate_id": 910015,
+      "load_num": "HD-2026-004506",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 627.19,
+      "created_at": "2026-07-06 16:37:00"
+    },
+    {
+      "rate_id": 910016,
+      "load_num": "HD-2026-004506",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 110.68,
+      "created_at": "2026-07-06 16:37:00"
+    },
+    {
+      "rate_id": 910017,
+      "load_num": "HD-2026-004425",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 432.65,
+      "created_at": "2026-07-06 07:11:00"
+    },
+    {
+      "rate_id": 910018,
+      "load_num": "HD-2026-004425",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 94.97,
+      "created_at": "2026-07-06 07:11:00"
+    },
+    {
+      "rate_id": 910019,
+      "load_num": "HD-2026-004425",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 529.2,
+      "created_at": "2026-07-06 07:11:00"
+    },
+    {
+      "rate_id": 910020,
+      "load_num": "HD-2026-004425",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 93.39,
+      "created_at": "2026-07-06 07:11:00"
+    },
+    {
+      "rate_id": 910021,
+      "load_num": "HD-2026-004433",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 394.17,
+      "created_at": "2026-07-06 05:30:00"
+    },
+    {
+      "rate_id": 910022,
+      "load_num": "HD-2026-004433",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 86.53,
+      "created_at": "2026-07-06 05:30:00"
+    },
+    {
+      "rate_id": 910023,
+      "load_num": "HD-2026-004433",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 482.15,
+      "created_at": "2026-07-06 05:30:00"
+    },
+    {
+      "rate_id": 910024,
+      "load_num": "HD-2026-004433",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 85.08,
+      "created_at": "2026-07-06 05:30:00"
+    }
+  ]
+}

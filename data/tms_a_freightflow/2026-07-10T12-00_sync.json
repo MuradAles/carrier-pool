@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-10T12:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127405649,
+      "status": "Completed",
+      "mileage": 197.9,
+      "totalSell": 441.36,
+      "totalBuy": 374.03,
+      "customer": {
+        "customerId": 881930,
+        "name": "Cowtown Auto Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 832028,
+        "name": "BLUEBONNET FREIGHT SYSTEMS",
+        "mcNumber": "655318",
+        "dotNumber": "1740092",
+        "phoneNumber": "+18305550172"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 36800.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "IRVING",
+          "state": "TX",
+          "zipCode": "75038",
+          "estimatedReadyDateTime": "2026-07-09T12:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T21:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T14:10:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HUTTO",
+          "state": "TX",
+          "zipCode": "78634",
+          "estimatedReadyDateTime": "2026-07-10T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T00:10:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-07T05:10:00-05:00",
+      "lastModifiedDate": "2026-07-10T01:05:00-05:00"
+    },
+    {
+      "shipmentId": 127405757,
+      "status": "Completed",
+      "mileage": 81.7,
+      "totalSell": 230.05,
+      "totalBuy": 201.8,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 836824,
+        "name": "IRON HORSE FLATBED CO",
+        "mcNumber": "1177336",
+        "dotNumber": "3288740",
+        "phoneNumber": "+19725550455"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 39000.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78724",
+          "estimatedReadyDateTime": "2026-07-09T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T21:59:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "SAN ANTONIO",
+          "state": "TX",
+          "zipCode": "78247",
+          "estimatedReadyDateTime": "2026-07-09T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T17:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T07:59:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-06T15:59:00-05:00",
+      "lastModifiedDate": "2026-07-10T09:19:00-05:00"
+    },
+    {
+      "shipmentId": 127405908,
+      "status": "Completed",
+      "mileage": 223.4,
+      "totalSell": 522.09,
+      "totalBuy": 457.97,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": {
+        "carrierMasterId": 833136,
+        "name": "TRINITY RIVER LOGISTICS INC",
+        "mcNumber": "843276",
+        "dotNumber": "2410558",
+        "phoneNumber": "+18175550231"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 39600.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "HILLSBORO",
+          "state": "TX",
+          "zipCode": "76645",
+          "estimatedReadyDateTime": "2026-07-09T14:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-09T23:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-09T17:48:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77099",
+          "estimatedReadyDateTime": "2026-07-10T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-10T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-10T04:48:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-08T09:48:00-05:00",
+      "lastModifiedDate": "2026-07-10T05:25:00-05:00"
+    }
+  ]
+}

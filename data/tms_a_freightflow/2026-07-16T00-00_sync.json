@@ -1,0 +1,77 @@
+{
+  "syncedAt": "2026-07-16T00:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127412794,
+      "status": "Booking",
+      "mileage": 296.0,
+      "totalSell": 628.7,
+      "totalBuy": null,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": null,
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 31300.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "COPPELL",
+          "state": "TX",
+          "zipCode": "75019",
+          "estimatedReadyDateTime": "2026-07-17T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-17T17:00:00-05:00",
+          "actualDepartureDateTime": null
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "SUGAR LAND",
+          "state": "TX",
+          "zipCode": "77479",
+          "estimatedReadyDateTime": "2026-07-18T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-18T17:00:00-05:00",
+          "actualDepartureDateTime": null
+        }
+      ],
+      "createdDate": "2026-07-15T14:03:00-05:00",
+      "lastModifiedDate": "2026-07-15T14:03:00-05:00"
+    },
+    {
+      "shipmentId": 127412960,
+      "status": "Booking",
+      "mileage": 284.2,
+      "totalSell": 697.54,
+      "totalBuy": null,
+      "customer": {
+        "customerId": 882970,
+        "name": "Bayou Provision Co"
+      },
+      "carrier": null,
+      "equipment": "53 ft Van | Reefer",
+      "weightTotal": 37500.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "NORTH RICHLAND HILLS",
+          "state": "TX",
+          "zipCode": "76180",
+          "estimatedReadyDateTime": "2026-07-17T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-17T17:00:00-05:00",
+          "actualDepartureDateTime": null
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "HOUSTON",
+          "state": "TX",
+          "zipCode": "77008",
+          "estimatedReadyDateTime": "2026-07-18T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-18T17:00:00-05:00",
+          "actualDepartureDateTime": null
+        }
+      ],
+      "createdDate": "2026-07-15T19:31:00-05:00",
+      "lastModifiedDate": "2026-07-15T19:31:00-05:00"
+    }
+  ]
+}

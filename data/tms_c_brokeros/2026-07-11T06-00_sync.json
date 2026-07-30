@@ -1,0 +1,202 @@
+{
+  "synced_at": "2026-07-11T11:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000d59u6ZX4",
+      "Name": "SHP6700953",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 274.1,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 784.31,
+      "bos__Carrier_Rate__c": 687.99,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000krBmF0jH",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-10T04:02:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000jB44WiiL",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-10T18:02:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Auto parts",
+          "bos__Weight__c": 32100.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 25.0
+        }
+      ],
+      "CreatedDate": "2026-07-09T01:02:00.000+0000",
+      "LastModifiedDate": "2026-07-10T19:59:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000iJPWl2Aq",
+      "Name": "SHP6700966",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 173.4,
+      "bos__Customer__c": "0011I00000mtOsE3o8",
+      "bos__Carrier__c": "0011I00000qCZ66ktD",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 569.3,
+      "bos__Carrier_Rate__c": 499.39,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000lYHaYeAF",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-10T19:28:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000O3xryE1R",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-11T05:28:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Auto parts",
+          "bos__Weight__c": 32500.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 25.0
+        }
+      ],
+      "CreatedDate": "2026-07-07T17:28:00.000+0000",
+      "LastModifiedDate": "2026-07-11T07:29:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000HDwNBPBo",
+      "Name": "SHP6700979",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 83.1,
+      "bos__Customer__c": "0011I00000W6ArWecE",
+      "bos__Carrier__c": "0011I00000cTcnCyJT",
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Customer_Rate__c": 344.7,
+      "bos__Carrier_Rate__c": 282.54,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000X24bnXVr",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-10T17:20:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000006hpyLo1n",
+          "bos__Scheduled_Date__c": "2026-07-10",
+          "bos__Arrival_Time__c": "2026-07-11T02:20:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Ice cream novelties",
+          "bos__Weight__c": 26900.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 21.0
+        }
+      ],
+      "CreatedDate": "2026-07-09T17:20:00.000+0000",
+      "LastModifiedDate": "2026-07-11T04:14:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000xdkp9sXL": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Texan Home Goods"
+    },
+    "0011I000003UEgxs3o": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Metroplex Ridge Logistics, Inc.",
+      "bos__MC_Number__c": "856920",
+      "bos__DOT_Number__c": "2489013"
+    },
+    "0011I00000krBmF0jH": {
+      "type": "Location",
+      "Name": "North Richland Hills Warehouse",
+      "bos__City__c": "North Richland Hills",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76180"
+    },
+    "0011I00000jB44WiiL": {
+      "type": "Location",
+      "Name": "Houston Warehouse",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77060"
+    },
+    "0011I00000mtOsE3o8": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Bluebonnet Grocery Co"
+    },
+    "0011I00000qCZ66ktD": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Montgomery County Haulers Inc",
+      "bos__MC_Number__c": "1233470",
+      "bos__DOT_Number__c": "3428907"
+    },
+    "0011I00000lYHaYeAF": {
+      "type": "Location",
+      "Name": "Spring Freight Terminal",
+      "bos__City__c": "Spring",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77373"
+    },
+    "0011I00000O3xryE1R": {
+      "type": "Location",
+      "Name": "Austin Cold Storage",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78745"
+    },
+    "0011I00000W6ArWecE": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Silverleaf Distributors"
+    },
+    "0011I00000cTcnCyJT": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Espinoza Brothers Trucking Co.",
+      "bos__MC_Number__c": "789003",
+      "bos__DOT_Number__c": "2044117"
+    },
+    "0011I00000X24bnXVr": {
+      "type": "Location",
+      "Name": "San Antonio Cross Dock",
+      "bos__City__c": "San Antonio",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78258"
+    },
+    "0011I000006hpyLo1n": {
+      "type": "Location",
+      "Name": "Austin Warehouse",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78724"
+    }
+  }
+}

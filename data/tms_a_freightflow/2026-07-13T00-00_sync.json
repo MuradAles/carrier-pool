@@ -1,0 +1,131 @@
+{
+  "syncedAt": "2026-07-13T00:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127409219,
+      "status": "Completed",
+      "mileage": 89.6,
+      "totalSell": 265.57,
+      "totalBuy": 221.31,
+      "customer": {
+        "customerId": 881930,
+        "name": "Cowtown Auto Supply"
+      },
+      "carrier": {
+        "carrierMasterId": 833820,
+        "name": "GULF COAST DRAYAGE LLC",
+        "mcNumber": "1005991",
+        "dotNumber": "2887431",
+        "phoneNumber": "+17135550264"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 29200.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "SCHERTZ",
+          "state": "TX",
+          "zipCode": "78154",
+          "estimatedReadyDateTime": "2026-07-12T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T00:48:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "LEANDER",
+          "state": "TX",
+          "zipCode": "78641",
+          "estimatedReadyDateTime": "2026-07-12T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T05:48:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-08T17:48:00-05:00",
+      "lastModifiedDate": "2026-07-12T07:03:00-05:00"
+    },
+    {
+      "shipmentId": 127409373,
+      "status": "Completed",
+      "mileage": 91.9,
+      "totalSell": 246.0,
+      "totalBuy": 219.64,
+      "customer": {
+        "customerId": 880048,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 831387,
+        "name": "RIO GRANDE HAULING CO",
+        "mcNumber": "771450",
+        "dotNumber": "1998233",
+        "phoneNumber": "+12105550143"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 30500.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "FLORESVILLE",
+          "state": "TX",
+          "zipCode": "78114",
+          "estimatedReadyDateTime": "2026-07-12T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T06:15:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "AUSTIN",
+          "state": "TX",
+          "zipCode": "78744",
+          "estimatedReadyDateTime": "2026-07-12T12:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T21:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T14:15:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-08T21:15:00-05:00",
+      "lastModifiedDate": "2026-07-12T15:52:00-05:00"
+    },
+    {
+      "shipmentId": 127409532,
+      "status": "Completed",
+      "mileage": 293.9,
+      "totalSell": 606.84,
+      "totalBuy": 523.14,
+      "customer": {
+        "customerId": 884595,
+        "name": "Panther Retail Group"
+      },
+      "carrier": {
+        "carrierMasterId": 830182,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",
+        "dotNumber": "3771394",
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 22000.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "MCKINNEY",
+          "state": "TX",
+          "zipCode": "75071",
+          "estimatedReadyDateTime": "2026-07-12T05:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T14:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T04:34:00-05:00"
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "KATY",
+          "state": "TX",
+          "zipCode": "77494",
+          "estimatedReadyDateTime": "2026-07-12T11:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-12T20:00:00-05:00",
+          "actualDepartureDateTime": "2026-07-12T13:34:00-05:00"
+        }
+      ],
+      "createdDate": "2026-07-11T03:34:00-05:00",
+      "lastModifiedDate": "2026-07-12T14:22:00-05:00"
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "synced_at": "2026-07-07T05:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000lx3Wo8PZ",
+      "Name": "SHP6700511",
+      "bos__Load_Status__c": "In Transit",
+      "bos__Distance_Miles__c": 289.9,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 809.68,
+      "bos__Carrier_Rate__c": 671.19,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000oaLLo1aM",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": null
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000009V6sGGIQ",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": null
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 42600.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 33.0
+        }
+      ],
+      "CreatedDate": "2026-07-04T09:26:00.000+0000",
+      "LastModifiedDate": "2026-07-07T03:34:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000ooNkCCVB",
+      "Name": "SHP6700368",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 243.1,
+      "bos__Customer__c": "0011I00000G5WZFEQb",
+      "bos__Carrier__c": "0011I00000OrJJdyEO",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 780.25,
+      "bos__Carrier_Rate__c": 661.23,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I000003Zovd6Bm",
+          "bos__Scheduled_Date__c": "2026-07-05",
+          "bos__Arrival_Time__c": "2026-07-06T02:09:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000llV9Mnks",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-06T09:09:00.000+0000"
+        },
+        {
+          "bos__Number__c": 3.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000001RXLrAAd",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-06T15:09:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Paper goods",
+          "bos__Weight__c": 22800.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 18.0
+        }
+      ],
+      "CreatedDate": "2026-07-05T00:09:00.000+0000",
+      "LastModifiedDate": "2026-07-06T16:15:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000Zn0eKCTX",
+      "Name": "SHP6700381",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 279.9,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 777.45,
+      "bos__Carrier_Rate__c": 694.15,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I0000098yMrQl5",
+          "bos__Scheduled_Date__c": "2026-07-05",
+          "bos__Arrival_Time__c": "2026-07-06T01:59:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I000009V6sGGIQ",
+          "bos__Scheduled_Date__c": "2026-07-06",
+          "bos__Arrival_Time__c": "2026-07-06T10:59:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Bottled water",
+          "bos__Weight__c": 25900.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 20.0
+        }
+      ],
+      "CreatedDate": "2026-07-02T18:59:00.000+0000",
+      "LastModifiedDate": "2026-07-06T13:06:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000G5WZFEQb": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Pecos Industrial Supply"
+    },
+    "0011I000003UEgxs3o": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Metroplex Ridge Logistics, Inc.",
+      "bos__MC_Number__c": "856920",
+      "bos__DOT_Number__c": "2489013"
+    },
+    "0011I00000oaLLo1aM": {
+      "type": "Location",
+      "Name": "Richardson Distribution Ctr",
+      "bos__City__c": "Richardson",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75080"
+    },
+    "0011I000009V6sGGIQ": {
+      "type": "Location",
+      "Name": "Stafford Freight Terminal",
+      "bos__City__c": "Stafford",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77477"
+    },
+    "0011I00000OrJJdyEO": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Delta Prime, L.L.C.",
+      "bos__MC_Number__c": "884201",
+      "bos__DOT_Number__c": "2551377"
+    },
+    "0011I000003Zovd6Bm": {
+      "type": "Location",
+      "Name": "Houston Cross Dock",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77002"
+    },
+    "0011I00000llV9Mnks": {
+      "type": "Location",
+      "Name": "Columbus Yard",
+      "bos__City__c": "Columbus",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78934"
+    },
+    "0011I000001RXLrAAd": {
+      "type": "Location",
+      "Name": "San Antonio Freight Terminal",
+      "bos__City__c": "San Antonio",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78245"
+    },
+    "0011I00000udoxsTen": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Ridgeline Materials"
+    },
+    "0011I0000098yMrQl5": {
+      "type": "Location",
+      "Name": "Grand Prairie Cross Dock",
+      "bos__City__c": "Grand Prairie",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75050"
+    }
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "synced_at": "2026-07-13T05:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000gJBRQkHa",
+      "Name": "SHP6701174",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 272.8,
+      "bos__Customer__c": "0011I00000W6ArWecE",
+      "bos__Carrier__c": "0011I00000OrJJdyEO",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 757.72,
+      "bos__Carrier_Rate__c": 676.54,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000aM1gBp2a",
+          "bos__Scheduled_Date__c": "2026-07-11",
+          "bos__Arrival_Time__c": "2026-07-11T17:38:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000F5hXa5aW",
+          "bos__Scheduled_Date__c": "2026-07-12",
+          "bos__Arrival_Time__c": "2026-07-12T06:38:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Packaged foods",
+          "bos__Weight__c": 20400.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 16.0
+        }
+      ],
+      "CreatedDate": "2026-07-08T06:38:00.000+0000",
+      "LastModifiedDate": "2026-07-12T08:23:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000cqnc5zjJ",
+      "Name": "SHP6701187",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 174.2,
+      "bos__Customer__c": "0011I00000mtOsE3o8",
+      "bos__Carrier__c": "0011I00000gutMK6yx",
+      "bos__Equipment_Type__c": "Flatbed",
+      "bos__Customer_Rate__c": 647.5,
+      "bos__Carrier_Rate__c": 548.73,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000Q9AHooRD",
+          "bos__Scheduled_Date__c": "2026-07-12",
+          "bos__Arrival_Time__c": "2026-07-12T10:28:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000WLSo7OMs",
+          "bos__Scheduled_Date__c": "2026-07-12",
+          "bos__Arrival_Time__c": "2026-07-12T20:28:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Roofing shingles",
+          "bos__Weight__c": 29800.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 23.0
+        }
+      ],
+      "CreatedDate": "2026-07-09T00:28:00.000+0000",
+      "LastModifiedDate": "2026-07-12T22:52:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000KEnX19tz",
+      "Name": "SHP6701200",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 231.1,
+      "bos__Customer__c": "0011I000003YEB6g03",
+      "bos__Carrier__c": "0011I0000051gR8MJj",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 766.88,
+      "bos__Carrier_Rate__c": 628.59,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000yA2pLD1c",
+          "bos__Scheduled_Date__c": "2026-07-12",
+          "bos__Arrival_Time__c": "2026-07-12T10:01:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000UjBaLspz",
+          "bos__Scheduled_Date__c": "2026-07-12",
+          "bos__Arrival_Time__c": "2026-07-12T18:01:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Packaged foods",
+          "bos__Weight__c": 25400.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 20.0
+        }
+      ],
+      "CreatedDate": "2026-07-09T04:01:00.000+0000",
+      "LastModifiedDate": "2026-07-12T19:45:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I00000W6ArWecE": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Silverleaf Distributors"
+    },
+    "0011I00000OrJJdyEO": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Delta Prime, L.L.C.",
+      "bos__MC_Number__c": "884201",
+      "bos__DOT_Number__c": "2551377"
+    },
+    "0011I00000aM1gBp2a": {
+      "type": "Location",
+      "Name": "Cleburne Fulfillment Ctr",
+      "bos__City__c": "Cleburne",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76031"
+    },
+    "0011I00000F5hXa5aW": {
+      "type": "Location",
+      "Name": "Deer Park Distribution Ctr",
+      "bos__City__c": "Deer Park",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77536"
+    },
+    "0011I00000mtOsE3o8": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Bluebonnet Grocery Co"
+    },
+    "0011I00000gutMK6yx": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Trinity Bay Transport Co.",
+      "bos__MC_Number__c": "1015228",
+      "bos__DOT_Number__c": "2901744"
+    },
+    "0011I00000Q9AHooRD": {
+      "type": "Location",
+      "Name": "Austin Yard",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78758"
+    },
+    "0011I00000WLSo7OMs": {
+      "type": "Location",
+      "Name": "Houston Distribution Ctr",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77032"
+    },
+    "0011I000003YEB6g03": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Gulf Coast Foods"
+    },
+    "0011I0000051gR8MJj": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Guadalupe Valley Freight, LLC",
+      "bos__MC_Number__c": "701558",
+      "bos__DOT_Number__c": "1802996"
+    },
+    "0011I00000yA2pLD1c": {
+      "type": "Location",
+      "Name": "Farmers Branch Cross Dock",
+      "bos__City__c": "Farmers Branch",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75234"
+    },
+    "0011I00000UjBaLspz": {
+      "type": "Location",
+      "Name": "Austin Freight Terminal",
+      "bos__City__c": "Austin",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78741"
+    }
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "synced_at": "2026-07-15T23:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO900000boBgPOWF",
+      "Name": "SHP6701486",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 291.7,
+      "bos__Customer__c": "0011I000003YEB6g03",
+      "bos__Carrier__c": "0011I00000GZqOfSSX",
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Customer_Rate__c": 933.9,
+      "bos__Carrier_Rate__c": 805.09,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000C1ybBmvc",
+          "bos__Scheduled_Date__c": "2026-07-15",
+          "bos__Arrival_Time__c": "2026-07-15T06:03:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000XfOGwCVJ",
+          "bos__Scheduled_Date__c": "2026-07-15",
+          "bos__Arrival_Time__c": "2026-07-15T17:03:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Frozen poultry",
+          "bos__Weight__c": 21300.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 16.0
+        }
+      ],
+      "CreatedDate": "2026-07-12T06:03:00.000+0000",
+      "LastModifiedDate": "2026-07-15T18:36:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000XNS68UY8",
+      "Name": "SHP6701499",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 210.0,
+      "bos__Customer__c": "0011I00000xdkp9sXL",
+      "bos__Carrier__c": "0011I00000cTcnCyJT",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 635.04,
+      "bos__Carrier_Rate__c": 567.0,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I000003Zovd6Bm",
+          "bos__Scheduled_Date__c": "2026-07-15",
+          "bos__Arrival_Time__c": "2026-07-15T04:49:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000R5QlJKoQ",
+          "bos__Scheduled_Date__c": "2026-07-15",
+          "bos__Arrival_Time__c": "2026-07-15T16:49:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 36200.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 28.0
+        }
+      ],
+      "CreatedDate": "2026-07-12T23:49:00.000+0000",
+      "LastModifiedDate": "2026-07-15T18:49:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I000003YEB6g03": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Gulf Coast Foods"
+    },
+    "0011I00000GZqOfSSX": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Bay Area Cold Carriers, LLC",
+      "bos__MC_Number__c": "1067712",
+      "bos__DOT_Number__c": "2974885"
+    },
+    "0011I00000C1ybBmvc": {
+      "type": "Location",
+      "Name": "San Antonio Cold Storage",
+      "bos__City__c": "San Antonio",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78201"
+    },
+    "0011I00000XfOGwCVJ": {
+      "type": "Location",
+      "Name": "Arlington Logistics Park",
+      "bos__City__c": "Arlington",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "76011"
+    },
+    "0011I00000xdkp9sXL": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Texan Home Goods"
+    },
+    "0011I00000cTcnCyJT": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Espinoza Brothers Trucking Co.",
+      "bos__MC_Number__c": "789003",
+      "bos__DOT_Number__c": "2044117"
+    },
+    "0011I000003Zovd6Bm": {
+      "type": "Location",
+      "Name": "Houston Cross Dock",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77002"
+    },
+    "0011I00000R5QlJKoQ": {
+      "type": "Location",
+      "Name": "Schertz Cross Dock",
+      "bos__City__c": "Schertz",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78154"
+    }
+  }
+}

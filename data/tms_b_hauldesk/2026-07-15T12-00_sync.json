@@ -1,0 +1,170 @@
+{
+  "synced_at": "2026-07-15 12:00:00",
+  "loads": [
+    {
+      "load_num": "HD-2026-005020",
+      "status_code": 90,
+      "customer_code": "C-0052",
+      "customer_name": "Capitol Office Products",
+      "carrier_ref": 66803,
+      "equip": "V",
+      "weight_kg": 13199.6,
+      "dist_km": 431.6,
+      "pu_city": "Houston",
+      "pu_state": "TX",
+      "pu_zip": "77094",
+      "pu_date": "2026-07-14",
+      "pu_departed_at": "2026-07-14 19:35:00",
+      "del_city": "Irving",
+      "del_state": "TX",
+      "del_zip": "75061",
+      "del_date": "2026-07-15",
+      "del_arrived_at": "2026-07-15 07:35:00",
+      "entered_at": "2026-07-13 08:35:00",
+      "updated_at": "2026-07-15 09:28:00"
+    },
+    {
+      "load_num": "HD-2026-005024",
+      "status_code": 90,
+      "customer_code": "C-0052",
+      "customer_name": "Capitol Office Products",
+      "carrier_ref": 67024,
+      "equip": "V",
+      "weight_kg": 15195.4,
+      "dist_km": 443.1,
+      "pu_city": "Dallas",
+      "pu_state": "TX",
+      "pu_zip": "75235",
+      "pu_date": "2026-07-14",
+      "pu_departed_at": "2026-07-14 21:59:00",
+      "del_city": "Houston",
+      "del_state": "TX",
+      "del_zip": "77002",
+      "del_date": "2026-07-15",
+      "del_arrived_at": "2026-07-15 06:59:00",
+      "entered_at": "2026-07-11 13:59:00",
+      "updated_at": "2026-07-15 07:21:00"
+    },
+    {
+      "load_num": "HD-2026-005033",
+      "status_code": 90,
+      "customer_code": "C-0066",
+      "customer_name": "Hill Country Dairy",
+      "carrier_ref": 67064,
+      "equip": "V",
+      "weight_kg": 17508.7,
+      "dist_km": 300.8,
+      "pu_city": "Austin",
+      "pu_state": "TX",
+      "pu_zip": "78702",
+      "pu_date": "2026-07-14",
+      "pu_departed_at": "2026-07-14 19:29:00",
+      "del_city": "Pasadena",
+      "del_state": "TX",
+      "del_zip": "77502",
+      "del_date": "2026-07-15",
+      "del_arrived_at": "2026-07-15 04:29:00",
+      "entered_at": "2026-07-12 18:29:00",
+      "updated_at": "2026-07-15 06:14:00"
+    }
+  ],
+  "carriers": [],
+  "rates": [
+    {
+      "rate_id": 910356,
+      "load_num": "HD-2026-005020",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 483.83,
+      "created_at": "2026-07-15 09:28:00"
+    },
+    {
+      "rate_id": 910357,
+      "load_num": "HD-2026-005020",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 106.21,
+      "created_at": "2026-07-15 09:28:00"
+    },
+    {
+      "rate_id": 910358,
+      "load_num": "HD-2026-005020",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 561.71,
+      "created_at": "2026-07-15 09:28:00"
+    },
+    {
+      "rate_id": 910359,
+      "load_num": "HD-2026-005020",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 99.13,
+      "created_at": "2026-07-15 09:28:00"
+    },
+    {
+      "rate_id": 910360,
+      "load_num": "HD-2026-005024",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 474.07,
+      "created_at": "2026-07-15 07:21:00"
+    },
+    {
+      "rate_id": 910361,
+      "load_num": "HD-2026-005024",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 104.06,
+      "created_at": "2026-07-15 07:21:00"
+    },
+    {
+      "rate_id": 910362,
+      "load_num": "HD-2026-005024",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 589.7,
+      "created_at": "2026-07-15 07:21:00"
+    },
+    {
+      "rate_id": 910363,
+      "load_num": "HD-2026-005024",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 104.06,
+      "created_at": "2026-07-15 07:21:00"
+    },
+    {
+      "rate_id": 910364,
+      "load_num": "HD-2026-005033",
+      "side": "pay",
+      "code": "LINEHAUL",
+      "amount_usd": 358.63,
+      "created_at": "2026-07-15 06:14:00"
+    },
+    {
+      "rate_id": 910365,
+      "load_num": "HD-2026-005033",
+      "side": "pay",
+      "code": "FUEL",
+      "amount_usd": 78.72,
+      "created_at": "2026-07-15 06:14:00"
+    },
+    {
+      "rate_id": 910366,
+      "load_num": "HD-2026-005033",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 431.23,
+      "created_at": "2026-07-15 06:14:00"
+    },
+    {
+      "rate_id": 910367,
+      "load_num": "HD-2026-005033",
+      "side": "bill",
+      "code": "FUEL",
+      "amount_usd": 76.1,
+      "created_at": "2026-07-15 06:14:00"
+    }
+  ]
+}

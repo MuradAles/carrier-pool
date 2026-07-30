@@ -1,0 +1,188 @@
+{
+  "synced_at": "2026-07-08T17:00:00.000+0000",
+  "records": [
+    {
+      "Id": "a0jO9000005cUiGNic",
+      "Name": "SHP6700576",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 308.5,
+      "bos__Customer__c": "0011I000003YEB6g03",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 928.27,
+      "bos__Carrier_Rate__c": 786.67,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I000004diwJUk8",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-07T20:12:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000Xtx6PvL6",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-08T10:12:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Household goods",
+          "bos__Weight__c": 20800.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 16.0
+        }
+      ],
+      "CreatedDate": "2026-07-06T20:12:00.000+0000",
+      "LastModifiedDate": "2026-07-08T11:43:00.000+0000"
+    },
+    {
+      "Id": "a0jO900000joFrRGLt",
+      "Name": "SHP6700589",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 271.6,
+      "bos__Customer__c": "0011I00000udoxsTen",
+      "bos__Carrier__c": "0011I00000gutMK6yx",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 810.84,
+      "bos__Carrier_Rate__c": 687.15,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000oaLLo1aM",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-07T17:26:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000wBg17wiC",
+          "bos__Scheduled_Date__c": "2026-07-08",
+          "bos__Arrival_Time__c": "2026-07-08T06:26:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Packaged foods",
+          "bos__Weight__c": 40800.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 31.0
+        }
+      ],
+      "CreatedDate": "2026-07-06T14:26:00.000+0000",
+      "LastModifiedDate": "2026-07-08T07:37:00.000+0000"
+    },
+    {
+      "Id": "a0jO9000002vEF72Gn",
+      "Name": "SHP6700602",
+      "bos__Load_Status__c": "Paid",
+      "bos__Distance_Miles__c": 276.3,
+      "bos__Customer__c": "0011I00000mtOsE3o8",
+      "bos__Carrier__c": "0011I000003UEgxs3o",
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Customer_Rate__c": 832.21,
+      "bos__Carrier_Rate__c": 693.51,
+      "bos__Stops__r": [
+        {
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000oaLLo1aM",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-07T09:35:00.000+0000"
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000mzySzM3w",
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": "2026-07-07T18:35:00.000+0000"
+        }
+      ],
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "Plastic resin totes",
+          "bos__Weight__c": 41200.0,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Pallet_Count__c": 32.0
+        }
+      ],
+      "CreatedDate": "2026-07-05T08:35:00.000+0000",
+      "LastModifiedDate": "2026-07-07T19:01:00.000+0000"
+    }
+  ],
+  "referenced_records": {
+    "0011I000003YEB6g03": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Gulf Coast Foods"
+    },
+    "0011I000003UEgxs3o": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Metroplex Ridge Logistics, Inc.",
+      "bos__MC_Number__c": "856920",
+      "bos__DOT_Number__c": "2489013"
+    },
+    "0011I000004diwJUk8": {
+      "type": "Location",
+      "Name": "Missouri City Logistics Park",
+      "bos__City__c": "Missouri City",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77459"
+    },
+    "0011I00000Xtx6PvL6": {
+      "type": "Location",
+      "Name": "Lewisville Logistics Park",
+      "bos__City__c": "Lewisville",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75067"
+    },
+    "0011I00000udoxsTen": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Ridgeline Materials"
+    },
+    "0011I00000gutMK6yx": {
+      "type": "Account",
+      "record_type": "Carrier",
+      "Name": "Trinity Bay Transport Co.",
+      "bos__MC_Number__c": "1015228",
+      "bos__DOT_Number__c": "2901744"
+    },
+    "0011I00000oaLLo1aM": {
+      "type": "Location",
+      "Name": "Richardson Distribution Ctr",
+      "bos__City__c": "Richardson",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "75080"
+    },
+    "0011I00000wBg17wiC": {
+      "type": "Location",
+      "Name": "Houston Warehouse",
+      "bos__City__c": "Houston",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77084"
+    },
+    "0011I00000mtOsE3o8": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Bluebonnet Grocery Co"
+    },
+    "0011I00000mzySzM3w": {
+      "type": "Location",
+      "Name": "Katy Cross Dock",
+      "bos__City__c": "Katy",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77450"
+    }
+  }
+}
