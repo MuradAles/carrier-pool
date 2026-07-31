@@ -376,10 +376,10 @@ bias over an undocumented non-uniform one.
 
 Two others worth naming before they are found:
 
-- **The shared carrier pool is designed, not built** (`DECISIONS.md` D17, D4). Field by
-  field against the real schema, including the finding that k-anonymity is arithmetically
-  unavailable at three brokers — stated rather than papered over with a threshold that
-  does not exist.
+- **The shared carrier pool discloses its contributors** (`DECISIONS.md` D17, D26). It was
+  built, and money provably does not cross — but k-anonymity is arithmetically unavailable
+  at three brokers, and watching a broker opt out attributes its rows exactly. Stated
+  rather than papered over with a threshold that does not exist.
 - **`pricing.py:481` has an unreachable `_provenance` fallback.** Dead code found during
   review, deliberately left, producing no wrong answer.
 

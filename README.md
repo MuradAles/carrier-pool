@@ -1,3 +1,31 @@
+## How to run this
+
+```bash
+docker compose up          # then open http://localhost:5173
+```
+
+That is the whole sequence from a clean checkout. Nothing else to install, no API keys, no network at runtime. The backend applies its schema and ingests all 132 sync files in chronological order before Uvicorn accepts a connection, so the UI is never up against an empty database. About 11 seconds to the first response on an M4, of which roughly 4 is this project's own work.
+
+The fastest way to see it working without the UI:
+
+```bash
+cd backend && ./.venv/bin/python -m scripts.e2e_check
+```
+
+It builds a throwaway database, ingests all 132 files, and asserts four named day-11 loads (one per lane tier) against figures computed before the code existed.
+
+| Document | What is in it |
+|---|---|
+| [`RUNNING.md`](RUNNING.md) | Every command, executed rather than assumed: timings, ports, the credential split, how to run the tests, how to regenerate the fixtures, and a troubleshooting table |
+| [`DECISIONS.md`](DECISIONS.md) | The judgment calls and the alternatives rejected, what I would do next, and the honest limits. [`DECISIONS-APPENDIX.md`](DECISIONS-APPENDIX.md) holds the arithmetic behind them |
+| [`SYSTEM-DESIGN-CARRIER-POOL.md`](SYSTEM-DESIGN-CARRIER-POOL.md) | The system design: requirements, entities, API, and one load traced end to end |
+| [`WALKTHROUGH.md`](WALKTHROUGH.md) | One day-11 answer worked out by hand, checkable with the JSON files and a calculator |
+| [`data/TRACEABILITY.md`](data/TRACEABILITY.md) | Per day-11 load: the behaviour it proves, its supporting history, and the expected answer. Computed from the fixtures before any of this code was written |
+
+Start at load `127412794` under broker FreightFlow. It is the one `WALKTHROUGH.md` traces.
+
+---
+
 # Take-Home: Carrier Recommendation for Freight Brokers
 
 - You may use AI coding tools (Claude Code, Codex, Cursor, etc) are strongly encouraged.
