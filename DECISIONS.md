@@ -1189,6 +1189,21 @@ blocked by process 2606. Process 2606 waits for RowExclusiveLock on relation 164
 `carrier_pool_app` from the host. The same suite against a *private* database passes 454
 deterministically.
 
+**A third symptom, and one observation I could not fully explain.** The same collision also
+takes down the *application*: at `00:08:07`, with the integration suite running against
+`carrier_pool` while the backend booted, the lifespan ingest died on
+`psycopg.errors.UniqueViolation: duplicate key value violates unique constraint
+"lane_stats_broker_id_tier_origin_key_dest_key_equipment_key"` and uvicorn reported
+`Application startup failed. Exiting.` So a reviewer who runs the test suite while the stack is
+up can lose the backend, not merely the data.
+
+Separately, and left unresolved: one boot logged `ingest complete: 132 files … 132 files
+ingested` and `startup complete`, and ~70 seconds later `loads`, `sync_files` and `lane_stats`
+were all `0`, with no pytest process running and no connection to that database. A plain restart
+produced a correct, populated database (295 / 132 / 445), stable across two further restarts. It
+is recorded here without a diagnosis because I could not reproduce it deliberately, and a
+guessed cause in this file would be worth less than an honest gap.
+
 *But concurrency is not the whole cause.* Three consecutive invocations of the identical
 command, verified beforehand at **zero** running pytest processes and with the backend container
 stopped:

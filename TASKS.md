@@ -189,11 +189,11 @@ Correctness and clarity only. README:101 — visual polish counts for nothing.
 
 | # | Task | Agent | Depends | Done when |
 |---|---|---|---|---|
-| [ ] X1 | README run section — exact command sequence, from clean checkout | builder | H1 | A stranger can reproduce results |
-| [ ] X2 | `DECISIONS.md`: judgment calls, rejected alternatives, honest limits | builder | H5 | D1–D4 plus what `breaker` couldn't break |
+| [x] X1 | Run section — exact command sequence, from clean checkout | builder | H1 | `RUNNING.md`. Every command executed, not assumed. Per-phase cold-start breakdown with the machine named, after two measurements disagreed 20× and agreed only on the ~4s that is our code |
+| [x] X2 | `DECISIONS.md`: judgment calls, rejected alternatives, honest limits | builder | H5 | 25 decisions + limitations. Every claim paired with what it does **not** reach — *"tenant isolation holds against a query, not against a caller"*. Answers the README's millions-of-loads question with the actual bottleneck |
 | [x] X3 | Shared-pool section — what crosses the broker boundary, what never does, how it's enforced | builder | D4 | **D17**, field by field against the real schema. Establishes that k-anonymity is arithmetically unavailable at three brokers and says so rather than claiming a threshold that doesn't exist |
-| [ ] X4 | Clean-checkout rehearsal: `git clone` → `docker compose up` → verify | integration-tester | X1 | Works on a machine with nothing cached |
-| [ ] X5 | Walkthrough notes for the review call — trace one day-11 answer end to end by hand | — | X4 | Defensible without the code |
+| [x] X4 | Clean-checkout rehearsal: `docker compose down -v` → `up` → verify | integration-tester | X1 | Ran from an empty volume. **Nothing needed a step the document didn't already have.** RLS re-verified forced on all 7 tenant tables, app role back at `rolsuper=f, rolbypassrls=f` |
+| [x] X5 | Walkthrough notes for the review call — trace one day-11 answer end to end by hand | — | X4 | `WALKTHROUGH.md`. ZIP3 pool rebuilt with a throwaway parser **independent of production code**, reproducing $518.00/$526.88/$534.28 — every number checkable with the JSON and a calculator |
 
 ---
 

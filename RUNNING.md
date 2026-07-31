@@ -329,25 +329,49 @@ assert it exists.
 
 ## 6. Tests
 
-There is a checked-in virtualenv at `backend/.venv`. Use it:
+### Stop the backend container first. This is not optional.
 
 ```
-$ cd backend && ./.venv/bin/python -m pytest tests -q
+docker compose stop backend        # leave db running — the suite needs it
+cd backend && ./.venv/bin/python -m pytest tests -q
+docker compose start backend       # afterwards; it re-ingests on the way up
+```
+
+The `db` service must stay up — the suite reaches Postgres at `localhost:5432`, which is
+where compose publishes it. The **backend** must not.
+
+**Why, and what you see if you skip it.** The integration suite `TRUNCATE`s the seven
+tenant tables of the shared `carrier_pool` database around every test. A backend that is
+serving requests is reading those same tables, and the two deadlock:
+
+```
+$ ./.venv/bin/python -m pytest tests -q          # stack up, UI open in a browser
+10 failed, 410 passed, 36 errors in 93.81s
+
+E   psycopg.errors.DeadlockDetected: deadlock detected
+E   DETAIL:  Process 6180 waits for AccessExclusiveLock on relation 251774 of database
+E            16384; blocked by process 6342.
+E            Process 6342 waits for RowExclusiveLock on relation 251791; blocked by 6180.
+```
+
+This is the ordinary reviewer path — `docker compose up`, look at the UI, run the tests —
+so it is worth being precise about the trigger. **An idle backend is usually fine; a
+backend answering requests is not.** With the stack up and nothing touching the API, three
+consecutive full runs passed 454. With the UI being polled during the run, the same
+command produced the failures above, and `pytest tests/integration -q` alone under the
+same load gave `16 failed, 11 passed, 35 errors`. So "it passed for me once with the stack
+up" is not evidence the combination is safe — it means nothing was talking to the API.
+
+### The count
+
+On a quiet machine with the backend container stopped, run twice back to back:
+
+```
+454 passed, 1 warning in 54.07s
 454 passed, 1 warning in 53.65s
 ```
 
-If you would rather build your own — verified from scratch in a throwaway venv with only
-the dependencies `pyproject.toml` declares, no editable install needed (the conftest puts
-`backend/` on `sys.path`):
-
-```
-python3 -m venv .venv
-./.venv/bin/pip install "fastapi>=0.115" "uvicorn[standard]>=0.32" "psycopg[binary]>=3.2" \
-                        "pydantic>=2.9" "pytest>=8.3" "httpx>=0.27"
-./.venv/bin/python -m pytest tests -q     # 454 passed in 53.00s
-```
-
-Per suite:
+Per suite, same conditions:
 
 | suite | tests | time | needs Postgres |
 |---|---|---|---|
@@ -356,10 +380,55 @@ Per suite:
 | `tests/integration` | 57 | 34.86s | yes |
 | `tests/adversarial` | 88 | 16.45s | yes |
 
-The DB-backed suites reach Postgres at `localhost:5432`, which is where `docker compose`
-publishes it. Bring the stack up first.
+If you would rather build your own environment than use the checked-in `backend/.venv` —
+verified from scratch in a throwaway venv with only the dependencies `pyproject.toml`
+declares, no editable install needed (the conftest puts `backend/` on `sys.path`):
 
-### Three things that will bite you
+```
+python3 -m venv .venv
+./.venv/bin/pip install "fastapi>=0.115" "uvicorn[standard]>=0.32" "psycopg[binary]>=3.2" \
+                        "pydantic>=2.9" "pytest>=8.3" "httpx>=0.27"
+./.venv/bin/python -m pytest tests -q     # 454 passed in 53.00s
+```
+
+### The first run after the database changes underneath it is unreliable
+
+**This is a real defect in the test suite, not a caveat.** With the backend stopped and
+nothing else running, the first invocation after the database has been disturbed — the
+backend repopulating it, an earlier interrupted run — frequently does not pass. Three
+separate attempts, each the first run after restarting and stopping the backend:
+
+```
+attempt 1:  14 failed, 440 passed
+attempt 2:  430 passed, 24 errors      psycopg.errors.DeadlockDetected
+attempt 3:    1 failed, 453 passed     psycopg.errors.InternalError_: tuple concurrently updated
+```
+
+Immediately re-running the identical command passed 454 every time — four consecutive
+clean runs after attempt 1, two after attempt 3.
+
+**The part that matters: it does not always look like an infrastructure error.** Among the
+failures observed were plain wrong-value assertions —
+
+```
+E   AssertionError: assert [] == ['2026-07-06T...00_sync.json']
+E   assert 0 == 3
+E   assert None is not None
+```
+
+— and a colleague reproducing the same flakiness saw `assert 9 == 12` and a top-ranked
+carrier of `IRON HORSE FLATBED CO` where `ALAMO CHILL TRANSPORT` was expected. A reviewer
+reading that would reasonably conclude the ranking is broken. It is not; the suite raced
+itself and read a half-truncated database.
+
+**So: if the first run fails, run it again before believing it.** If the second run also
+fails, that is a real result worth reporting. This is recorded as a known limitation in
+`DECISIONS.md` — the fix is per-run database isolation for the integration suite, which
+the adversarial suite already does and the integration suite does not.
+
+### Three more things that will bite you
+
+Distinct from the two problems above, and from each other.
 
 **1. Do not run the tests inside the backend container — they will lie to you.** Running
 them there is the obvious thing to try, and it reports a healthy-looking green:
@@ -396,9 +465,9 @@ All 85 are errors at `admin_conn` fixture setup — the session never starts. No
 corrupted and no data is wrong; re-run it alone and it passes. Sequential invocations are
 fine, which is how the per-suite table above was produced.
 
-**3. The integration suite empties the database the UI is reading.** Separately from item
-2: it truncates the seven tenant tables around every test, on the shared `carrier_pool`
-database that the running stack also uses. After a run:
+**3. Afterwards, the database is empty.** Even on a completely clean run, the integration
+suite leaves the seven tenant tables truncated — that is the same truncation that causes
+the deadlock above, seen from the other end. After a run:
 
 ```
 $ curl -s ".../api/loads?broker_id=broker_a&status=ACTIVE" | ...
@@ -479,6 +548,8 @@ bytes, so it is a no-op — but there is no reason to do it.
 |---|---|---|
 | `/api/health` reports fewer than 132 sync files | `./data:/data:ro` not mounted | check you ran compose from the repo root |
 | UI lists no loads, health is `ok` | you ran the integration suite; the tenant tables are truncated | `curl -X POST localhost:8000/api/admin/ingest` |
+| `psycopg.errors.DeadlockDetected` during pytest | the backend container is serving while the suite truncates | `docker compose stop backend`, then re-run — §6 |
+| pytest fails once, passes on an immediate re-run | the suite's first-run race after the database changed under it — a known defect | re-run before believing it; §6 |
 | `psycopg.errors.InternalError_: tuple concurrently updated` | two pytest invocations at once | run them one at a time |
 | 88 tests "skipped" | pytest run inside the container | run from the host |
 | `up` seems to hang, no `backend` output at all | Postgres `initdb` on an empty volume — minutes on a slow disk | `docker compose logs -f db`; see §1 |
@@ -510,8 +581,12 @@ app role came back `rolsuper=f, rolbypassrls=f` with RLS forced on all seven ten
 `127412794` returned ZIP3 / 12 loads / medium / **$526.88 ($518.00–$534.28)** with IBRAHIM
 TRANSPORT INC at **84.3**; all six UI routes answered through the Vite proxy with the
 cross-broker request 404-ing; `scripts.e2e_check` passed in 10.6s; the full suite came back
-**454 passed in 50.94s**, left the tenant tables truncated exactly as §6 warns, and one
+**454 passed**, left the tenant tables truncated exactly as §6 warns, and one
 `POST /api/admin/ingest` (4.1s) restored all five day-11 loads.
+
+The suite numbers in §6 were measured separately and deliberately: backend container
+stopped, nothing polling the API, and after discarding the first run — which is the
+condition §6 tells you to reproduce, and the only one under which the count is stable.
 
 **Nothing needed a step that is not on this page.** That was the thing being tested — a
 reviewer who has to improvise has found a gap — and the sequence above is the whole of it.
