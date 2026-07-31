@@ -56,7 +56,7 @@ export function RankedCarriersPanel({ brokerId, loadId }: Props) {
         <h3>Carriers, ranked</h3>
         <span className="sub">
           {recommendations.state === "ready"
-            ? `${recommendations.data.carriers.length} candidates · one column per signal, the bar is the score it earned`
+            ? `${recommendations.data.carriers.length} candidates · one row per signal, the bar is the credit it earned`
             : "who to call, and why"}
         </span>
       </div>
@@ -91,13 +91,9 @@ function Ranking({ ranking }: { ranking: Recommendations }) {
     );
   }
 
-  // The column layout follows whatever signals the API scored, in its order,
-  // with its labels — the browser does not know the signal list.
-  const columns = carriers[0].signals;
-
-  // The reference line in each cell: the best value any candidate reached for
-  // that signal. A position, never a printed number, and the whole reason this
-  // grid is readable — a bar means nothing without the field to compare it to.
+  // The reference tick on each bar: the best value any candidate reached for
+  // that signal. A position, never a printed number, and the whole reason a bar
+  // is readable — a bar means nothing without the field to compare it to.
   const best = new Map<string, number>();
   for (const carrier of carriers) {
     for (const signal of carrier.signals) {
@@ -129,13 +125,6 @@ function Ranking({ ranking }: { ranking: Recommendations }) {
       <div className="cgrid-hd">
         <div className="h">Carrier</div>
         <div className="h">Score</div>
-        <div className="sigcols">
-          {columns.map((column) => (
-            <div className="sh" key={column.name}>
-              <span className="n">{column.label}</span>
-            </div>
-          ))}
-        </div>
       </div>
 
       {carriers.map((scored, index) => (
@@ -152,9 +141,9 @@ function Ranking({ ranking }: { ranking: Recommendations }) {
       <div className="note">
         Order is exactly what the ranking API returned — <b>not re-sorted, filtered or trimmed
         in the browser</b>. The bottom carrier is shown with its reasons rather than dropped,
-        because "why is nobody good for this lane" is a real answer. The dashed rule inside
-        each cell marks the best value any candidate reached for that signal, so a gap is
-        visible without arithmetic.
+        because "why is nobody good for this lane" is a real answer. On each bar, the tick
+        marks the best value any candidate reached for that signal, so a gap is visible
+        without arithmetic.
       </div>
     </>
   );
@@ -175,12 +164,10 @@ function CarrierRow({
 }) {
   const { carrier } = scored;
 
-  // A reason is marked negative only when the signal it came from scored zero.
-  // That is a fact off the payload, not a judgement made here — and the strings
-  // are identical because both come from the same generated reason.
-  const noCredit = new Set(
-    scored.signals.filter((signal) => signal.value === 0).map((signal) => signal.reason),
-  );
+  // Everything in `reasons` past the signal reasons is the non-scoring rate
+  // note. PRD section 8 lists it among the reasons but not among the signals,
+  // so it gets no label and no verdict mark — there is no signal it belongs to.
+  const rateNotes = scored.reasons.slice(scored.signals.length);
 
   return (
     <div className={`crow${isTop ? " top" : ""}${scored.score === 0 ? " zero" : ""}`}>
@@ -219,19 +206,29 @@ function CarrierRow({
         </div>
       </div>
 
-      <div className="cells">
-        {scored.signals.map((signal) => (
-          <SignalCell key={signal.name} signal={signal} best={best.get(signal.name) ?? 0} />
-        ))}
-      </div>
+      {/* One row per signal, in the API's order, all of them. A signal's mark,
+          name, bar and sentence are read off one `Signal` object and rendered
+          on one line, so the four cannot describe different things. They were
+          two blocks once, a labelled bar grid above a labelled sentence list,
+          which said every signal's name twice in every row.
 
-      {/* In the API's order, all of them. PRD section 8 orders these by signal
-          with the non-scoring rate note last; re-sorting or cutting to the top
-          three would hide the reason a carrier is ranked where it is. */}
+          Re-sorting or cutting to the top three would hide the reason a carrier
+          is ranked where it is. */}
       <ul className="creasons">
-        {scored.reasons.map((reason, index) => (
-          <li key={index} className={noCredit.has(reason) ? "neg" : undefined}>
-            {reason}
+        {scored.signals.map((signal) => (
+          <li key={signal.name}>
+            <Verdict value={signal.value} />
+            <span className="sig">{signal.label}</span>
+            <SignalBar signal={signal} best={best.get(signal.name) ?? 0} />
+            <span className="txt">{signal.reason}</span>
+          </li>
+        ))}
+        {rateNotes.map((note, index) => (
+          <li key={`note-${index}`} className="rate">
+            <span className="vm" aria-hidden="true" />
+            <span className="sig" />
+            <span className="bar" />
+            <span className="txt">{note}</span>
           </li>
         ))}
       </ul>
@@ -241,24 +238,68 @@ function CarrierRow({
   );
 }
 
-function SignalCell({ signal, best }: { signal: Signal; best: number }) {
-  const scored = signal.value > 0;
+/**
+ * Whether this signal earned credit: none, partial, or full.
+ *
+ * A classification of `signal.value`, not a computation on it. The same thing
+ * the bar beside it says with a width, said in a glyph so a row of "no credit"
+ * reads at a glance instead of as five sentences. The number itself is never
+ * printed here; it is in the breakdown, once.
+ */
+function Verdict({ value }: { value: number }) {
+  const [kind, title] =
+    value === 0
+      ? (["no", "no credit"] as const)
+      : value >= 1
+        ? (["full", "full credit"] as const)
+        : (["part", "partial credit"] as const);
   return (
-    <div className="cell">
-      <span className="label">{signal.label}</span>
-      <div className="box">
-        {scored ? (
-          <div className="f" style={{ height: `${Math.min(100, signal.value * 100)}%` }} />
-        ) : (
-          <div className="empty">none</div>
+    <span className={`vm ${kind}`} title={title} role="img" aria-label={title}>
+      {/* Drawn, not typed. Three marks on one 12x12 grid at one 1.6px stroke,
+          so they read as a set: a struck circle, a half-filled circle, a
+          checked circle. A Unicode glyph would inherit whatever the system
+          font felt like and none of these three come from one family. */}
+      <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">
+        <circle cx="6" cy="6" r="4.4" fill="none" stroke="currentColor" strokeWidth="1.6" />
+        {kind === "no" && (
+          <path d="M4.1 4.1 L7.9 7.9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
         )}
-        {/* Drawn only where it is not the carrier's own bar top, so the leader
-            does not get a redundant rule across its fill. */}
+        {kind === "part" && <path d="M6 1.6 A4.4 4.4 0 0 1 6 10.4 Z" fill="currentColor" />}
+        {kind === "full" && (
+          <path
+            d="M3.9 6.2 L5.4 7.7 L8.2 4.4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        )}
+      </svg>
+    </span>
+  );
+}
+
+/**
+ * How much of this signal the carrier earned, as a width.
+ *
+ * The tick is the best any candidate reached on the same signal, which is what
+ * makes the width mean anything: 0.62 is only good or bad against the field.
+ * Both are percentages of the track, never printed as numbers.
+ */
+function SignalBar({ signal, best }: { signal: Signal; best: number }) {
+  const fill = Math.max(0, Math.min(100, signal.value * 100));
+  return (
+    <span className="bar" aria-hidden="true">
+      <span className="track">
+        <i style={{ width: `${fill}%` }} />
+        {/* Drawn only where it is not this carrier's own bar end, so the leader
+            does not get a redundant tick on top of its fill. */}
         {best > signal.value && (
-          <div className="best" style={{ bottom: `calc(${Math.min(100, best * 100)}% - 1px)` }} />
+          <u style={{ left: `calc(${Math.max(0, Math.min(100, best * 100))}% - 1px)` }} />
         )}
-      </div>
-    </div>
+      </span>
+    </span>
   );
 }
 

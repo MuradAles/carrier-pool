@@ -134,12 +134,18 @@ function Section({ section }: { section: PoolSection }) {
 
       <div style={{ padding: "0 18px 14px" }}>
         {/* `opted_in` and `eligible` fail for different reasons, so they are
-            reported separately rather than collapsed into one "no". */}
+            reported separately rather than collapsed into one "no".
+
+            `eligible` is a precondition, not an outcome: it says this load may
+            be asked about, never that the pool found anyone. Labelling it
+            "pool answered" put a green yes directly above "no pool lane for
+            this load", which is a chip disagreeing with the sentence under it.
+            The field is named for what it holds. */}
         <span className={section.opted_in ? "chip good" : "chip mute"}>
           opted in: {section.opted_in ? "yes" : "no"}
         </span>{" "}
         <span className={section.eligible ? "chip good" : "chip mute"}>
-          pool answered: {section.eligible ? "yes" : "no"}
+          load eligible: {section.eligible ? "yes" : "no"}
         </span>{" "}
         <span className="chip mute">as of {section.as_of}</span>{" "}
         <span className="chip mute">{section.tier ?? "no pool tier"}</span>{" "}

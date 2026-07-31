@@ -128,11 +128,18 @@ function LoadRow({
 }) {
   const { origin, destination } = laneEnds(load);
   const isActive = load.status === "ACTIVE";
+  const open = () => onSelect(load.source_load_id);
 
   return (
-    <tr>
+    // The whole row opens the load. A 23px id link was the only target on a
+    // 60px row carrying ten columns about that same load, so every cell was
+    // dead space pointing at one word. The button stays: it is what a keyboard
+    // tabs to and what a screen reader announces, and the row handler is the
+    // mouse affordance on top of it. Clicking the button bubbles here and
+    // opens the same load, so there is nothing to stop.
+    <tr className="loadrow" onClick={open}>
       <td>
-        <button className="rowlink" onClick={() => onSelect(load.source_load_id)}>
+        <button className="rowlink" onClick={open}>
           {load.load_number ?? load.source_load_id}
         </button>
       </td>

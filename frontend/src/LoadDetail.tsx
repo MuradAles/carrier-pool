@@ -14,8 +14,9 @@
  * and a blank panel is indistinguishable from a bug.
  */
 
-import { getLoad } from "./api";
+import { getLoad, getPriceEstimate, getRecommendations } from "./api";
 import {
+  confidence as confidenceLabel,
   day,
   equipment,
   instant,
@@ -24,13 +25,19 @@ import {
   money,
   place,
   pounds,
+  score as fmtScore,
   UNKNOWN,
 } from "./format";
 import { PoolCarriersPanel } from "./PoolCarriersPanel";
 import { PriceEstimatePanel } from "./PriceEstimatePanel";
 import { RankedCarriersPanel } from "./RankedCarriersPanel";
 import { SyncHistoryPanel } from "./SyncHistoryPanel";
-import type { LoadDetail as Detail, Stop } from "./types";
+import type {
+  LoadDetail as Detail,
+  PriceEstimate,
+  Recommendations,
+  Stop,
+} from "./types";
 import { useApi } from "./useApi";
 
 interface Props {
@@ -60,6 +67,7 @@ export function LoadDetail({ brokerId, loadId, onBack }: Props) {
       {load.state === "ready" && (
         <>
           <LoadFacts load={load.data} />
+          <CoverageAnswer brokerId={brokerId} loadId={loadId} />
           <PriceEstimatePanel
             brokerId={brokerId}
             loadId={loadId}
@@ -78,6 +86,86 @@ export function LoadDetail({ brokerId, loadId, onBack }: Props) {
         </>
       )}
     </div>
+  );
+}
+
+/**
+ * The two answers, before the evidence for them.
+ *
+ * The screen exists to answer "who do I call" and "what do I pay", and both
+ * used to sit roughly 1300px apart with the carrier below the fold. This puts
+ * them together, at the top, in the order the rep asks them.
+ *
+ * Nothing here is new information: every value is a field of the same two
+ * responses the panels below render in full, and both of those panels stay
+ * exactly as they are. This is the answer; they are the working. It fetches
+ * independently rather than being handed data, so a failure here still leaves
+ * the panels below able to answer for themselves.
+ */
+function CoverageAnswer({ brokerId, loadId }: { brokerId: string; loadId: string }) {
+  const key = `${brokerId}|${loadId}`;
+  const ranking = useApi<Recommendations>(key, (signal) =>
+    getRecommendations(brokerId, loadId, signal),
+  );
+  const price = useApi<PriceEstimate>(key, (signal) =>
+    getPriceEstimate(brokerId, loadId, signal),
+  );
+
+  // rank 1 as the API ordered it, not a maximum computed here.
+  const top = ranking.state === "ready" ? (ranking.data.carriers[0] ?? null) : null;
+  const est = price.state === "ready" ? price.data : null;
+  const failed = ranking.state === "error" && price.state === "error";
+
+  if (failed) return null;
+
+  return (
+    <section className="answer" aria-label="Recommended action">
+      <div className="answer-cell">
+        <h3>Call first</h3>
+        {top === null ? (
+          <p className="answer-none">
+            {ranking.state === "ready"
+              ? "No carriers on record for this broker."
+              : "Ranking…"}
+          </p>
+        ) : (
+          <>
+            <p className="answer-lead">{top.carrier.name ?? top.carrier.source_carrier_id}</p>
+            <p className="answer-sub mono">{top.carrier.phone ?? "no phone on file"}</p>
+            <p className="answer-meta">
+              <b>{fmtScore(top.score)}</b> of 100
+              {ranking.state === "ready" && ranking.data.tier !== null && (
+                <> · scored on {ranking.data.tier} history</>
+              )}
+            </p>
+          </>
+        )}
+      </div>
+
+      <div className="answer-cell">
+        <h3>Expect to pay</h3>
+        {est === null || est.point_usd === null ? (
+          <p className="answer-none">
+            {price.state === "ready" ? "No estimate for this load." : "Pricing…"}
+          </p>
+        ) : (
+          <>
+            <p className="answer-lead">{money(est.point_usd)}</p>
+            <p className="answer-sub">
+              {money(est.low_usd)} to {money(est.high_usd)}
+            </p>
+            <p className="answer-meta">
+              {confidenceLabel(est.confidence)} · median of {est.load_count} loads
+            </p>
+          </>
+        )}
+      </div>
+
+      <p className="answer-foot">
+        Both figures come from the panels below, which show the lane they were
+        drawn from and every number behind them.
+      </p>
+    </section>
   );
 }
 

@@ -5,7 +5,9 @@ import { App } from "./App";
 import { getHealth } from "./api";
 import type { Health } from "./types";
 import { useApi } from "./useApi";
-import "./styles.css";
+// Order is load-bearing: screens.css overrides selectors system.css declares.
+import "./system.css";
+import "./screens.css";
 
 /**
  * A one-line footer saying whether the backend and its data are reachable.

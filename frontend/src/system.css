@@ -1,0 +1,330 @@
+/**
+ * The system: what every screen is built from.
+ *
+ * Design tokens for all four theme states, the reset, typography, the sticky
+ * chrome, panel anatomy, and the shared vocabulary (chips, provenance blocks,
+ * caveats). Nothing here knows about loads, carriers or lanes.
+ *
+ * Loaded before screens.css and the order is load-bearing: screens.css
+ * overrides selectors declared here, so swapping the two imports in main.tsx
+ * changes the cascade. This file was split out of a single 1,349-line
+ * stylesheet at exactly that seam, so the two together are byte-identical to
+ * what preceded them.
+ */
+
+/* Coverage console.
+ *
+ * Ported from the approved `design-b` mockup: its tokens, type scale, spacing
+ * and chart treatments are reproduced here rather than re-invented. The
+ * identity is comparison-first — a score means nothing alone, so carriers are
+ * shown against each other with signal bars and a shared reference line, and
+ * the price sits on a scale next to what the customer pays.
+ *
+ * Nothing here is decoration. Colour is either the one accent or a semantic
+ * (confidence, verdict, weakness); grey does the rest of the work. Borders and
+ * rules separate regions — no shadows, no floating cards, no gradients.
+ */
+
+:root {
+  color-scheme: light;
+  --bg:        #f4f3ef;
+  --panel:     #ffffff;
+  --panel-2:   #faf9f5;
+  --ink:       #16191d;
+  --ink-2:     #4c535b;
+  --ink-3:     #6a7078;
+  --rule:      #ddd9d1;
+  --rule-2:    #c6c1b6;
+  --accent:    #2b5fa8;
+  --accent-2:  #7496c7;
+  --accent-sf: #e2eaf6;
+  --good:      #1b7a5a;
+  --good-sf:   #d9ece3;
+  --warn:      #9d6510;
+  --warn-sf:   #f6e8cd;
+  --weak:      #a8402f;
+  --weak-sf:   #f4ded9;
+  --grid:      #e8e5dd;
+  --on-accent: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg:        #131519;
+    --panel:     #1a1d22;
+    --panel-2:   #21252b;
+    --ink:       #eceef2;
+    --ink-2:     #b2b9c2;
+    --ink-3:     #848c96;
+    --rule:      #2c313a;
+    --rule-2:    #3e454f;
+    --accent:    #74a3e2;
+    --accent-2:  #4a6d9e;
+    --accent-sf: #1e2a3c;
+    --good:      #4dbd93;
+    --good-sf:   #16302a;
+    --warn:      #d9a44c;
+    --warn-sf:   #362b17;
+    --weak:      #e17f6c;
+    --weak-sf:   #38201c;
+    --grid:      #262b33;
+    --on-accent: #10131a;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:        #131519;
+  --panel:     #1a1d22;
+  --panel-2:   #21252b;
+  --ink:       #eceef2;
+  --ink-2:     #b2b9c2;
+  --ink-3:     #848c96;
+  --rule:      #2c313a;
+  --rule-2:    #3e454f;
+  --accent:    #74a3e2;
+  --accent-2:  #4a6d9e;
+  --accent-sf: #1e2a3c;
+  --good:      #4dbd93;
+  --good-sf:   #16302a;
+  --warn:      #d9a44c;
+  --warn-sf:   #362b17;
+  --weak:      #e17f6c;
+  --weak-sf:   #38201c;
+  --grid:      #262b33;
+  --on-accent: #10131a;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg:        #f4f3ef;
+  --panel:     #ffffff;
+  --panel-2:   #faf9f5;
+  --ink:       #16191d;
+  --ink-2:     #4c535b;
+  --ink-3:     #6a7078;
+  --rule:      #ddd9d1;
+  --rule-2:    #c6c1b6;
+  --accent:    #2b5fa8;
+  --accent-2:  #7496c7;
+  --accent-sf: #e2eaf6;
+  --good:      #1b7a5a;
+  --good-sf:   #d9ece3;
+  --warn:      #9d6510;
+  --warn-sf:   #f6e8cd;
+  --weak:      #a8402f;
+  --weak-sf:   #f4ded9;
+  --grid:      #e8e5dd;
+  --on-accent: #ffffff;
+}
+
+/* Measured, not guessed: the sticky topbar is 51.75px at every width where it
+   does not wrap. The table header parks directly under it. */
+:root { --topbar-h: 52px; }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15.5px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Digits align down a column so two rows can be compared by eye. Applied to
+   every number on screen, not just the ones in tables. */
+.num,
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.num {
+  text-align: right;
+}
+
+/* Ids, lane keys and rates get a near-monospace face; prose does not. */
+.mono {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+a { color: var(--accent); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* ---------- chrome ---------- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 26px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--rule-2);
+}
+
+.brand {
+  font-weight: 640;
+  letter-spacing: -0.01em;
+  font-size: 15px;
+}
+
+.brand span {
+  color: var(--ink-3);
+  font-weight: 450;
+}
+
+.topbar .spacer { flex: 1; }
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+select {
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--ink);
+  background: var(--panel-2);
+  border: 1px solid var(--rule-2);
+  border-radius: 3px;
+  padding: 4px 8px;
+}
+
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--rule-2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.seg button {
+  font: inherit;
+  font-size: 12.5px;
+  background: var(--panel-2);
+  color: var(--ink-2);
+  border: 0;
+  border-left: 1px solid var(--rule);
+  padding: 5px 11px;
+  cursor: pointer;
+}
+
+.seg button:first-child { border-left: 0; }
+
+.seg button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.wrap {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 22px 26px 90px;
+}
+
+.screen-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 14px;
+  margin: 4px 0 16px;
+  padding-bottom: 9px;
+  border-bottom: 2px solid var(--rule-2);
+}
+
+.screen-label h2 {
+  margin: 0;
+  font-size: 19px;
+  letter-spacing: -0.015em;
+  font-weight: 620;
+}
+
+.screen-label .sub {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.screen-label .spacer { flex: 1; }
+
+/* ---------- panels ---------- */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+.panel + .panel { margin-top: 18px; }
+
+.panel-hd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.panel-hd h3 {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 620;
+  letter-spacing: -0.005em;
+}
+
+.panel-hd .sub {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.panel-hd .spacer { flex: 1; }
+
+.panel-bd { padding: 18px; }
+
+.chip {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 620;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: var(--panel-2);
+  color: var(--ink-2);
+  border: 1px solid var(--rule-2);
+  white-space: nowrap;
+}
+
+.chip.active { background: var(--accent-sf); color: var(--accent); border-color: var(--accent-2); }
+.chip.good   { background: var(--good-sf);   color: var(--good);   border-color: var(--good); }
+.chip.warn   { background: var(--warn-sf);   color: var(--warn);   border-color: var(--warn); }
+.chip.weak   { background: var(--weak-sf);   color: var(--weak);   border-color: var(--weak); }
+.chip.mute   { color: var(--ink-3); }
+
+/* A verdict chip carries the domain's own sentence, so it is not shouted into
+   uppercase — "rejected, 2 < 5" has to stay readable as written. */
+.chip.verdict {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+}
+

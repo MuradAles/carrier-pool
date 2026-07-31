@@ -1,313 +1,81 @@
-/* Coverage console.
+/**
+ * The screens: the load list, the load detail, and every panel on them.
  *
- * Ported from the approved `design-b` mockup: its tokens, type scale, spacing
- * and chart treatments are reproduced here rather than re-invented. The
- * identity is comparison-first — a score means nothing alone, so carriers are
- * shown against each other with signal bars and a shared reference line, and
- * the price sits on a scale next to what the customer pays.
+ * The answer strip, load table, detail header, price chart, tier walk, carrier
+ * matrix, score breakdown, stops, shared pool, sync history, and the narrow
+ * breakpoint that reflows all of it.
  *
- * Nothing here is decoration. Colour is either the one accent or a semantic
- * (confidence, verdict, weakness); grey does the rest of the work. Borders and
- * rules separate regions — no shadows, no floating cards, no gradients.
+ * Loaded after system.css, whose tokens and panel anatomy this file assumes
+ * and in places overrides. See the note at the top of that file.
  */
 
-:root {
-  color-scheme: light;
-  --bg:        #f4f3ef;
-  --panel:     #ffffff;
-  --panel-2:   #faf9f5;
-  --ink:       #16191d;
-  --ink-2:     #4c535b;
-  --ink-3:     #787f88;
-  --rule:      #ddd9d1;
-  --rule-2:    #c6c1b6;
-  --accent:    #2b5fa8;
-  --accent-2:  #7ba0d4;
-  --accent-sf: #e2eaf6;
-  --good:      #1b7a5a;
-  --good-sf:   #d9ece3;
-  --warn:      #9d6510;
-  --warn-sf:   #f6e8cd;
-  --weak:      #a8402f;
-  --weak-sf:   #f4ded9;
-  --grid:      #e8e5dd;
-  --on-accent: #ffffff;
-}
+/* ---------- the answer, above its evidence ---------- */
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --bg:        #131519;
-    --panel:     #1a1d22;
-    --panel-2:   #21252b;
-    --ink:       #eceef2;
-    --ink-2:     #b2b9c2;
-    --ink-3:     #838b95;
-    --rule:      #2c313a;
-    --rule-2:    #3e454f;
-    --accent:    #74a3e2;
-    --accent-2:  #4a6d9e;
-    --accent-sf: #1e2a3c;
-    --good:      #4dbd93;
-    --good-sf:   #16302a;
-    --warn:      #d9a44c;
-    --warn-sf:   #362b17;
-    --weak:      #e17f6c;
-    --weak-sf:   #38201c;
-    --grid:      #262b33;
-    --on-accent: #10131a;
-  }
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --bg:        #131519;
-  --panel:     #1a1d22;
-  --panel-2:   #21252b;
-  --ink:       #eceef2;
-  --ink-2:     #b2b9c2;
-  --ink-3:     #838b95;
-  --rule:      #2c313a;
-  --rule-2:    #3e454f;
-  --accent:    #74a3e2;
-  --accent-2:  #4a6d9e;
-  --accent-sf: #1e2a3c;
-  --good:      #4dbd93;
-  --good-sf:   #16302a;
-  --warn:      #d9a44c;
-  --warn-sf:   #362b17;
-  --weak:      #e17f6c;
-  --weak-sf:   #38201c;
-  --grid:      #262b33;
-  --on-accent: #10131a;
-}
-
-:root[data-theme="light"] {
-  color-scheme: light;
-  --bg:        #f4f3ef;
-  --panel:     #ffffff;
-  --panel-2:   #faf9f5;
-  --ink:       #16191d;
-  --ink-2:     #4c535b;
-  --ink-3:     #787f88;
-  --rule:      #ddd9d1;
-  --rule-2:    #c6c1b6;
-  --accent:    #2b5fa8;
-  --accent-2:  #7ba0d4;
-  --accent-sf: #e2eaf6;
-  --good:      #1b7a5a;
-  --good-sf:   #d9ece3;
-  --warn:      #9d6510;
-  --warn-sf:   #f6e8cd;
-  --weak:      #a8402f;
-  --weak-sf:   #f4ded9;
-  --grid:      #e8e5dd;
-  --on-accent: #ffffff;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 15.5px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Digits align down a column so two rows can be compared by eye. Applied to
-   every number on screen, not just the ones in tables. */
-.num,
-.tnum {
-  font-variant-numeric: tabular-nums;
-}
-
-.num {
-  text-align: right;
-}
-
-/* Ids, lane keys and rates get a near-monospace face; prose does not. */
-.mono {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
-}
-
-a { color: var(--accent); }
-
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
-}
-
-/* ---------- chrome ---------- */
-
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 10px 26px;
+/* Two answers side by side, then the line that says where they came from.
+   Heavier rules than a panel because this is the one region on the screen a
+   rep can act on without reading anything else. */
+.answer {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   background: var(--panel);
-  border-bottom: 1px solid var(--rule-2);
-}
-
-.brand {
-  font-weight: 640;
-  letter-spacing: -0.01em;
-  font-size: 15px;
-}
-
-.brand span {
-  color: var(--ink-3);
-  font-weight: 450;
-}
-
-.topbar .spacer { flex: 1; }
-
-.field {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 13.5px;
-  color: var(--ink-2);
-}
-
-select {
-  font: inherit;
-  font-size: 13.5px;
-  color: var(--ink);
-  background: var(--panel-2);
   border: 1px solid var(--rule-2);
-  border-radius: 3px;
-  padding: 4px 8px;
-}
-
-.seg {
-  display: inline-flex;
-  border: 1px solid var(--rule-2);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.seg button {
-  font: inherit;
-  font-size: 12.5px;
-  background: var(--panel-2);
-  color: var(--ink-2);
-  border: 0;
-  border-left: 1px solid var(--rule);
-  padding: 5px 11px;
-  cursor: pointer;
-}
-
-.seg button:first-child { border-left: 0; }
-
-.seg button[aria-pressed="true"] {
-  background: var(--accent);
-  color: var(--on-accent);
-}
-
-.wrap {
-  max-width: 1360px;
-  margin: 0 auto;
-  padding: 22px 26px 90px;
-}
-
-.screen-label {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 14px;
-  margin: 4px 0 16px;
-  padding-bottom: 9px;
-  border-bottom: 2px solid var(--rule-2);
-}
-
-.screen-label h2 {
-  margin: 0;
-  font-size: 19px;
-  letter-spacing: -0.015em;
-  font-weight: 620;
-}
-
-.screen-label .sub {
-  color: var(--ink-3);
-  font-size: 13px;
-}
-
-.screen-label .spacer { flex: 1; }
-
-/* ---------- panels ---------- */
-
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--rule);
+  border-top: 2px solid var(--accent);
   border-radius: 4px;
 }
 
-.panel + .panel { margin-top: 18px; }
+.answer-cell { padding: 16px 20px 18px; }
+.answer-cell + .answer-cell { border-left: 1px solid var(--rule); }
 
-.panel-hd {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 12px;
-  padding: 13px 18px;
-  border-bottom: 1px solid var(--rule);
-}
-
-.panel-hd h3 {
-  margin: 0;
-  font-size: 14.5px;
+.answer h3 {
+  margin: 0 0 10px;
+  font-size: 11.5px;
   font-weight: 620;
-  letter-spacing: -0.005em;
-}
-
-.panel-hd .sub {
-  font-size: 13px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
   color: var(--ink-3);
 }
 
-.panel-hd .spacer { flex: 1; }
-
-.panel-bd { padding: 18px; }
-
-.chip {
-  display: inline-block;
-  font-size: 11.5px;
-  font-weight: 620;
-  letter-spacing: 0.055em;
-  text-transform: uppercase;
-  padding: 2px 7px;
-  border-radius: 3px;
-  background: var(--panel-2);
-  color: var(--ink-2);
-  border: 1px solid var(--rule-2);
-  white-space: nowrap;
+.answer-lead {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 640;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 
-.chip.active { background: var(--accent-sf); color: var(--accent); border-color: var(--accent-2); }
-.chip.good   { background: var(--good-sf);   color: var(--good);   border-color: var(--good); }
-.chip.warn   { background: var(--warn-sf);   color: var(--warn);   border-color: var(--warn); }
-.chip.weak   { background: var(--weak-sf);   color: var(--weak);   border-color: var(--weak); }
-.chip.mute   { color: var(--ink-3); }
+.answer-sub {
+  margin: 5px 0 0;
+  font-size: 14.5px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
 
-/* A verdict chip carries the domain's own sentence, so it is not shouted into
-   uppercase — "rejected, 2 < 5" has to stay readable as written. */
-.chip.verdict {
-  text-transform: none;
-  letter-spacing: 0.01em;
-  font-weight: 600;
+.answer-meta {
+  margin: 9px 0 0;
+  font-size: 12.5px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.answer-meta b { color: var(--ink-2); font-weight: 640; }
+
+.answer-none {
+  margin: 0;
+  font-size: 15px;
+  color: var(--ink-3);
+}
+
+.answer-foot {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 9px 20px;
+  border-top: 1px solid var(--rule);
+  background: var(--panel-2);
+  font-size: 12.5px;
+  color: var(--ink-3);
 }
 
 /* ---------- load list ---------- */
@@ -317,7 +85,16 @@ table.loads {
   border-collapse: collapse;
 }
 
+/* The header follows the list down. Customer rate and carrier rate are
+   adjacent, right-aligned and identically styled, so a header that scrolls
+   away leaves two unlabelled money columns and invites quoting the wrong one.
+   `border-collapse: collapse` drops the borders of a sticky cell, so the rule
+   under the header is an inset shadow instead. */
 table.loads th {
+  position: sticky;
+  top: var(--topbar-h);
+  z-index: 5;
+  background: var(--panel);
   text-align: left;
   font-size: 12px;
   font-weight: 620;
@@ -325,7 +102,7 @@ table.loads th {
   text-transform: uppercase;
   color: var(--ink-3);
   padding: 10px 14px;
-  border-bottom: 1px solid var(--rule-2);
+  box-shadow: inset 0 -1px 0 var(--rule-2);
   white-space: nowrap;
 }
 
@@ -341,6 +118,15 @@ table.loads td {
 table.loads tr:last-child td { border-bottom: 0; }
 
 table.loads tbody tr:hover td { background: var(--panel-2); }
+
+/* The row is the target, so it says so on approach. */
+table.loads tr.loadrow { cursor: pointer; }
+
+/* Keyboard focus lands on the id button, but the row is what will open, so the
+   row is what the focus ring has to describe. */
+table.loads tr.loadrow:focus-within td { background: var(--panel-2); }
+table.loads tr.loadrow:focus-within td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
+table.loads tr.loadrow .rowlink:focus-visible { outline: none; }
 
 /* A number that wraps stops being comparable with the number above it. */
 table.loads td.tnum,
@@ -479,7 +265,7 @@ table.loads td.r { white-space: nowrap; }
 .cols > *,
 .crow > *,
 .poolrow > *,
-.cells > * {
+.creasons > li > * {
   min-width: 0;
 }
 
@@ -533,13 +319,18 @@ svg.chart {
 }
 
 /* The sentence the backend generated. It is the answer's evidence, so it sits
-   with the number rather than under a fold. */
+   with the number rather than under a fold.
+
+   The leading rule is 1px, not 3px. A thick coloured edge on one side of a
+   block is the single most recognisable tell of a generated interface, and it
+   was not carrying the idiom anyway: the square left corners and the tinted
+   surface are what make this read as a quote block. */
 .provenance {
   margin-top: 14px;
   padding: 11px 13px;
   background: var(--panel-2);
   border: 1px solid var(--rule);
-  border-left: 3px solid var(--accent-2);
+  border-left: 1px solid var(--accent);
   font-size: 13.5px;
   color: var(--ink-2);
   border-radius: 0 3px 3px 0;
@@ -572,12 +363,13 @@ svg.chart {
   color: var(--ink-3);
 }
 
-/* A caveat that qualifies the whole answer, not one value. */
+/* A caveat that qualifies the whole answer, not one value. Uniform 1px in the
+   warn hue: the surface tint already carries the status, so the thicker
+   leading edge was decoration on top of a signal that was already legible. */
 .caveat {
   margin: 14px 0 0;
   padding: 11px 13px;
   border: 1px solid var(--warn);
-  border-left: 3px solid var(--warn);
   background: var(--warn-sf);
   color: var(--ink);
   font-size: 13.5px;
@@ -706,10 +498,14 @@ svg.chart {
 
 /* ---------- carrier matrix ---------- */
 
+/* Identity and score sit side by side; the signals run full width beneath them,
+   one row each. There was a third column of stacked signal bars here, which
+   made every signal's name appear twice in a row: once over its bar and once
+   beside its sentence. One row per signal says each name once. */
 .cgrid-hd,
 .crow {
   display: grid;
-  grid-template-columns: 250px 118px minmax(360px, 1fr);
+  grid-template-columns: minmax(250px, 1fr) 118px;
   gap: 0;
 }
 
@@ -724,26 +520,6 @@ svg.chart {
   text-transform: uppercase;
   color: var(--ink-3);
   padding: 10px 0 8px;
-}
-
-.sigcols {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
-}
-
-.sigcols .sh {
-  padding: 10px 0 8px;
-  border-left: 1px solid var(--rule);
-  padding-left: 8px;
-}
-
-.sigcols .sh .n {
-  font-size: 11.5px;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  display: block;
 }
 
 .crow {
@@ -818,93 +594,97 @@ svg.chart {
 .crow.zero .cscore .track i { background: var(--weak); }
 .crow.zero .cscore .v { color: var(--weak); }
 
-.cells {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
+/* The signal bar, inline in its own row. Fixed width so twelve carriers'
+   bars line up down the page and stay comparable, which is what the old
+   column grid bought and this has to keep. */
+.creasons .bar {
+  width: 96px;
+  align-self: center;
 }
 
-.cell {
-  border-left: 1px solid var(--rule);
-  padding-left: 8px;
-}
-
-/* Capped so it reads as a bar rather than a field of colour — the height is
-   the signal, the width carries no meaning and should not pretend to. */
-.cell .box {
+.creasons .bar .track {
   position: relative;
-  height: 78px;
-  max-width: 104px;
+  display: block;
+  height: 8px;
   background: var(--grid);
   border: 1px solid var(--rule);
   border-radius: 2px;
   overflow: hidden;
 }
 
-.cell .box .f {
+.creasons .bar .track i {
   position: absolute;
-  left: 0;
-  right: 0;
+  top: 0;
   bottom: 0;
+  left: 0;
   background: var(--accent-2);
 }
 
-.crow.top .cell .box .f { background: var(--accent); }
+.crow.top .creasons .bar .track i { background: var(--accent); }
 
 /* The best value any candidate reached for this signal, so a gap is visible
    without arithmetic. A position, never a printed number. */
-.cell .box .best {
+.creasons .bar .track u {
   position: absolute;
-  left: 0;
-  right: 0;
-  border-top: 1px dashed var(--ink-3);
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--ink-3);
 }
 
-.cell .box .empty {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--weak);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-}
-
-/* In the API's order, all of them: PRD section 8 orders these by signal with
-   the non-scoring rate note last. */
+/* One row per signal, in the API's order: PRD section 8 orders these by signal
+   with the non-scoring rate note last. Four aligned columns rather than a
+   wrapped flow, because a reason has exactly one signal it belongs to and a
+   ragged two-column flow leaves the reading order ambiguous. Mark, name, bar
+   and sentence sit on one line, so a signal is described in one place. */
 .creasons {
   grid-column: 1 / -1;
   margin: 12px 0 0;
   padding: 11px 0 0;
   border-top: 1px dotted var(--rule);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 22px;
+  display: grid;
+  grid-template-columns: 13px minmax(112px, max-content) 96px 1fr;
+  column-gap: 10px;
+  row-gap: 5px;
+  align-items: baseline;
   list-style: none;
 }
 
-.creasons li {
-  list-style: none;
+/* The li is the semantic row; its three children are the grid cells. */
+.creasons li { display: contents; }
+
+.creasons .vm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  color: var(--accent);
+}
+
+.creasons .vm.no { color: var(--weak); }
+.creasons .vm.full { color: var(--good); }
+.creasons .vm.part { color: var(--accent); }
+
+.creasons .sig {
+  font-size: 11.5px;
+  font-weight: 620;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.creasons .txt {
   font-size: 13.5px;
   color: var(--ink-2);
-  padding-left: 15px;
-  position: relative;
-  max-width: 46ch;
 }
 
-.creasons li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 8px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent-2);
+/* The rate note is not a signal: no label, no verdict, and it sits under the
+   sentences rather than among them. */
+.creasons li.rate .txt {
+  color: var(--ink-3);
+  padding-top: 3px;
 }
-
-.creasons li.neg::before { background: var(--weak); }
 
 /* ---------- how the score was calculated (closed by default) ---------- */
 
@@ -1127,12 +907,14 @@ table.grid tr:last-child td { border-bottom: 0; }
   margin-right: 7px;
 }
 
+/* The raw payload as its TMS sent it. 1px leading rule to match .provenance
+   and .caveat, which is what makes this a set rather than three thicknesses. */
 .sync-event pre {
   margin: 4px 0 10px;
   padding: 10px 12px;
   background: var(--panel-2);
   border: 1px solid var(--rule);
-  border-left: 3px solid var(--rule-2);
+  border-left: 1px solid var(--rule-2);
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   font-size: 12px;
   line-height: 1.45;
@@ -1198,7 +980,17 @@ footer {
 }
 
 @media (max-width: 980px) {
-  .topbar { flex-wrap: wrap; gap: 12px 18px; }
+  /* Wrapped, the topbar reaches 165px, which is a fifth of a phone viewport
+     held permanently. It gives up sticking here, and the table header takes
+     the top edge instead, since the header is the part that has to stay
+     readable while you scroll a hundred rows of money. */
+  .topbar {
+    position: static;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+  }
+
+  table.loads th { top: 0; }
   .wrap { padding: 16px 14px 60px; }
 
   /* Only the tables that genuinely need the room get a floor, and only inside
@@ -1227,36 +1019,26 @@ footer {
 
   .cscore .track { flex: 1; margin: 0; }
 
-  .cells { gap: 3px; }
-
-  /* The column headers vanish at this width, so each cell names its own
-     signal — the bars are meaningless without knowing which is which. */
-  .cell {
-    padding-left: 5px;
-  }
-
-  .cell .label {
-    display: block;
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--ink-3);
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .cell .box { height: 48px; }
-
   .facts { grid-template-columns: repeat(2, 1fr); }
   .facts > div { border-bottom: 1px solid var(--rule); }
 
-  .creasons { gap: 6px 0; }
-  .creasons li { max-width: none; flex: 1 1 100%; }
-}
+  /* The two answers stack rather than splitting a phone width in half. */
+  .answer { grid-template-columns: 1fr; }
+  .answer-cell + .answer-cell {
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+  }
 
-/* At full width the per-cell label is redundant with the column header. */
-@media (min-width: 981px) {
-  .cell .label { display: none; }
+  /* No room for a label column or a bar column: the name and its bar share one
+     line, and the sentence wraps under both, still inside the row the verdict
+     mark opens. */
+  .creasons {
+    grid-template-columns: 13px max-content 1fr;
+    row-gap: 3px;
+  }
+
+  .creasons .txt {
+    grid-column: 2 / -1;
+    padding-bottom: 5px;
+  }
 }
