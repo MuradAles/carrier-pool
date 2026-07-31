@@ -16,13 +16,11 @@ It builds a throwaway database, ingests all 132 files, and asserts four named da
 
 | Document | What is in it |
 |---|---|
+| [`DECISIONS.md`](DECISIONS.md) | The judgment calls and the alternatives rejected, what I would do next, and the honest limits |
 | [`RUNNING.md`](RUNNING.md) | Every command, executed rather than assumed: timings, ports, the credential split, how to run the tests, how to regenerate the fixtures, and a troubleshooting table |
-| [`DECISIONS.md`](DECISIONS.md) | The judgment calls and the alternatives rejected, what I would do next, and the honest limits. [`DECISIONS-APPENDIX.md`](DECISIONS-APPENDIX.md) holds the arithmetic behind them |
-| [`SYSTEM-DESIGN-CARRIER-POOL.md`](SYSTEM-DESIGN-CARRIER-POOL.md) | The system design: requirements, entities, API, and one load traced end to end |
-| [`WALKTHROUGH.md`](WALKTHROUGH.md) | One day-11 answer worked out by hand, checkable with the JSON files and a calculator |
 | [`data/TRACEABILITY.md`](data/TRACEABILITY.md) | Per day-11 load: the behaviour it proves, its supporting history, and the expected answer. Computed from the fixtures before any of this code was written |
 
-Start at load `127412794` under broker FreightFlow. It is the one `WALKTHROUGH.md` traces.
+Start at load `127412794` under broker FreightFlow. `data/TRACEABILITY.md` holds the arithmetic behind its answer, so every figure on that screen can be checked against the raw sync files with a calculator.
 
 ---
 

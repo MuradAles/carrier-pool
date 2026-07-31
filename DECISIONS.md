@@ -2,7 +2,7 @@
 
 Judgment calls, the alternatives I rejected, and what is still wrong with this. Written as the decisions were made, not reconstructed afterwards.
 
-Each entry gives the call and the alternative it beat. Where the arithmetic is the argument, the working is in `DECISIONS-APPENDIX.md` under the same number. Nothing here depends on reading it.
+Each entry gives the call and the alternative it beat. Where a decision turned on arithmetic, the figure that settled it is quoted inline.
 
 The README asks five questions. Corrections and derived stats are D3. What counts as a lane is D6 and D11. Fairness to a carrier with little history is D5 and D21. Pricing a thin lane is D6, D15 and D18. The pool boundary is D17 and D26.
 
@@ -38,7 +38,7 @@ The README asks five questions. Corrections and derived stats are D3. What count
 
 ## The smaller calls
 
-Same numbering, one line each. The appendix has the working.
+Same numbering, one line each.
 
 | | Decided | Instead of |
 |---|---|---|

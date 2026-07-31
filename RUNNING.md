@@ -168,7 +168,7 @@ ALL CHECKS PASSED in 10.6s
 
 The money sums in the ingestion block are the load-bearing assertion there: a
 double-counted TMS B rate line would show up in them and essentially nowhere else.
-`WALKTHROUGH.md` derives the `DAY11-RICH` block above by hand from the raw JSON, without
+`data/TRACEABILITY.md` derives the `DAY11-RICH` block above from the fixtures, without
 running anything.
 
 Same code also runs as a test: `./.venv/bin/python -m pytest tests/integration/test_end_to_end.py -q -s`.
@@ -255,7 +255,7 @@ median of 2.16. If any of the three ever prints 2.16 over n=36, the boundary is 
 **A correction, as it arrived.** Open broker_b's `HD-2026-004733` and read the Sync history
 panel: four rate lines on 2026-07-11, then a single `-120.00 ADJUSTMENT` on 2026-07-12 that
 arrived in a file whose `loads` array does not mention this load at all. `674.70 + 148.10 −
-120.00 = 702.80`, and the derived stats were rebuilt, not patched. `WALKTHROUGH.md` §6
+120.00 = 702.80`, and the derived stats were rebuilt, not patched. `data/TRACEABILITY.md`
 traces it.
 
 **Confidence that is labeled, not hidden.** `127413097` accepts at `REGION` with 70 loads
