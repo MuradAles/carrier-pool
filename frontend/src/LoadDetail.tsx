@@ -1,17 +1,19 @@
 /**
  * The load detail screen: U3's facts and stops, then the price estimate (U4),
- * the ranked carriers (U5) and the sync history (U6).
+ * the ranked carriers (U5), the shared pool section (S4) and the sync history
+ * (U6).
  *
  * Every figure on this screen is a field of a response as the API returned it.
  * Nothing is derived: no rate per mile, no margin, no totals, no re-rounding.
  *
- * The three panels below the facts fetch or receive their own data, and each
+ * The four panels below the facts fetch or receive their own data, and each
  * says so when it is loading or has failed — one panel being unavailable never
  * blanks the others, and a blank panel is indistinguishable from a bug.
  */
 
 import { getLoad } from "./api";
 import { day, equipment, instant, miles, money, place, pounds, UNKNOWN } from "./format";
+import { PoolCarriersPanel } from "./PoolCarriersPanel";
 import { PriceEstimatePanel } from "./PriceEstimatePanel";
 import { RankedCarriersPanel } from "./RankedCarriersPanel";
 import { SyncHistoryPanel } from "./SyncHistoryPanel";
@@ -46,6 +48,9 @@ export function LoadDetail({ brokerId, loadId, onBack }: Props) {
           <StopsTable stops={load.data.stops} />
           <PriceEstimatePanel brokerId={brokerId} loadId={loadId} />
           <RankedCarriersPanel brokerId={brokerId} loadId={loadId} />
+          {/* Below the ranking, always separate from it: these carriers are
+              scored from bands, not from this broker's own numbers. */}
+          <PoolCarriersPanel brokerId={brokerId} loadId={loadId} />
           <SyncHistoryPanel events={load.data.sync_history} />
         </>
       )}

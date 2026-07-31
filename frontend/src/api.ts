@@ -25,6 +25,8 @@ import type {
   Load,
   LoadDetail,
   LoadStatus,
+  PoolOptIn,
+  PoolSection,
   PriceEstimate,
   Recommendations,
 } from "./types";
@@ -138,4 +140,53 @@ export function getRecommendations(
 ): Promise<Recommendations> {
   const path = `/api/loads/${encodeURIComponent(loadId)}/recommendations?${loadQuery(brokerId)}`;
   return getJson<Recommendations>(path, signal);
+}
+
+/**
+ * The shared carrier pool — a *separate* route from the recommendations above,
+ * not a field on them (DECISIONS.md D17).
+ *
+ * That is why opting out changes nothing about a ranking: there is no field on
+ * the ranking response a pool carrier could occupy, so the two answers cannot
+ * be confused for one another in the payload, in the types, or on the screen.
+ */
+export function getPoolCarriers(
+  brokerId: string,
+  loadId: string,
+  signal: AbortSignal,
+): Promise<PoolSection> {
+  const path = `/api/loads/${encodeURIComponent(loadId)}/pool-carriers?${loadQuery(brokerId)}`;
+  return getJson<PoolSection>(path, signal);
+}
+
+export function getPoolOptIn(brokerId: string, signal: AbortSignal): Promise<PoolOptIn> {
+  return getJson<PoolOptIn>(`/api/pool/opt-in?${loadQuery(brokerId)}`, signal);
+}
+
+/**
+ * Join or leave the pool. The only write the UI makes.
+ *
+ * Not routed through `getJson`, which is GET-only; failures still surface as
+ * the same `ApiError` the panels already know how to render.
+ */
+export async function setPoolOptIn(
+  brokerId: string,
+  optedIn: boolean,
+  signal: AbortSignal,
+): Promise<PoolOptIn> {
+  const path = `/api/pool/opt-in?${loadQuery(brokerId)}`;
+  let response: Response;
+  try {
+    response = await fetch(path, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ opted_in: optedIn }),
+      signal,
+    });
+  } catch (error) {
+    if (isAbort(error)) throw error;
+    throw new ApiError(0, `cannot reach the API at ${path} (${String(error)})`);
+  }
+  if (!response.ok) throw new ApiError(response.status, await describeFailure(response));
+  return (await response.json()) as PoolOptIn;
 }

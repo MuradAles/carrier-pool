@@ -18,18 +18,22 @@ calls a millisecond apart give the same rung.
 from __future__ import annotations
 
 from fastapi import APIRouter, Query
+from pydantic import BaseModel
 
 from ..domain.model import LoadStatus
+from ..domain.pool import build_pool_section, pool_eligible
 from ..domain.pricing import estimate_price, walk_tiers
 from ..domain.scoring import rank_carriers
 from ..ingestion import ingest_all
 from ..repository import list_brokers as db_list_brokers
-from .deps import BrokerRepo, DbConnection, require_load
+from .deps import BrokerRepo, DbConnection, PoolRepo, require_load
 from .schemas import (
     BrokerOut,
     IngestReportOut,
     LoadDetailOut,
     LoadOut,
+    PoolOptInOut,
+    PoolSectionOut,
     PriceEstimateOut,
     RecommendationsOut,
 )
@@ -116,6 +120,68 @@ def get_price_estimate(repo: BrokerRepo, load_id: str) -> PriceEstimateOut:
         equipment_mix=repo.equipment_mix_for,
     )
     return PriceEstimateOut.of(load_id, estimate)
+
+
+class PoolOptInIn(BaseModel):
+    """The one thing a broker can say about the pool: in, or out."""
+
+    opted_in: bool
+
+
+@router.get("/pool/opt-in")
+def get_pool_opt_in(pool: PoolRepo) -> PoolOptInOut:
+    """Is this broker in the shared carrier pool? Off by default (S1).
+
+    A broker can only ask about itself: the read is RLS-confined to its own
+    row, so the roster of who else has joined is not available here. What the
+    pool discloses about other brokers is exactly what a pool answer contains.
+    """
+    return PoolOptInOut(broker_id=pool.broker_id, opted_in=pool.is_opted_in())
+
+
+@router.put("/pool/opt-in")
+def set_pool_opt_in(pool: PoolRepo, body: PoolOptInIn) -> PoolOptInOut:
+    """Join or leave the pool. Idempotent in both directions.
+
+    Leaving takes effect on the next read for everybody, because there is no
+    copy of this broker's rows anywhere — the projection reads ``carrier_stats``
+    live and joins ``pool_opt_in`` (DECISIONS.md D17 rejects a physical pool
+    table for exactly this reason).
+    """
+    return PoolOptInOut(
+        broker_id=pool.broker_id, opted_in=pool.set_opted_in(body.opted_in)
+    )
+
+
+@router.get("/loads/{load_id}/pool-carriers")
+def get_pool_carriers(
+    repo: BrokerRepo, pool: PoolRepo, load_id: str
+) -> PoolSectionOut:
+    """The labeled second section: carriers this broker has never used (S4).
+
+    A **separate route** from ``/recommendations``, not a field on it. The
+    ranking response has no field a pool carrier could be assigned to, so with
+    every broker opted out this endpoint is the only thing that changes and the
+    ranking is byte-identical to what it was before Phase 11 existed.
+
+    ``require_load`` first, so the load is one of *this* broker's and anything
+    else is the usual 404 — the pool never answers for a load id the requester
+    does not own, which is what bounds the query space to its own freight. The
+    audit row is written before the read and only when the read is going to
+    happen, so what is recorded is what was answered.
+    """
+    load = require_load(repo, load_id)
+    opted_in = pool.is_opted_in()
+    if pool_eligible(load, opted_in=opted_in):
+        pool.record_pool_read(load_id)
+    return PoolSectionOut.of(
+        build_pool_section(
+            load,
+            as_of=repo.as_of_date(),
+            opted_in=opted_in,
+            carriers_for=pool.pool_carriers,
+        )
+    )
 
 
 @router.post("/admin/ingest")

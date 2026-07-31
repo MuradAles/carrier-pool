@@ -45,6 +45,7 @@ from ..domain.model import (
     StopLocation,
     SyncEvent,
 )
+from ..domain.pool import PoolCarrier, PoolCarrierScore, PoolSection
 from ..domain.pricing import MIN_SAMPLE, PriceEstimate, TierAttempt, TierWalk
 from ..domain.scoring import CarrierRanking, CarrierScore, Signal
 from ..ingestion import IngestionReport
@@ -62,6 +63,10 @@ __all__ = [
     "LoadDetailOut",
     "LoadOut",
     "PlaceOut",
+    "PoolCarrierOut",
+    "PoolCarrierScoreOut",
+    "PoolOptInOut",
+    "PoolSectionOut",
     "PriceEstimateOut",
     "RecommendationsOut",
     "SignalOut",
@@ -675,6 +680,141 @@ class RecommendationsOut(BaseModel):
             basis=ranking.basis,
             walk=TierWalkOut.of(ranking.walk),
             carriers=[CarrierScoreOut.of(score) for score in ranking.carriers],
+        )
+
+
+# ---------------------------------------------------------------------------
+# The shared carrier pool (Phase 11, DECISIONS.md D17)
+# ---------------------------------------------------------------------------
+
+
+class PoolOptInOut(BaseModel):
+    """Whether this broker is in the shared pool. Off by default."""
+
+    broker_id: str
+    opted_in: bool
+
+
+class PoolCarrierOut(BaseModel):
+    """A carrier as the pool knows them — **identity and bands, nothing else**.
+
+    This model is the boundary rendered onto the wire, and its field list is
+    :class:`~app.domain.pool.PoolCarrier`'s. There is no rate field, no
+    customer, no shipment, no date and no truck position, because there is no
+    attribute on the object being copied that could fill one. A leak here would
+    have to be a leak three layers down, in a projection that has no money
+    column and is owned by a role that was never granted the money column.
+
+    ``load_band`` and ``on_time_band`` are **ranges**, not numbers, and
+    ``on_time_band`` is ``null`` when nothing that carrier ran on the lane has
+    delivered yet — which is a third state and not 0%.
+    """
+
+    mc_number: str
+    dot_number: str | None
+    name: str | None
+    phone: str | None
+    home_city: str | None
+    home_state: str | None
+    tier: str
+    lane_key: str
+    equipment: str
+    load_band: str
+    on_time_band: str | None
+    active_recently: bool
+    equipment_operated: list[str]
+    contributor_count: int
+
+    @classmethod
+    def of(cls, carrier: PoolCarrier) -> PoolCarrierOut:
+        return cls(
+            mc_number=carrier.mc_number,
+            dot_number=carrier.dot_number,
+            name=carrier.name,
+            phone=carrier.phone,
+            home_city=carrier.home_city,
+            home_state=carrier.home_state,
+            tier=carrier.tier,
+            lane_key=carrier.lane_key,
+            equipment=carrier.equipment,
+            load_band=carrier.load_band,
+            on_time_band=carrier.on_time_band,
+            active_recently=carrier.active_recently,
+            equipment_operated=list(carrier.equipment_operated),
+            contributor_count=carrier.contributor_count,
+        )
+
+
+class PoolCarrierScoreOut(BaseModel):
+    """One scored pool carrier, labeled as pool-sourced on the row itself.
+
+    ``source`` is a constant, and it is on every carrier rather than only on the
+    section header on purpose: D4 wants a leak to be *visible in the output*,
+    and a pool row that ended up somewhere it should not be still says where it
+    came from.
+
+    ``score`` is on the ranking's 0-100 scale but is **not comparable with it**.
+    Every signal was scored at the weakest end of a band and deadhead is
+    structurally zero, so this is a lower bound on what the carrier would score
+    with real data. The reasons say so line by line, and the section's ``basis``
+    says so once.
+    """
+
+    source: str = "shared_pool"
+    rank: int
+    carrier: PoolCarrierOut
+    score: float
+    score_exact: float
+    reasons: list[str]
+    signals: list[SignalOut]
+
+    @classmethod
+    def of(cls, score: PoolCarrierScore) -> PoolCarrierScoreOut:
+        return cls(
+            rank=score.rank,
+            carrier=PoolCarrierOut.of(score.carrier),
+            score=score.score,
+            score_exact=score.score_exact,
+            reasons=list(score.reasons),
+            signals=[SignalOut.of(signal) for signal in score.signals],
+        )
+
+
+class PoolSectionOut(BaseModel):
+    """The labeled second section of the ranking, or the reason there isn't one.
+
+    Served by its own route, from its own repository, over its own projection.
+    ``/api/loads/{id}/recommendations`` has no field this could be assigned to,
+    so a broker that never opts in gets a byte-identical ranking response and a
+    broker that does cannot have pool rows appear inside its own ranked list.
+
+    ``opted_in`` and ``eligible`` fail for different reasons and are reported
+    separately: not in the pool at all, versus in the pool but asking about a
+    load that is not ``ACTIVE``. ``basis`` states whichever it is in words.
+    """
+
+    load_id: str
+    as_of: date
+    opted_in: bool
+    eligible: bool
+    tier: str | None
+    lane_key: str | None
+    equipment_pool: str | None
+    basis: str
+    carriers: list[PoolCarrierScoreOut]
+
+    @classmethod
+    def of(cls, section: PoolSection) -> PoolSectionOut:
+        return cls(
+            load_id=section.load_id,
+            as_of=section.as_of,
+            opted_in=section.opted_in,
+            eligible=section.eligible,
+            tier=section.tier,
+            lane_key=section.lane_key,
+            equipment_pool=section.equipment_pool,
+            basis=section.basis,
+            carriers=[PoolCarrierScoreOut.of(score) for score in section.carriers],
         )
 
 

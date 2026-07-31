@@ -397,3 +397,103 @@ export interface Recommendations {
   walk: TierWalk;
   carriers: CarrierScore[];
 }
+
+// ---------------------------------------------------------------------------
+// The shared carrier pool — Phase 11, DECISIONS.md D17
+// ---------------------------------------------------------------------------
+
+/** `/api/pool/opt-in`. Off by default; a broker can only ask about itself. */
+export interface PoolOptIn {
+  broker_id: string;
+  opted_in: boolean;
+}
+
+/** The tiers the pool answers at. `ZIP3` never crosses — it is roughly a facility. */
+export type PoolTier = "METRO" | "REGION";
+
+/**
+ * Depth of another broker's relationship with a carrier, as a **band**.
+ *
+ * Never a count. Below five loads there is no row at all, so there is no
+ * `"0-4"` — a suppressed carrier is absent, not zero.
+ */
+export type LoadBand = "5-9" | "10-19" | "20-49" | "50+";
+
+/**
+ * On-time as a band, or `null` when nothing that carrier ran on the lane has
+ * delivered yet. `null` is a third state and is not `"<75"`.
+ */
+export type OnTimeBand = "90+" | "75-89" | "<75";
+
+/**
+ * A carrier as the pool knows them: identity and bands, and nothing else.
+ *
+ * There is no rate field here and there is no rate field on the API model this
+ * is transcribed from, because the projection it is read through has no rate
+ * column. If a future version of this interface grows one, something three
+ * layers down has been undone — do not add it to make a payload typecheck.
+ *
+ * `equipment_operated` is what the pool has seen them pull, subject to the same
+ * five-load floor, so it understates a fleet and never overstates one.
+ */
+export interface PoolCarrier {
+  mc_number: string;
+  dot_number: string | null;
+  name: string | null;
+  phone: string | null;
+  home_city: string | null;
+  home_state: string | null;
+  tier: PoolTier;
+  lane_key: string;
+  equipment: EquipmentFilter;
+  load_band: LoadBand;
+  on_time_band: OnTimeBand | null;
+  active_recently: boolean;
+  equipment_operated: Equipment[];
+  /** How many *other* opted-in brokers run this carrier. Never which ones. */
+  contributor_count: number;
+}
+
+/**
+ * One scored pool carrier.
+ *
+ * `score` is on the ranking's 0-100 scale and is **not comparable with it**:
+ * every signal was scored at the weakest end of a band and deadhead is
+ * structurally zero, because truck position does not cross the boundary. So it
+ * is a lower bound, which is why these are rendered as a separate labeled
+ * section rather than merged into the ranked list. Render `reasons` as given —
+ * each line says which band produced it.
+ *
+ * `source` is a constant `"shared_pool"` carried on every row, so a pool
+ * carrier that ever appeared somewhere it should not would say so itself.
+ */
+export interface PoolCarrierScore {
+  source: string;
+  rank: number;
+  carrier: PoolCarrier;
+  score: number;
+  score_exact: number;
+  reasons: string[];
+  signals: Signal[];
+}
+
+/**
+ * `/api/loads/{id}/pool-carriers` — the labeled second section, or the reason
+ * there isn't one.
+ *
+ * `opted_in` and `eligible` fail for different reasons and are reported
+ * separately: not in the pool at all, versus in the pool but asking about a
+ * load that is not `ACTIVE`. `basis` states whichever it is in words, so the
+ * panel prints that rather than assembling its own sentence from the booleans.
+ */
+export interface PoolSection {
+  load_id: string;
+  as_of: string;
+  opted_in: boolean;
+  eligible: boolean;
+  tier: PoolTier | null;
+  lane_key: string | null;
+  equipment_pool: EquipmentFilter | null;
+  basis: string;
+  carriers: PoolCarrierScore[];
+}

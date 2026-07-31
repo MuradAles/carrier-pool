@@ -38,13 +38,15 @@ import psycopg
 from fastapi import Depends, HTTPException, Query, status
 
 from ..domain.model import Load
-from ..repository import BrokerRepository, UnknownBroker, connect
+from ..repository import BrokerRepository, PoolRepository, UnknownBroker, connect
 
 __all__ = [
     "BrokerRepo",
     "DbConnection",
+    "PoolRepo",
     "broker_repo",
     "db_connection",
+    "pool_repo",
     "require_load",
 ]
 
@@ -87,6 +89,39 @@ def broker_repo(
 
 
 BrokerRepo = Annotated[BrokerRepository, Depends(broker_repo)]
+
+
+def pool_repo(
+    conn: DbConnection,
+    broker_id: Annotated[
+        str,
+        Query(
+            description=(
+                "The tenant asking. The pool is read on behalf of exactly one "
+                "broker: it excludes that broker's own contribution and "
+                "answers only if it has opted in."
+            )
+        ),
+    ],
+) -> PoolRepository:
+    """A pool reader bound to ``broker_id``, or 404 if there is no such tenant.
+
+    Deliberately a *separate* dependency from :func:`broker_repo` rather than a
+    method reached through it. The pool is the one read path in the system that
+    crosses a tenant boundary, and a route has to name it to get it — a route
+    that asks for ``BrokerRepo`` cannot reach the pool by accident, and this
+    one is greppable.
+    """
+    try:
+        return PoolRepository(conn, broker_id)
+    except UnknownBroker:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"no such broker: {broker_id}",
+        ) from None
+
+
+PoolRepo = Annotated[PoolRepository, Depends(pool_repo)]
 
 
 def require_load(repo: BrokerRepository, load_id: str) -> Load:

@@ -1380,6 +1380,20 @@ class BrokerRepository:
             )
             return cur.fetchone()["latest"]
 
+    def as_of_date(self) -> date:
+        """The Central date every answer for this broker is measured against.
+
+        The newest ingested sync file, not the wall clock (see
+        :meth:`latest_sync_at`), so a ranking, a price and a pool section asked
+        in the same minute all date themselves the same way and stay
+        reproducible from the fixture. The fallback to today only fires for a
+        broker with no ingested files, which also has nothing to answer about.
+        """
+        latest = self.latest_sync_at()
+        if latest is not None:
+            return central_date(latest)
+        return central_date(datetime.now(timezone.utc))
+
     def ranking_inputs(
         self, key: LaneKey | None, *, as_of: date | None = None
     ) -> RankingInputs:
@@ -1396,10 +1410,7 @@ class BrokerRepository:
         also has no carriers to rank.
         """
         if as_of is None:
-            latest = self.latest_sync_at()
-            as_of = central_date(latest) if latest is not None else central_date(
-                datetime.now(timezone.utc)
-            )
+            as_of = self.as_of_date()
         stats: dict[str, CarrierStats] = {}
         on_time: tuple[int, int] = (0, 0)
         if key is not None:

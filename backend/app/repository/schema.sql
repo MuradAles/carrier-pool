@@ -275,6 +275,39 @@ CREATE INDEX IF NOT EXISTS carrier_stats_lane_idx
     ON carrier_stats (broker_id, tier, lane_key, equipment);
 
 -- ---------------------------------------------------------------------------
+-- Shared carrier pool: the opt-in, and the record of who asked
+-- (Phase 11, DECISIONS.md D4/D17)
+-- ---------------------------------------------------------------------------
+
+-- A broker is in the pool iff it has a row here. No row is the default, so the
+-- feature is off for everybody on a fresh database and stays off until someone
+-- opts in explicitly (S1). Opting *out* deletes the row rather than flipping a
+-- flag, so "not in" has exactly one representation.
+CREATE TABLE IF NOT EXISTS pool_opt_in (
+    broker_id   TEXT PRIMARY KEY REFERENCES brokers (id),
+    opted_in_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- D17's "every pool read is written to an audit row keyed by (broker_id,
+-- source_load_id, asked_at)". The pool is not a directory — it answers only for
+-- one of the requester's own ACTIVE loads — so this is what makes *repetition*
+-- visible after the fact, which is the only defence against an opted-in broker
+-- who asks honestly-shaped questions over and over and does arithmetic.
+--
+-- Append-only for the same reason sync_events is: carrier_pool_app is granted
+-- SELECT and INSERT and nothing else, so there is no privilege with which to
+-- edit away a record of having asked.
+CREATE TABLE IF NOT EXISTS pool_audit (
+    id             BIGSERIAL   PRIMARY KEY,
+    broker_id      TEXT        NOT NULL REFERENCES brokers (id),
+    source_load_id TEXT        NOT NULL,
+    asked_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS pool_audit_asked_idx
+    ON pool_audit (broker_id, source_load_id, asked_at);
+
+-- ---------------------------------------------------------------------------
 -- Tenant isolation, enforced by the database (CLAUDE.md invariant 1)
 -- ---------------------------------------------------------------------------
 
@@ -326,6 +359,11 @@ GRANT SELECT, INSERT ON sync_files, sync_events TO carrier_pool_app;
 GRANT SELECT, INSERT, UPDATE ON loads, carriers, customers TO carrier_pool_app;
 -- Derived stats are deleted and re-inserted per dirty key — that is the rebuild.
 GRANT SELECT, INSERT, UPDATE, DELETE ON lane_stats, carrier_stats TO carrier_pool_app;
+-- Joining and leaving the pool. No UPDATE: the row has nothing to change, and
+-- leaving is a DELETE so that "not in the pool" has one representation.
+GRANT SELECT, INSERT, DELETE ON pool_opt_in TO carrier_pool_app;
+-- Append-only, like the sync log.
+GRANT SELECT, INSERT ON pool_audit TO carrier_pool_app;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO carrier_pool_app;
 
 -- The bound broker, or a loud failure. Reading the setting directly is not
@@ -355,7 +393,7 @@ DECLARE
 BEGIN
     FOREACH t IN ARRAY ARRAY[
         'sync_files', 'sync_events', 'loads', 'carriers', 'customers',
-        'lane_stats', 'carrier_stats'
+        'lane_stats', 'carrier_stats', 'pool_opt_in', 'pool_audit'
     ]
     LOOP
         EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', t);
@@ -368,3 +406,219 @@ BEGIN
     END LOOP;
 END
 $$;
+
+-- ---------------------------------------------------------------------------
+-- The one cross-broker reader (Phase 11 S3, DECISIONS.md D17)
+-- ---------------------------------------------------------------------------
+--
+-- Everything above this line is tenant-confined: RLS is forced on every table
+-- carrying a broker_id, and an unbound read raises out of current_broker().
+-- The shared pool is the single place where one broker's answer may be informed
+-- by another's data, and D17 spends its length on making that place small.
+--
+-- It is a **projection, not a filter**. A filter over the full record is one
+-- forgotten SELECT * away from publishing what Broker B pays a carrier — the
+-- exact commercial harm D4 names. The view below has no rate column to forget,
+-- and three separate things have to be defeated to add one:
+--
+--   1. The view's column list, which names every column that crosses.
+--   2. carrier_pool_reader's *column-level* SELECT grants, which do not include
+--      carrier_stats.avg_rate_per_mile and include nothing at all on `loads`,
+--      `lane_stats`, `customers`, `sync_files` or `sync_events`. So editing the
+--      view to select a rate does not leak a rate — it fails to create, with
+--      "permission denied for table carrier_stats". The barrier survives
+--      somebody editing the SQL, which is the point of putting it in the
+--      catalog rather than in Python.
+--   3. app.domain.pool.PoolCarrier, a dataclass with no money attribute, which
+--      is the only type the pool read path returns.
+--
+-- Raw counts do not cross either: the view emits *bands*. Suppression below 5
+-- loads is the WHERE clause, and 5-9 / 10-19 / 20-49 / 50+ is the CASE, so the
+-- integer never leaves the database and no caller can un-bucket what it was
+-- never given. D17 is explicit that this is obfuscation and not a privacy
+-- proof: at three brokers k-anonymity is arithmetically unavailable, because
+-- every pooled statistic about a shared carrier is one other broker's data
+-- minus your own. Bands are why a count crosses as a range rather than as a
+-- number a competitor can subtract from.
+
+-- The owner of the view, and the only role in the system that sees across
+-- brokers. NOLOGIN and no password: nothing can connect as it, and
+-- carrier_pool_app is deliberately *not* a member, so the only way to exercise
+-- this role's reach is through the view it owns.
+--
+-- BYPASSRLS is required and is the riskiest line in the feature. schema.sql
+-- declares FORCE ROW LEVEL SECURITY on every tenant table, so even the table
+-- owner is subject to broker_isolation and an unbound read raises out of
+-- current_broker(); a view owner without the bypass could therefore never
+-- assemble a cross-broker row at all. The mitigation is not the grant, it is
+-- the projection: this role can reach carriers and carrier_stats across every
+-- broker and still cannot name a rate, because it was never granted the column.
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'carrier_pool_reader') THEN
+        CREATE ROLE carrier_pool_reader;
+    END IF;
+END
+$$;
+
+-- Declarative, like carrier_pool_app's: re-running this file repairs a role
+-- that was loosened by hand.
+ALTER ROLE carrier_pool_reader
+    WITH NOLOGIN NOSUPERUSER BYPASSRLS NOCREATEDB NOCREATEROLE NOINHERIT;
+
+-- The bootstrap user must be a member to hand it ownership of the view.
+GRANT carrier_pool_reader TO CURRENT_USER;
+GRANT USAGE ON SCHEMA public TO carrier_pool_reader;
+
+-- Table-level first, then the column lists. REVOKE ALL on a table does not
+-- remove column-level privileges, so the forbidden columns are named again
+-- below rather than assumed gone.
+REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM carrier_pool_reader;
+REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public FROM carrier_pool_reader;
+
+-- What the view is allowed to read. Column-level SELECT, so the grant is the
+-- same list as D17's "what crosses" table and can be diffed against it.
+GRANT SELECT (broker_id, source_carrier_id, name, mc_number, dot_number, phone,
+              home_city, home_state)
+    ON carriers TO carrier_pool_reader;
+GRANT SELECT (broker_id, source_carrier_id, tier, lane_key, equipment,
+              load_count, on_time_count, on_time_eligible_count, last_load_at)
+    ON carrier_stats TO carrier_pool_reader;
+GRANT SELECT (broker_id) ON pool_opt_in TO carrier_pool_reader;
+
+-- Named explicitly, so that reading this file tells you what was withheld and
+-- so a hand-granted column is taken back on the next start (D8). These are
+-- D17's "never crosses" rows that live on a table the view does touch; the
+-- tables it does not touch at all get nothing by the REVOKE above.
+REVOKE ALL (avg_rate_per_mile) ON carrier_stats FROM carrier_pool_reader;
+REVOKE ALL (last_delivery_lat, last_delivery_lon, last_delivery_at)
+    ON carriers FROM carrier_pool_reader;
+
+-- Dropped and recreated rather than CREATE OR REPLACEd: replacing a view
+-- refuses any change to the column list, which would make tightening this
+-- projection require a hand-run migration. The grant below is re-issued on
+-- every start for the same reason (D8).
+DROP VIEW IF EXISTS pool_carrier_lane;
+
+-- One row per (contributing broker, carrier, lane, equipment pool). Every
+-- column is either the carrier's own published identity or a band.
+--
+-- security_invoker is left at its default of false, so the underlying tables
+-- are read as the *owner* — which is what lets carrier_pool_reader's BYPASSRLS
+-- apply and what makes its column grants the binding constraint. A caller who
+-- joins this view back to `loads` inside a broker_session still gets only its
+-- own rows: the policy filters the join, not the projection.
+--
+-- current_broker() in the WHERE clause below is evaluated against the
+-- *invoker's* session setting, not the owner's, because app.broker_id is a
+-- transaction-local GUC rather than anything the owner carries. So the view is
+-- owner-privileged for reach and invoker-scoped for permission, which is
+-- exactly the split this feature needs.
+CREATE VIEW pool_carrier_lane AS
+SELECT
+    -- Not part of what crosses: the read path counts distinct contributors
+    -- with it, and app.domain.pool.PoolCarrier has no field it could be copied
+    -- into. Self-exclusion does not depend on a caller using it — see the
+    -- WHERE clause.
+    s.broker_id                                   AS contributor_broker_id,
+    -- The cross-TMS identity key (D2). Trimmed and upper-cased here so the
+    -- match is done once, in the projection, rather than by every caller.
+    upper(btrim(c.mc_number))                     AS mc_number,
+    c.dot_number                                  AS dot_number,
+    c.name                                        AS name,
+    c.phone                                       AS phone,
+    c.home_city                                   AS home_city,
+    c.home_state                                  AS home_state,
+    s.tier                                        AS tier,
+    s.lane_key                                    AS lane_key,
+    s.equipment                                   AS equipment,
+    -- Depth of the relationship, as a band. The floor of 5 is CLAUDE.md's
+    -- minimum sample reused: a carrier below it is not in this view at all, so
+    -- there is no row to un-bucket.
+    CASE
+        WHEN s.load_count >= 50 THEN '50+'
+        WHEN s.load_count >= 20 THEN '20-49'
+        WHEN s.load_count >= 10 THEN '10-19'
+        ELSE '5-9'
+    END                                           AS load_band,
+    -- The same band as an ordinal, because '5-9' > '50+' lexicographically and
+    -- the read path aggregates several contributors by taking the strongest.
+    CASE
+        WHEN s.load_count >= 50 THEN 4
+        WHEN s.load_count >= 20 THEN 3
+        WHEN s.load_count >= 10 THEN 2
+        ELSE 1
+    END                                           AS load_band_rank,
+    -- Reliability without the raw pair: D16 shows that "18 of 22" is a
+    -- fingerprint identifying one carrier under one broker. NULL is a real
+    -- third state — nothing on this lane has delivered yet — and is not 0%.
+    CASE
+        WHEN s.on_time_eligible_count = 0 THEN NULL
+        WHEN s.on_time_count::numeric / s.on_time_eligible_count >= 0.90 THEN '90+'
+        WHEN s.on_time_count::numeric / s.on_time_eligible_count >= 0.75 THEN '75-89'
+        ELSE '<75'
+    END                                           AS on_time_band,
+    CASE
+        WHEN s.on_time_eligible_count = 0 THEN NULL
+        WHEN s.on_time_count::numeric / s.on_time_eligible_count >= 0.90 THEN 1
+        WHEN s.on_time_count::numeric / s.on_time_eligible_count >= 0.75 THEN 2
+        ELSE 3
+    END                                           AS on_time_band_rank,
+    -- "Still running", with no date attached. Measured against the freshest
+    -- delivery the pool holds rather than against now(), for the same reason
+    -- BrokerRepository.latest_sync_at exists: an answer stays reproducible from
+    -- the fixture instead of decaying as the wall clock walks away from day 11.
+    -- Keep the 30 in step with app.domain.pool.POOL_RECENCY_DAYS.
+    COALESCE(
+        s.last_load_at > (
+            SELECT max(cs.last_load_at)
+            FROM carrier_stats cs
+            JOIN pool_opt_in po ON po.broker_id = cs.broker_id
+        ) - INTERVAL '30 days',
+        FALSE
+    )                                             AS active_recently
+FROM carrier_stats s
+JOIN carriers c
+    ON c.broker_id = s.broker_id
+   AND c.source_carrier_id = s.source_carrier_id
+-- Opt-in, enforced in the projection itself. A broker that leaves disappears
+-- from the pool on its next read; there is no copy of its rows to expire.
+JOIN pool_opt_in p ON p.broker_id = s.broker_id
+-- Three conditions on the *reader*, in the projection rather than in the query
+-- that reads it, so that none of them is something a call site could forget.
+--
+--   * current_broker() raises when no broker is bound, so this view fails
+--     closed outside a broker_session exactly like every tenant table does. A
+--     careless psycopg.connect(DATABASE_URL) followed by SELECT * FROM
+--     pool_carrier_lane gets the same "no broker bound" error it would get from
+--     `loads`, rather than the whole pool.
+--   * The pool is reciprocal: you see it only if you are in it. Enforced here,
+--     so a broker that never opted in cannot read one banded row even through
+--     hand-written SQL.
+--   * A broker never sees its own contribution back. Its own carriers are in
+--     its ranking already, scored from real numbers rather than from bands.
+WHERE EXISTS (
+        SELECT 1 FROM pool_opt_in me WHERE me.broker_id = current_broker()
+      )
+  AND s.broker_id <> current_broker()
+  AND c.mc_number IS NOT NULL
+  AND btrim(c.mc_number) <> ''
+  -- METRO and REGION only. A ZIP3 pair is roughly a facility, and naming the
+  -- facility a competitor's carrier runs into is naming their shipper.
+  -- REGION_ANY is excluded because its lane key is the region with no
+  -- equipment dimension, which the read path already reaches via REGION.
+  AND s.tier IN ('METRO', 'REGION')
+  -- Suppression below the minimum sample, applied before anything is banded.
+  AND s.load_count >= 5;
+
+ALTER VIEW pool_carrier_lane OWNER TO carrier_pool_reader;
+
+-- The application role gets SELECT on the view and nothing else new. It has no
+-- membership in carrier_pool_reader and no privilege on another broker's rows;
+-- this one projection is the entire widening.
+GRANT SELECT ON pool_carrier_lane TO carrier_pool_app;
+
+-- pool_audit's sequence was created after the blanket sequence grant above, so
+-- it is granted again here: on a fresh database the earlier statement ran
+-- before the table existed.
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO carrier_pool_app;
