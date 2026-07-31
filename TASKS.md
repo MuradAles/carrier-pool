@@ -41,7 +41,7 @@ Cheap now, expensive later. Nothing below should start until D1–D4 are settled
 | # | Task | Agent | Done when |
 |---|---|---|---|
 | [x] F1 | Scaffold: compose, Dockerfiles, deps, health endpoint, placeholder UI | — | `docker compose config` validates |
-| [!] F2 | Verify the stack actually boots | builder | **Blocked** — Docker daemon not running. Deferred to start of Phase 1 |
+| [x] F2 | Verify the stack actually boots | builder | Verified end to end from an **empty volume** (`docker compose down -v` → `up`), not just a warm restart: Postgres `initdb`, schema bootstrap, role creation, all 132 files ingested, and a day-11 answer reaching the browser through the Vite proxy. Closed during X4 |
 | [x] D1 | **Load budget** | — | Mostly `COMPLETED` backfill; arithmetic in `DECISIONS.md` |
 | [x] D2 | **Cross-TMS carrier identity** | — | TMS C extended with MC/DOT, disclosed as an extension |
 | [x] D3 | **`sync_events` grain** | — | Split into `sync_files` + per-entity `sync_events`; PRD §5 updated |
