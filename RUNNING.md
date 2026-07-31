@@ -393,10 +393,11 @@ python3 -m venv .venv
 
 ### The first run after the database changes underneath it is unreliable
 
-**This is a real defect in the test suite, not a caveat.** With the backend stopped and
-nothing else running, the first invocation after the database has been disturbed — the
-backend repopulating it, an earlier interrupted run — frequently does not pass. Three
-separate attempts, each the first run after restarting and stopping the backend:
+**This is a real defect in the test suite, not a caveat, and it is not rare.** With the
+backend stopped and nothing else running, the first invocation after the database has been
+disturbed — the backend repopulating it, an earlier interrupted run — does not pass.
+**Three attempts, three failures**, each one the first run after restarting and then
+stopping the backend:
 
 ```
 attempt 1:  14 failed, 440 passed
@@ -405,7 +406,14 @@ attempt 3:    1 failed, 453 passed     psycopg.errors.InternalError_: tuple conc
 ```
 
 Immediately re-running the identical command passed 454 every time — four consecutive
-clean runs after attempt 1, two after attempt 3.
+clean runs after attempt 1, two after attempt 3. A colleague measuring it differently
+— three consecutive runs of `tests/integration` from a reset database rather than three
+first-runs — got `33 passed, 24 errors`, then `57 passed`, then `57 passed`: **one in
+three**, and the same shape. Their errors included a `ForeignKeyViolation` on
+`sync_events_sync_file_id_fkey` alongside the deadlocks.
+
+Both measurements say the same thing: it is the *first* run against a database whose state
+just changed that races, and re-running clears it.
 
 **The part that matters: it does not always look like an infrastructure error.** Among the
 failures observed were plain wrong-value assertions —
