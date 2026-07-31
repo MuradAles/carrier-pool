@@ -1,264 +1,1262 @@
-/* README:101 — "visual polish counts for nothing." This stylesheet exists to
-   make numbers legible and to make an ACTIVE load and a low-confidence answer
-   distinguishable at a glance. Nothing here is decoration. */
+/* Coverage console.
+ *
+ * Ported from the approved `design-b` mockup: its tokens, type scale, spacing
+ * and chart treatments are reproduced here rather than re-invented. The
+ * identity is comparison-first — a score means nothing alone, so carriers are
+ * shown against each other with signal bars and a shared reference line, and
+ * the price sits on a scale next to what the customer pays.
+ *
+ * Nothing here is decoration. Colour is either the one accent or a semantic
+ * (confidence, verdict, weakness); grey does the rest of the work. Borders and
+ * rules separate regions — no shadows, no floating cards, no gradients.
+ */
+
+:root {
+  color-scheme: light;
+  --bg:        #f4f3ef;
+  --panel:     #ffffff;
+  --panel-2:   #faf9f5;
+  --ink:       #16191d;
+  --ink-2:     #4c535b;
+  --ink-3:     #787f88;
+  --rule:      #ddd9d1;
+  --rule-2:    #c6c1b6;
+  --accent:    #2b5fa8;
+  --accent-2:  #7ba0d4;
+  --accent-sf: #e2eaf6;
+  --good:      #1b7a5a;
+  --good-sf:   #d9ece3;
+  --warn:      #9d6510;
+  --warn-sf:   #f6e8cd;
+  --weak:      #a8402f;
+  --weak-sf:   #f4ded9;
+  --grid:      #e8e5dd;
+  --on-accent: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg:        #131519;
+    --panel:     #1a1d22;
+    --panel-2:   #21252b;
+    --ink:       #eceef2;
+    --ink-2:     #b2b9c2;
+    --ink-3:     #838b95;
+    --rule:      #2c313a;
+    --rule-2:    #3e454f;
+    --accent:    #74a3e2;
+    --accent-2:  #4a6d9e;
+    --accent-sf: #1e2a3c;
+    --good:      #4dbd93;
+    --good-sf:   #16302a;
+    --warn:      #d9a44c;
+    --warn-sf:   #362b17;
+    --weak:      #e17f6c;
+    --weak-sf:   #38201c;
+    --grid:      #262b33;
+    --on-accent: #10131a;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:        #131519;
+  --panel:     #1a1d22;
+  --panel-2:   #21252b;
+  --ink:       #eceef2;
+  --ink-2:     #b2b9c2;
+  --ink-3:     #838b95;
+  --rule:      #2c313a;
+  --rule-2:    #3e454f;
+  --accent:    #74a3e2;
+  --accent-2:  #4a6d9e;
+  --accent-sf: #1e2a3c;
+  --good:      #4dbd93;
+  --good-sf:   #16302a;
+  --warn:      #d9a44c;
+  --warn-sf:   #362b17;
+  --weak:      #e17f6c;
+  --weak-sf:   #38201c;
+  --grid:      #262b33;
+  --on-accent: #10131a;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg:        #f4f3ef;
+  --panel:     #ffffff;
+  --panel-2:   #faf9f5;
+  --ink:       #16191d;
+  --ink-2:     #4c535b;
+  --ink-3:     #787f88;
+  --rule:      #ddd9d1;
+  --rule-2:    #c6c1b6;
+  --accent:    #2b5fa8;
+  --accent-2:  #7ba0d4;
+  --accent-sf: #e2eaf6;
+  --good:      #1b7a5a;
+  --good-sf:   #d9ece3;
+  --warn:      #9d6510;
+  --warn-sf:   #f6e8cd;
+  --weak:      #a8402f;
+  --weak-sf:   #f4ded9;
+  --grid:      #e8e5dd;
+  --on-accent: #ffffff;
+}
+
+* { box-sizing: border-box; }
 
 body {
-  font-family: system-ui, sans-serif;
-  line-height: 1.45;
   margin: 0;
-  color: #111;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15.5px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
-main {
-  padding: 1.5rem;
+/* Digits align down a column so two rows can be compared by eye. Applied to
+   every number on screen, not just the ones in tables. */
+.num,
+.tnum {
+  font-variant-numeric: tabular-nums;
 }
 
-h1 {
-  font-size: 1.4rem;
-}
-
-.controls {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 0.9rem;
-}
-
-th,
-td {
-  border-bottom: 1px solid #ddd;
-  padding: 0.35rem 0.6rem;
-  text-align: left;
-  vertical-align: top;
-}
-
-th {
-  background: #f3f3f3;
-}
-
-/* Money and distances line up on the decimal point, so two rows are comparable
-   without reading them character by character. */
 .num {
   text-align: right;
+}
+
+/* Ids, lane keys and rates get a near-monospace face; prose does not. */
+.mono {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
-/* The loads the platform exists to answer for. */
-.active-load {
-  background: #fffbe6;
+a { color: var(--accent); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
-.status {
-  font-size: 0.75rem;
-  letter-spacing: 0.03em;
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
 }
 
-.status-active {
-  font-weight: 700;
+/* ---------- chrome ---------- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 26px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--rule-2);
 }
 
-/* Geo-null and other caveats ride next to the value they qualify, never in a
-   footnote — a caveated number must not read like a clean one. */
-.flag {
-  margin-left: 0.4rem;
-  font-size: 0.7rem;
-  border: 1px solid #b58900;
-  color: #7a5c00;
-  padding: 0 0.25rem;
+.brand {
+  font-weight: 640;
+  letter-spacing: -0.01em;
+  font-size: 15px;
 }
 
-.muted {
-  color: #666;
+.brand span {
+  color: var(--ink-3);
+  font-weight: 450;
 }
 
-/* --- Price estimate (U4) ------------------------------------------------- */
+.topbar .spacer { flex: 1; }
 
-.headline {
-  margin: 0.4rem 0 0.2rem;
+.field {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13.5px;
+  color: var(--ink-2);
 }
 
-.point {
-  font-size: 1.6rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+select {
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--ink);
+  background: var(--panel-2);
+  border: 1px solid var(--rule-2);
+  border-radius: 3px;
+  padding: 4px 8px;
 }
 
-.range {
-  margin: 0 0 0.4rem;
-  font-variant-numeric: tabular-nums;
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--rule-2);
+  border-radius: 3px;
+  overflow: hidden;
 }
 
-/* Confidence is a label, not a shade: a low-confidence estimate has to be
-   unmistakable next to a high-confidence one, so it gets its own border and
-   word rather than a lighter grey. */
-.confidence {
-  margin-left: 0.6rem;
-  padding: 0.1rem 0.4rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  border: 2px solid;
+.seg button {
+  font: inherit;
+  font-size: 12.5px;
+  background: var(--panel-2);
+  color: var(--ink-2);
+  border: 0;
+  border-left: 1px solid var(--rule);
+  padding: 5px 11px;
+  cursor: pointer;
+}
+
+.seg button:first-child { border-left: 0; }
+
+.seg button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.wrap {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 22px 26px 90px;
+}
+
+.screen-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 14px;
+  margin: 4px 0 16px;
+  padding-bottom: 9px;
+  border-bottom: 2px solid var(--rule-2);
+}
+
+.screen-label h2 {
+  margin: 0;
+  font-size: 19px;
+  letter-spacing: -0.015em;
+  font-weight: 620;
+}
+
+.screen-label .sub {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.screen-label .spacer { flex: 1; }
+
+/* ---------- panels ---------- */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+.panel + .panel { margin-top: 18px; }
+
+.panel-hd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.panel-hd h3 {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 620;
+  letter-spacing: -0.005em;
+}
+
+.panel-hd .sub {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.panel-hd .spacer { flex: 1; }
+
+.panel-bd { padding: 18px; }
+
+.chip {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 620;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: var(--panel-2);
+  color: var(--ink-2);
+  border: 1px solid var(--rule-2);
+  white-space: nowrap;
+}
+
+.chip.active { background: var(--accent-sf); color: var(--accent); border-color: var(--accent-2); }
+.chip.good   { background: var(--good-sf);   color: var(--good);   border-color: var(--good); }
+.chip.warn   { background: var(--warn-sf);   color: var(--warn);   border-color: var(--warn); }
+.chip.weak   { background: var(--weak-sf);   color: var(--weak);   border-color: var(--weak); }
+.chip.mute   { color: var(--ink-3); }
+
+/* A verdict chip carries the domain's own sentence, so it is not shouted into
+   uppercase — "rejected, 2 < 5" has to stay readable as written. */
+.chip.verdict {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+}
+
+/* ---------- load list ---------- */
+
+table.loads {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table.loads th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 620;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--rule-2);
+  white-space: nowrap;
+}
+
+table.loads th.r,
+table.loads td.r { text-align: right; }
+
+table.loads td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--rule);
   vertical-align: middle;
 }
 
-.confidence-high {
-  border-color: #1b7f3b;
-  color: #1b7f3b;
+table.loads tr:last-child td { border-bottom: 0; }
+
+table.loads tbody tr:hover td { background: var(--panel-2); }
+
+/* A number that wraps stops being comparable with the number above it. */
+table.loads td.tnum,
+table.loads td.r { white-space: nowrap; }
+
+.lane-cell { min-width: 240px; white-space: normal; }
+
+.lane-txt { font-size: 14.5px; }
+
+.lane-txt .arrow {
+  color: var(--ink-3);
+  padding: 0 6px;
 }
 
-.confidence-medium {
-  border-color: #b58900;
-  color: #7a5c00;
+.lane-sub {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  margin-top: 1px;
 }
 
-.confidence-low {
-  border-color: #b00020;
-  color: #b00020;
-  background: #ffe9ec;
+.milesbar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+
+.milesbar .track {
+  width: 78px;
+  height: 8px;
+  background: var(--grid);
+  border: 1px solid var(--rule);
+  border-radius: 1px;
+  overflow: hidden;
+  flex: none;
+}
+
+.milesbar .fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.milesbar .u { color: var(--ink-3); }
+
+/* `—` plus what the gap means. Never `$0.00`. */
+.dash { color: var(--ink-3); }
+.dash small { font-size: 11.5px; }
+
+.rowlink {
+  font: inherit;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ---------- detail header ---------- */
+
+.load-hd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--panel-2);
+}
+
+.load-hd .id {
+  font-size: 20px;
+  font-weight: 640;
+  letter-spacing: -0.01em;
+}
+
+.load-hd .lane {
+  font-size: 16px;
+  color: var(--ink-2);
+}
+
+.load-hd .lane .arrow { color: var(--ink-3); }
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  border-top: 1px solid var(--rule);
+  margin: 0;
+}
+
+.facts > div {
+  padding: 12px 18px;
+  border-right: 1px solid var(--rule);
+}
+
+.facts > div:last-child { border-right: 0; }
+
+.facts dt {
+  font-size: 11.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 0 0 3px;
+}
+
+.facts dd {
+  margin: 0;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.facts dd .u {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.cols {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 18px;
+  margin-top: 18px;
+  align-items: start;
+}
+
+.cols > .panel + .panel { margin-top: 0; }
+
+/* A grid item's default `min-width: auto` refuses to shrink below its widest
+   content, so one wide table inside a panel would push the whole page into a
+   horizontal scroll instead of scrolling inside its own panel. */
+.cols > *,
+.crow > *,
+.poolrow > *,
+.cells > * {
+  min-width: 0;
+}
+
+/* ---------- charts ---------- */
+
+svg.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ax-line { stroke: var(--rule-2); stroke-width: 1; }
+.ax-tick { stroke: var(--rule-2); stroke-width: 1; }
+.grid-line { stroke: var(--grid); stroke-width: 1; }
+
+.ax-label {
+  fill: var(--ink-3);
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.ax-label.tnum { font-variant-numeric: tabular-nums; }
+
+.val-label {
+  fill: var(--ink);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.key-label {
+  fill: var(--ink-2);
+  font-size: 12.5px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.legend i {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: -1px;
 }
 
 /* The sentence the backend generated. It is the answer's evidence, so it sits
    with the number rather than under a fold. */
 .provenance {
-  margin: 0.3rem 0 0.8rem;
-  padding-left: 0.6rem;
-  border-left: 3px solid #999;
+  margin-top: 14px;
+  padding: 11px 13px;
+  background: var(--panel-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent-2);
+  font-size: 13.5px;
+  color: var(--ink-2);
+  border-radius: 0 3px 3px 0;
+}
+
+.provenance b {
+  color: var(--ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.headline {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin: 0 0 4px;
+}
+
+.headline .point {
+  font-size: 30px;
+  font-weight: 640;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.headline .of {
+  font-size: 13px;
+  color: var(--ink-3);
 }
 
 /* A caveat that qualifies the whole answer, not one value. */
-.warn {
-  border: 1px solid #b58900;
-  background: #fffbe6;
-  padding: 0.4rem 0.6rem;
-  margin: 0.6rem 0;
+.caveat {
+  margin: 14px 0 0;
+  padding: 11px 13px;
+  border: 1px solid var(--warn);
+  border-left: 3px solid var(--warn);
+  background: var(--warn-sf);
+  color: var(--ink);
+  font-size: 13.5px;
+  border-radius: 0 3px 3px 0;
 }
 
-.warn ul {
-  margin: 0.3rem 0 0;
-}
+.caveat p { margin: 0; }
 
-/* --- Tier walk (invariant 6) --------------------------------------------- */
-
-.walk {
-  margin: 1rem 0;
-}
-
-.walk h4 {
-  margin: 0 0 0.2rem;
-}
-
-.walk table {
-  max-width: 60rem;
-}
-
-.accepted-rung {
-  background: #eaf7ee;
-  font-weight: 600;
-}
-
-/* --- Ranked carriers (U5) ------------------------------------------------ */
-
-.carrier {
-  border-top: 1px solid #ddd;
-  padding: 0.5rem 0;
-}
-
-.carrier h4 {
-  margin: 0;
-}
-
-.rank {
-  color: #666;
+.caveat ul {
+  margin: 7px 0 0;
+  padding-left: 18px;
   font-variant-numeric: tabular-nums;
 }
 
-.score {
-  float: right;
+.caveat.weak {
+  border-color: var(--weak);
+  background: var(--weak-sf);
+}
+
+/* ---------- tier walk ---------- */
+
+.rung {
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--rule);
+}
+
+.rung:last-child { border-bottom: 0; }
+
+.rung-hd {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.rung-hd .spacer { flex: 1; }
+
+.rung-name {
+  font-size: 14px;
+  font-weight: 620;
+  letter-spacing: 0.03em;
+}
+
+.rung-def {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.rung.off .rung-name,
+.rung.off .rung-def { color: var(--ink-3); }
+
+/* How wide the lane definition gets at this rung. Narrower is better. */
+.scope {
+  height: 6px;
+  background: var(--grid);
+  border-radius: 1px;
+  margin-bottom: 9px;
+  position: relative;
+}
+
+.scope i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--rule-2);
+  border-radius: 1px;
+}
+
+.rung.on .scope i { background: var(--accent-2); }
+
+.countbar {
+  position: relative;
+  height: 26px;
+  background: var(--panel-2);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+
+.countbar > .f {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--accent);
+}
+
+.rung.rejected .countbar > .f { background: var(--rule-2); }
+
+.countbar > .thr {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 0;
+  border-left: 2px dashed var(--warn);
+}
+
+.countbar > .n {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 620;
   font-variant-numeric: tabular-nums;
-  font-size: 1.15rem;
+  color: var(--on-accent);
 }
 
-.contact,
-.evidence {
-  margin: 0.15rem 0;
-  font-size: 0.85rem;
+.rung.rejected .countbar > .n,
+.countbar > .n.out { color: var(--ink-3); }
+
+.rung-note {
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-top: 7px;
 }
 
-.reasons {
-  margin: 0.3rem 0;
+.thr-key {
+  font-size: 12.5px;
+  color: var(--warn);
+  margin-top: 10px;
 }
 
-/* --- Sync history (U6) --------------------------------------------------- */
+/* ---------- carrier matrix ---------- */
+
+.cgrid-hd,
+.crow {
+  display: grid;
+  grid-template-columns: 250px 118px minmax(360px, 1fr);
+  gap: 0;
+}
+
+.cgrid-hd {
+  border-bottom: 1px solid var(--rule-2);
+  padding: 0 18px;
+}
+
+.cgrid-hd .h {
+  font-size: 11.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 10px 0 8px;
+}
+
+.sigcols {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+
+.sigcols .sh {
+  padding: 10px 0 8px;
+  border-left: 1px solid var(--rule);
+  padding-left: 8px;
+}
+
+.sigcols .sh .n {
+  font-size: 11.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  display: block;
+}
+
+.crow {
+  padding: 15px 18px 13px;
+  border-bottom: 1px solid var(--rule);
+  align-items: start;
+}
+
+.crow:last-child { border-bottom: 0; }
+
+.crow.top { background: var(--panel-2); }
+
+.cname { padding-right: 14px; }
+
+.cname .rk {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.cname .nm {
+  font-size: 16px;
+  font-weight: 620;
+  letter-spacing: -0.01em;
+  margin: 1px 0 3px;
+}
+
+.cname .meta {
+  font-size: 13px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.cname .meta.mono {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+.cname .meta .sep {
+  color: var(--ink-3);
+  padding: 0 5px;
+}
+
+.cscore { padding-right: 16px; }
+
+.cscore .v {
+  font-size: 25px;
+  font-weight: 640;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.cscore .of {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.cscore .track {
+  margin-top: 6px;
+  height: 8px;
+  background: var(--grid);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.cscore .track i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.crow.zero .cscore .track i { background: var(--weak); }
+.crow.zero .cscore .v { color: var(--weak); }
+
+.cells {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+
+.cell {
+  border-left: 1px solid var(--rule);
+  padding-left: 8px;
+}
+
+/* Capped so it reads as a bar rather than a field of colour — the height is
+   the signal, the width carries no meaning and should not pretend to. */
+.cell .box {
+  position: relative;
+  height: 78px;
+  max-width: 104px;
+  background: var(--grid);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cell .box .f {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--accent-2);
+}
+
+.crow.top .cell .box .f { background: var(--accent); }
+
+/* The best value any candidate reached for this signal, so a gap is visible
+   without arithmetic. A position, never a printed number. */
+.cell .box .best {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--ink-3);
+}
+
+.cell .box .empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--weak);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+/* In the API's order, all of them: PRD section 8 orders these by signal with
+   the non-scoring rate note last. */
+.creasons {
+  grid-column: 1 / -1;
+  margin: 12px 0 0;
+  padding: 11px 0 0;
+  border-top: 1px dotted var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  list-style: none;
+}
+
+.creasons li {
+  list-style: none;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  padding-left: 15px;
+  position: relative;
+  max-width: 46ch;
+}
+
+.creasons li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-2);
+}
+
+.creasons li.neg::before { background: var(--weak); }
+
+/* ---------- how the score was calculated (closed by default) ---------- */
+
+.calc {
+  grid-column: 1 / -1;
+  margin-top: 11px;
+}
+
+.calc > summary {
+  cursor: pointer;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 3px 9px;
+  background: var(--panel-2);
+}
+
+.calc > summary::-webkit-details-marker { display: none; }
+
+.calc > summary::before {
+  content: "+";
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--ink-3);
+}
+
+.calc[open] > summary::before { content: "\2212"; }
+
+.calc[open] > summary { color: var(--ink-2); }
+
+.calc table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-variant-numeric: tabular-nums;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+}
+
+.calc th {
+  font-size: 11.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 620;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--rule-2);
+  white-space: nowrap;
+}
+
+.calc th.r,
+.calc td.r { text-align: right; }
+
+.calc td {
+  padding: 7px 12px;
+  font-size: 13.5px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+.calc td.lbl { color: var(--ink-2); white-space: nowrap; }
+
+/* The fact leads, the normalised value follows. */
+.calc .fact { color: var(--ink); }
+
+.calc .norm {
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.calc .norm::before { content: " \2192 "; }
+
+.calc tr.sum td {
+  border-bottom: 0;
+  border-top: 1px solid var(--rule-2);
+  font-size: 15px;
+  font-weight: 640;
+  background: var(--panel-2);
+}
+
+.calc .foot {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  margin: 8px 0 0;
+  line-height: 1.45;
+}
+
+/* ---------- stops ---------- */
+
+table.grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+table.grid th {
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 620;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--rule-2);
+  white-space: nowrap;
+}
+
+table.grid th.r,
+table.grid td.r { text-align: right; }
+
+table.grid td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  font-variant-numeric: tabular-nums;
+}
+
+table.grid tr:last-child td { border-bottom: 0; }
+
+/* Geo-null and other caveats ride next to the value they qualify, never in a
+   footnote — a caveated number must not read like a clean one. */
+.flag {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+  padding: 0 5px;
+  border: 1px solid var(--warn);
+  color: var(--warn);
+  background: var(--warn-sf);
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.muted { color: var(--ink-3); }
+
+/* ---------- shared pool ---------- */
+
+.poolrow {
+  display: grid;
+  grid-template-columns: 250px 118px minmax(280px, 1fr);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--rule);
+  align-items: start;
+}
+
+.poolrow:last-child { border-bottom: 0; }
+
+.bands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  margin-bottom: 9px;
+}
+
+.band {
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+  border: 1px solid var(--rule-2);
+  background: var(--panel-2);
+  border-radius: 2px;
+  padding: 1px 6px;
+}
+
+.band b {
+  color: var(--ink-3);
+  font-weight: 620;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  margin-right: 5px;
+}
+
+/* ---------- sync history ---------- */
 
 .sync-file {
-  margin: 0.8rem 0 0.2rem;
-  font-size: 0.95rem;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 16px 0 6px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 13.5px;
+  font-weight: 620;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
-.sync-event {
-  margin-left: 1rem;
+.sync-file:first-child { margin-top: 0; }
+
+.sync-file .when {
+  font-weight: 400;
+  color: var(--ink-3);
+  font-size: 12.5px;
 }
 
-.sync-event summary {
+.sync-event { margin: 0 0 4px; }
+
+.sync-event > summary {
   cursor: pointer;
+  font-size: 13px;
+  padding: 3px 0;
+  color: var(--ink-2);
 }
 
-.entity {
-  font-weight: 700;
-  font-size: 0.8rem;
+.sync-event .entity {
+  font-size: 11px;
+  font-weight: 620;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-right: 7px;
 }
 
 .sync-event pre {
-  margin: 0.2rem 0 0.5rem;
-  padding: 0.4rem 0.6rem;
-  background: #f6f6f6;
-  border-left: 3px solid #ccc;
-  font-size: 0.8rem;
+  margin: 4px 0 10px;
+  padding: 10px 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule-2);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
   overflow-x: auto;
 }
 
+/* ---------- notes, states, footer ---------- */
+
 .note {
-  color: #444;
+  font-size: 13px;
+  color: var(--ink-3);
+  padding: 12px 18px;
+  border-top: 1px solid var(--rule);
+  background: var(--panel-2);
 }
 
-.error {
-  color: #b00020;
+.note b { color: var(--ink-2); font-weight: 600; }
+
+.note:first-child { border-top: 0; }
+
+/* A panel that is loading, idle or broken still says so — a blank panel is
+   indistinguishable from a bug. */
+.state {
+  padding: 16px 18px;
+  font-size: 13.5px;
+  color: var(--ink-3);
 }
+
+.state.error { color: var(--weak); }
+
+.error { color: var(--weak); }
 
 .link {
   background: none;
-  border: none;
+  border: 0;
   padding: 0;
   font: inherit;
-  color: #0645ad;
+  color: var(--accent);
   text-decoration: underline;
+  text-underline-offset: 2px;
   cursor: pointer;
 }
 
-.facts {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: 0.15rem 1rem;
-  max-width: 40rem;
-}
-
-.facts dt {
-  color: #555;
-}
-
-.facts dd {
-  margin: 0;
-  font-variant-numeric: tabular-nums;
+.backlink {
+  font-size: 13px;
+  margin-bottom: 14px;
+  display: inline-block;
 }
 
 footer {
-  padding: 0.75rem 1.5rem;
-  border-top: 1px solid #ddd;
-  font-size: 0.8rem;
-  color: #555;
+  border-top: 1px solid var(--rule-2);
+  background: var(--panel);
+  padding: 10px 26px;
+  font-size: 12.5px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- narrow: a rep may have this beside their TMS ---------- */
+
+@media (max-width: 1080px) {
+  .cols { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 980px) {
+  .topbar { flex-wrap: wrap; gap: 12px 18px; }
+  .wrap { padding: 16px 14px 60px; }
+
+  /* Only the tables that genuinely need the room get a floor, and only inside
+     a wrapper that scrolls on their behalf. */
+  .tablewrap { overflow-x: auto; }
+  .tablewrap table.loads { min-width: 900px; }
+  .tablewrap table.grid { min-width: 720px; }
+
+  .panel-bd { overflow-x: auto; }
+  svg.chart { min-width: 480px; }
+
+  .cgrid-hd { display: none; }
+
+  .crow,
+  .poolrow {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .cscore {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 0;
+  }
+
+  .cscore .track { flex: 1; margin: 0; }
+
+  .cells { gap: 3px; }
+
+  /* The column headers vanish at this width, so each cell names its own
+     signal — the bars are meaningless without knowing which is which. */
+  .cell {
+    padding-left: 5px;
+  }
+
+  .cell .label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cell .box { height: 48px; }
+
+  .facts { grid-template-columns: repeat(2, 1fr); }
+  .facts > div { border-bottom: 1px solid var(--rule); }
+
+  .creasons { gap: 6px 0; }
+  .creasons li { max-width: none; flex: 1 1 100%; }
+}
+
+/* At full width the per-cell label is redundant with the column header. */
+@media (min-width: 981px) {
+  .cell .label { display: none; }
 }

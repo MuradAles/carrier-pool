@@ -4,7 +4,7 @@
  *
  * Four things this panel is careful about:
  *
- * * **It labels every row.** The section header says it, and each card carries
+ * * **It labels every row.** The section header says it, and each row carries
  *   `source` from the payload. D4 wants a leak to be visible in the output
  *   rather than silent, and a pool row that ever turned up outside this panel
  *   would still be saying where it came from.
@@ -12,7 +12,8 @@
  *   the same 0-100 scale and they are lower bounds — every signal was scored at
  *   the weakest end of a band, and deadhead is structurally zero because truck
  *   position does not cross. The panel says so once, from `basis`, and the
- *   per-card reasons say it again line by line.
+ *   per-row reasons say it again line by line. It is drawn as a separate panel
+ *   below the ranking, never interleaved with it.
  * * **It renders bands as bands.** `20-49` is printed as `20-49`. Turning a
  *   band into a midpoint would be the browser inventing a number, which is the
  *   one thing this frontend is not allowed to do — and it would be inventing
@@ -47,26 +48,33 @@ export function PoolCarriersPanel({ brokerId, loadId }: Props) {
   );
 
   return (
-    <section>
-      <h3>Shared carrier pool</h3>
+    <section className="panel">
+      <div className="panel-hd">
+        <h3>Shared carrier pool</h3>
+        <span className="sub">
+          carriers you have never used · scored from bands, so these are lower bounds and are
+          not comparable with the ranking above
+        </span>
+        <span className="spacer" />
+        {optIn.state === "ready" && (
+          <OptInControl
+            optedIn={optIn.data.opted_in}
+            brokerId={brokerId}
+            onChanged={() => setGeneration((n) => n + 1)}
+          />
+        )}
+      </div>
 
-      {optIn.state === "loading" && <p className="note">Checking pool membership…</p>}
-      {optIn.state === "idle" && <p className="note">No broker selected.</p>}
+      {optIn.state === "loading" && <p className="state">Checking pool membership…</p>}
+      {optIn.state === "idle" && <p className="state">No broker selected.</p>}
       {optIn.state === "error" && (
-        <p className="error">Could not read the pool opt-in: {optIn.message}</p>
-      )}
-      {optIn.state === "ready" && (
-        <OptInControl
-          optedIn={optIn.data.opted_in}
-          brokerId={brokerId}
-          onChanged={() => setGeneration((n) => n + 1)}
-        />
+        <p className="state error">Could not read the pool opt-in: {optIn.message}</p>
       )}
 
-      {pool.state === "loading" && <p className="note">Loading pool carriers…</p>}
-      {pool.state === "idle" && <p className="note">No load selected.</p>}
+      {pool.state === "loading" && <p className="state">Loading pool carriers…</p>}
+      {pool.state === "idle" && <p className="state">No load selected.</p>}
       {pool.state === "error" && (
-        <p className="error">Could not read the shared pool: {pool.message}</p>
+        <p className="state error">Could not read the shared pool: {pool.message}</p>
       )}
       {pool.state === "ready" && <Section section={pool.data} />}
     </section>
@@ -74,9 +82,8 @@ export function PoolCarriersPanel({ brokerId, loadId }: Props) {
 }
 
 /**
- * Join or leave. The write is deliberately blunt and unstyled — the state it
- * reports comes back from the server, never from optimistic local state, so
- * what the button says is what the database holds.
+ * Join or leave. The state it reports comes back from the server, never from
+ * optimistic local state, so what the control says is what the database holds.
  */
 function OptInControl({
   optedIn,
@@ -104,100 +111,132 @@ function OptInControl({
   }
 
   return (
-    <p className="contact">
-      {optedIn ? "In the shared pool." : "Not in the shared pool (the default)."}{" "}
+    <span className="sub">
+      <span className={optedIn ? "chip good" : "chip mute"}>
+        {optedIn ? "In the pool" : "Not in the pool"}
+      </span>{" "}
       <button className="link" onClick={toggle} disabled={busy}>
         {busy ? "saving…" : optedIn ? "leave the pool" : "join the pool"}
       </button>
       {failure !== null && <span className="error"> {failure}</span>}
-    </p>
+    </span>
   );
 }
 
 function Section({ section }: { section: PoolSection }) {
   return (
     <>
-      {/* The finished sentence from the API, whichever case it describes:
-          not opted in, not an ACTIVE load, no pool lane, or a real answer. */}
-      <p className="provenance">{section.basis}</p>
+      {/* The finished sentence from the API, whichever case it describes: not
+          opted in, not an ACTIVE load, no pool lane, or a real answer. */}
+      <p className="provenance" style={{ margin: "18px" }}>
+        {section.basis}
+      </p>
 
-      <dl className="facts">
-        <Fact label="As of" value={section.as_of} />
-        <Fact label="In the pool" value={section.opted_in ? "yes" : "no"} />
-        <Fact label="Pool answered" value={section.eligible ? "yes" : "no"} />
-        <Fact label="Pool tier" value={section.tier ?? UNKNOWN} />
-        <Fact label="Pool lane" value={section.lane_key ?? UNKNOWN} />
-        <Fact
-          label="Equipment pool"
-          value={
-            section.equipment_pool === null
-              ? UNKNOWN
-              : equipmentFilter(section.equipment_pool)
-          }
+      <div style={{ padding: "0 18px 14px" }}>
+        {/* `opted_in` and `eligible` fail for different reasons, so they are
+            reported separately rather than collapsed into one "no". */}
+        <span className={section.opted_in ? "chip good" : "chip mute"}>
+          opted in: {section.opted_in ? "yes" : "no"}
+        </span>{" "}
+        <span className={section.eligible ? "chip good" : "chip mute"}>
+          pool answered: {section.eligible ? "yes" : "no"}
+        </span>{" "}
+        <span className="chip mute">as of {section.as_of}</span>{" "}
+        <span className="chip mute">{section.tier ?? "no pool tier"}</span>{" "}
+        <span className="chip mute">{section.lane_key ?? "no pool lane"}</span>{" "}
+        <span className="chip mute">
+          {section.equipment_pool === null
+            ? UNKNOWN
+            : equipmentFilter(section.equipment_pool)}
+        </span>
+      </div>
+
+      {section.carriers.map((scored) => (
+        <PoolRow
+          key={scored.carrier.mc_number}
+          scored={scored}
+          total={section.carriers.length}
         />
-        <Fact label="Pool carriers" value={String(section.carriers.length)} />
-      </dl>
-
-      {section.carriers.length > 0 && (
-        <div className="carriers">
-          {section.carriers.map((carrier) => (
-            <PoolCard key={carrier.carrier.mc_number} scored={carrier} />
-          ))}
-        </div>
-      )}
+      ))}
     </>
   );
 }
 
-function PoolCard({ scored }: { scored: PoolCarrierScore }) {
+function PoolRow({ scored, total }: { scored: PoolCarrierScore; total: number }) {
   const { carrier } = scored;
   return (
-    <article className="carrier">
-      <h4>
-        <span className="rank">#{scored.rank}</span> {carrier.name ?? `MC ${carrier.mc_number}`}{" "}
-        <span className="score">{fmtScore(scored.score)}</span>{" "}
-        {/* Per-row, not just per-section. A leak should say so wherever it lands. */}
-        <span className="flag" title="Known through the opt-in shared carrier pool, not from your own loads">
-          {scored.source}
-        </span>
-      </h4>
-      <p className="contact">
-        {carrier.phone ?? "no phone on file"} · MC {carrier.mc_number}
-        {carrier.dot_number !== null && <> · DOT {carrier.dot_number}</>}
-        {carrier.home_city !== null && (
-          <>
-            {" "}
-            · based in {carrier.home_city}
-            {carrier.home_state === null ? "" : `, ${carrier.home_state}`}
-          </>
-        )}
-      </p>
-      <ul className="reasons">
-        {scored.reasons.map((reason, index) => (
-          <li key={index}>{reason}</li>
-        ))}
-      </ul>
-      {/* Bands printed as bands, and the null on-time band printed as "not
-          delivered yet" rather than as a percentage nobody sent. */}
-      <p className="muted evidence">
-        Loads {carrier.load_band} · on-time{" "}
-        {carrier.on_time_band === null ? "none delivered yet" : carrier.on_time_band} ·{" "}
-        {carrier.active_recently ? "active recently" : "not active recently"} · runs{" "}
-        {carrier.equipment_operated.length === 0
-          ? UNKNOWN
-          : carrier.equipment_operated.map(equipment).join(", ")}{" "}
-        · known to {carrier.contributor_count} other broker
-        {carrier.contributor_count === 1 ? "" : "s"}
-      </p>
-    </article>
-  );
-}
+    <div className="poolrow">
+      <div className="cname">
+        <div className="rk">
+          {scored.rank} of {total}{" "}
+          {/* Per-row, not just per-section. A leak should say so wherever it lands. */}
+          <span
+            className="chip mute"
+            title="Known through the opt-in shared carrier pool, not from your own loads"
+          >
+            {scored.source}
+          </span>
+        </div>
+        <div className="nm">{carrier.name ?? `MC ${carrier.mc_number}`}</div>
+        <div className="meta mono">{carrier.phone ?? "no phone on file"}</div>
+        <div className="meta">
+          MC {carrier.mc_number}
+          {carrier.dot_number !== null && (
+            <>
+              <span className="sep">·</span>DOT {carrier.dot_number}
+            </>
+          )}
+          {carrier.home_city !== null && (
+            <>
+              <span className="sep">·</span>
+              {carrier.home_city}
+              {carrier.home_state === null ? "" : `, ${carrier.home_state}`}
+            </>
+          )}
+        </div>
+      </div>
 
-function Fact({ label, value }: { label: string; value: string }) {
-  return (
-    <>
-      <dt>{label}</dt>
-      <dd>{value}</dd>
-    </>
+      <div className="cscore">
+        <div className="v">{fmtScore(scored.score)}</div>
+        <div className="of">lower bound</div>
+        <div className="track">
+          <i style={{ width: `${Math.max(0, Math.min(100, scored.score))}%` }} />
+        </div>
+      </div>
+
+      <div>
+        {/* Bands printed as bands, and the null on-time band printed as "not
+            delivered yet" rather than as a percentage nobody sent. */}
+        <div className="bands">
+          <span className="band">
+            <b>loads</b>
+            {carrier.load_band}
+          </span>
+          <span className="band">
+            <b>on-time</b>
+            {carrier.on_time_band === null ? "none delivered yet" : carrier.on_time_band}
+          </span>
+          <span className="band">
+            <b>activity</b>
+            {carrier.active_recently ? "active recently" : "not active recently"}
+          </span>
+          <span className="band">
+            <b>runs</b>
+            {carrier.equipment_operated.length === 0
+              ? UNKNOWN
+              : carrier.equipment_operated.map(equipment).join(", ")}
+          </span>
+          <span className="band">
+            <b>brokers</b>
+            {carrier.contributor_count}
+          </span>
+        </div>
+        <ul className="creasons" style={{ borderTop: 0, margin: 0, padding: 0 }}>
+          {scored.reasons.map((reason, index) => (
+            <li key={index}>{reason}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }

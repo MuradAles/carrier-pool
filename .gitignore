@@ -14,3 +14,6 @@ dist/
 .DS_Store
 .idea/
 .vscode/
+
+# tooling scratch
+.playwright-mcp/

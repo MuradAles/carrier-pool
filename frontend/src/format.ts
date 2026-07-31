@@ -112,6 +112,44 @@ export function score(value: number): string {
   return SCORE.format(value);
 }
 
+/**
+ * A signal's normalized value, at three decimals — the precision the scoring
+ * functions are legible at (`8/(8+5) = 0.615`).
+ *
+ * Padding, not rounding: `Signal.value` arrives finished and this only fixes
+ * the number of characters so a column of them lines up.
+ */
+const SIGNAL_VALUE = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 3,
+  maximumFractionDigits: 3,
+});
+
+export function signalValue(value: number): string {
+  return SIGNAL_VALUE.format(value);
+}
+
+/** A signal's weight, as PRD section 8 writes it: `0.35`, `0.10`. */
+const TWO_DP = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+export function weight(value: number): string {
+  return TWO_DP.format(value);
+}
+
+/**
+ * A signal's contribution to the score — `Signal.contribution`, printed.
+ *
+ * Never `weight × value` computed here. The API already multiplied, and the
+ * whole point of the collapsible this appears in is that a rep can check the
+ * published score against its parts; a second multiplication in the browser is
+ * a second answer waiting to disagree (DECISIONS.md D19).
+ */
+export function contribution(value: number): string {
+  return TWO_DP.format(value);
+}
+
 /** A plain integer, for load counts. `0 loads` is a fact, not a gap. */
 export function loads(value: number): string {
   return `${DECIMAL.format(value)} ${value === 1 ? "load" : "loads"}`;
@@ -172,6 +210,19 @@ export function confidence(value: Confidence): string {
 export function place(location: StopLocation): string {
   const town = [location.city, location.state].filter(Boolean).join(", ");
   const label = location.zip ? `${town} ${location.zip}`.trim() : town;
+  return label || UNKNOWN;
+}
+
+/**
+ * Just the town: `Coppell, TX`, without the zip.
+ *
+ * The dense lane cell puts the human-readable end on one line and the zips and
+ * metros on the line below, so it needs the two halves separately. Same rule as
+ * `place`: built from the raw `city`/`state`, so a geo-null stop reads exactly
+ * like a resolved one.
+ */
+export function town(location: StopLocation): string {
+  const label = [location.city, location.state].filter(Boolean).join(", ");
   return label || UNKNOWN;
 }
 
