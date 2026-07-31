@@ -362,6 +362,28 @@ command produced the failures above, and `pytest tests/integration -q` alone und
 same load gave `16 failed, 11 passed, 35 errors`. So "it passed for me once with the stack
 up" is not evidence the combination is safe — it means nothing was talking to the API.
 
+**And it can cost you the backend, not just the data.** If the backend happens to *boot*
+while the suite is running — a `--reload` restart after an edit, or a `docker compose
+restart` — the lifespan loses the same race and the process exits:
+
+```
+$ ./.venv/bin/python -m pytest tests/integration -q &   # then restart the backend
+psycopg.errors.DeadlockDetected: deadlock detected
+DETAIL:  Process 10412 waits for AccessExclusiveLock on relation 251774 of database
+         16384; blocked by process 10397.
+CONTEXT: SQL statement "ALTER TABLE sync_files ENABLE ROW LEVEL SECURITY"
+ERROR:    Application startup failed. Exiting.
+
+$ curl -s -o /dev/null -w "%{http_code}\n" localhost:8000/api/health
+000        # nothing listening
+```
+
+The suite itself passed `57 passed` in that run — so the only visible symptom is that the
+API stopped answering. The same collision has also been seen killing startup inside the
+ingest rather than the schema step, on a `lane_stats` `UniqueViolation`. Either way,
+`docker compose start backend` (or `restart`) with no test running brings it back and
+re-ingests. Stopping the backend first avoids all of it.
+
 ### The count
 
 On a quiet machine with the backend container stopped, run twice back to back:
@@ -557,6 +579,7 @@ bytes, so it is a no-op — but there is no reason to do it.
 | `/api/health` reports fewer than 132 sync files | `./data:/data:ro` not mounted | check you ran compose from the repo root |
 | UI lists no loads, health is `ok` | you ran the integration suite; the tenant tables are truncated | `curl -X POST localhost:8000/api/admin/ingest` |
 | `psycopg.errors.DeadlockDetected` during pytest | the backend container is serving while the suite truncates | `docker compose stop backend`, then re-run — §6 |
+| API stops answering entirely (`curl` gets nothing), `Application startup failed. Exiting.` in the logs | the backend booted while pytest was running against `carrier_pool` | `docker compose start backend` with no test running — §6 |
 | pytest fails once, passes on an immediate re-run | the suite's first-run race after the database changed under it — a known defect | re-run before believing it; §6 |
 | `psycopg.errors.InternalError_: tuple concurrently updated` | two pytest invocations at once | run them one at a time |
 | 88 tests "skipped" | pytest run inside the container | run from the host |
