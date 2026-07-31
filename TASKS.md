@@ -204,12 +204,12 @@ it ships as the written design in `DECISIONS.md` and nothing else changes.
 
 | # | Task | Agent | Depends | Done when |
 |---|---|---|---|---|
-| [ ] S1 | Opt-in flag per broker | builder | X2 | Off by default; no behavior change when off |
-| [ ] S2 | Carrier identity resolution across brokers on MC/DOT | builder | S1 | Same carrier recognized across TMSs |
-| [ ] S3 | Pool projection that **cannot select rate columns** — separate read path, not a filter | builder | S2 | Structurally incapable of returning money |
-| [ ] S4 | Pool carriers merged into rankings, visibly labeled, reasons from shareable fields only | builder | S3 | A leak would be visible in output |
-| [ ] S5 | Leak tests: every shareable field present, every forbidden field absent | integration-tester | S4 | Asserts field-by-field |
-| [ ] S6 | `breaker` attacks the boundary specifically | breaker | S5 | Attempts documented, successful or not |
+| [x] S1 | Opt-in flag per broker | builder | X2 | `pool_opt_in`; no row is the default. Opted-out behaviour asserted **byte-identical** by exact dict equality on real rankings and estimates |
+| [x] S2 | Carrier identity resolution across brokers on MC/DOT | builder | S1 | Matched in the projection, trimmed and upper-cased once. Self-exclusion is **global by MC**, not lane-scoped: own-MC ∩ pool-MC is empty for all three brokers |
+| [x] S3 | Pool projection that **cannot select rate columns** — separate read path, not a filter | builder | S2 | `carrier_pool_reader` has column grants excluding every money column and no grant on `loads` at all. `SELECT carrier_rate FROM loads`, `avg_rate_per_mile`, and a bare `SELECT *` all return **permission denied**. A `pg_depend` test proves the view never even *reads* a money column |
+| [x] S4 | Pool carriers merged into rankings, visibly labeled, reasons from shareable fields only | builder | S3 | On-time crosses as a **band**, not a ratio — "18 of 22" is a fingerprint identifying one carrier under one broker. `pool_audit` records every read, append-only |
+| [x] S5 | Leak tests: every shareable field present, every forbidden field absent | integration-tester | S4 | 43 tests, 454→497. Field-by-field both directions, bucketing boundaries, and a join-path attack (`pool_carrier_lane → carriers → loads`) proving RLS still confines it — the one way MC/DOT could have become a tenant leak |
+| [x] S6 | Attack the boundary specifically | breaker → lead | S5 | `breaker` was cut short by a spend limit; run by the lead instead. **D26**: five attacks failed, one finding — opting out is disclosive to an observer, resolving D17's "about one bit" of source anonymity to certainty. Money never moves; the bands hold |
 
 ---
 

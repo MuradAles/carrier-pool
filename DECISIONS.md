@@ -1075,6 +1075,52 @@ in this file as an accepted one.
 
 ---
 
+## D26 — The pool boundary, attacked (S6)
+
+`breaker` was cut short by a spend limit, so I ran S6 myself. Six attacks against a live
+three-broker pool with everyone opted in.
+
+**Failed to break anything:**
+
+- **Reading money through the pool role.** Holding `carrier_pool_reader` directly:
+  `SELECT carrier_rate FROM loads` → *permission denied for table loads*;
+  `SELECT avg_rate_per_mile FROM carrier_stats` → *permission denied*;
+  `SELECT *` from `carrier_stats` → *permission denied*, so the forgotten-star case fails closed
+  rather than widening. `loads` is not granted to that role at all.
+- **Reaching the view with the pool role alone.** `SELECT … FROM pool_carrier_lane` still raises
+  *"no broker bound"*. The pool sits **on top of** invariant 1, not beside it: the pool role and
+  a bound broker are both required, and neither suffices.
+- **Finding an exact number in the payload.** Every field is banded or categorical —
+  `load_band`, `on_time_band`, `active_recently`, `contributor_count`, `equipment_operated`. No
+  count, no ratio, no date, no load id.
+- **Self-exclusion.** Own-MC ∩ pool-MC is empty for all three brokers (12/13, 12/13, 12/12).
+- **Pinning a banded value.** MC 812445 on `METRO DFW→HOU DRY_VAN` is truly `broker_b, 12 loads,
+  12/12 on-time`. Published: `10-19` and `90+`. Ten candidates for the count, and a perfect
+  record indistinguishable from 90%.
+
+**One finding, and it is about source anonymity rather than money.** D17 says a contributor's
+identity is worth "about one bit" at three brokers. It can be resolved to certainty by
+observation. Counting `broker_a`'s pool rows while `broker_b`'s opt-in changes:
+
+```
+all three opted in           45 rows
+broker_b opted out           24 rows
+broker_b opted back in       45 rows
+```
+
+So 21 rows are attributable to `broker_b` exactly. A broker cannot toggle another's flag — only
+`broker_b` controls `broker_b` — so this is passive observation across a change the contributor
+made themselves, not an active attack. What it yields is *which* broker runs a carrier, never
+*how often* or *at what price*: the bands do not move. Still, "about one bit" understates it,
+and the honest statement is that **opting out is itself disclosive to anyone watching.**
+
+**Not fixed.** Suppressing it would mean withholding pool data for a period after any opt-in
+change, which trades a real feature against an attacker who must already be an opted-in
+competitor watching a specific carrier across a specific window. Recorded instead, and D17's
+"about one bit" is corrected by this entry rather than left to stand.
+
+---
+
 ## Honest limitations
 
 Everything above records a decision. This records what those decisions cost, what is broken and
