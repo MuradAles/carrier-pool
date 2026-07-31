@@ -1172,6 +1172,58 @@ this for itself — a database per pid, swept on exit — after the failure prod
 run as three separate invocations. It is a harness defect of exactly the kind this project
 treats as real when it appears in product code.
 
+**And it is worse than "two invocations collide" — there are two mechanisms, measured
+separately.**
+
+*Concurrency amplifies it.* Sampling `pgrep -f "m pytest"` during three back-to-back runs:
+
+| peak concurrent pytest processes | result |
+|---|---|
+| 2 | **454 passed** |
+| 7 | 14 failed, 409 passed, 34 errors |
+| 8 | 9 failed, 410 passed, 38 errors |
+
+The lock graph confirms it — `Process 2483 waits for AccessExclusiveLock on relation 16394;
+blocked by process 2606. Process 2606 waits for RowExclusiveLock on relation 16411; blocked by
+2483` — a `TRUNCATE` against another run's in-flight ingest, every party connecting as
+`carrier_pool_app` from the host. The same suite against a *private* database passes 454
+deterministically.
+
+*But concurrency is not the whole cause.* Three consecutive invocations of the identical
+command, verified beforehand at **zero** running pytest processes and with the backend container
+stopped:
+
+```
+run 1:  3 failed, 447 passed, 4 errors
+run 2:  454 passed
+run 3:  397 passed, 57 errors      <- the entire integration suite failed at setup
+```
+
+Back-to-back sequential runs still diverge, so state or connections outliving a run affect the
+next one. An earlier measurement of the integration suite alone gave `33 passed, 24 errors` then
+`57 passed` twice.
+
+The failures are not all errors. Alongside `DeadlockDetected` and a `ForeignKeyViolation` on
+`sync_events_sync_file_id_fkey`, two runs produced **wrong-value assertions** — `assert 9 == 12`
+on a lane's load count, and a top carrier of `IRON HORSE FLATBED CO` where `ALAMO CHILL
+TRANSPORT` was expected. That is the dangerous shape: an error is obviously infrastructure, a
+wrong number looks like a product regression. Anyone bisecting a real defect against this suite
+can be sent somewhere false by a run that had nothing to do with their change.
+
+**A running backend breaks it too**, which matters because it is the reviewer's default path:
+`docker compose up`, then run the tests, gives `13 failed, 412 passed, 29 errors` with
+`DeadlockDetected` — the suite truncates `carrier_pool` while the live container reads it.
+`docker compose stop backend` clears it, and `RUNNING.md` §6 says so before the invocation
+rather than after.
+
+**Why it is documented rather than fixed.** The fix is the one the adversarial suite already
+demonstrates — a database per pytest session, created and swept by the fixture, so no suite
+shares mutable state with any other or with a running app. That is maybe an hour, and it is the
+first thing to do next. Doing it at the end of a long session, on the harness that certifies
+everything else, is how a green suite starts certifying nothing. The product code is unaffected:
+every defect above is in the test fixtures, and the 88-test adversarial suite and the 287 unit
+tests are deterministic across repeated runs.
+
 **Four findings characterised and left unmarked.**
 
 - **FINDING 11.** `broker_session` nested inside an outer transaction becomes a savepoint, and

@@ -15,6 +15,7 @@ failure instead of depending on it.
 
 import logging
 import os
+import time
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -32,17 +33,45 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", "../data"))
 log = logging.getLogger(__name__)
 
 
+def _log_through_uvicorn() -> None:
+    """Give the ``app`` logger uvicorn's handler, once, at startup.
+
+    uvicorn configures its own loggers and leaves the root logger alone, so an
+    ``app.*`` record has nowhere to go and the lifespan runs silent — on a clean
+    volume that is minutes of nothing between "Waiting for application startup."
+    and "Application startup complete.", which reads exactly like a hang.
+    Borrowing the handler rather than calling ``basicConfig`` keeps these lines
+    in uvicorn's format and on its stream, so they interleave with its own
+    output in order. Under pytest there is no uvicorn and no handler to borrow,
+    which is why this is a no-op there rather than noise on every test.
+    """
+    # ``uvicorn``, not ``uvicorn.error``: the handler lives on the parent and the
+    # error logger reaches it by propagation, so borrowing from the child copies
+    # an empty list and prints nothing.
+    source = logging.getLogger("uvicorn")
+    target = logging.getLogger(__package__)
+    if source.handlers and not target.handlers:
+        target.handlers = source.handlers
+        target.setLevel(source.getEffectiveLevel())
+        target.propagate = False
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    _log_through_uvicorn()
+    started = time.monotonic()
     # The one place the admin credential is used: applying the schema. Every
     # request afterwards runs on DATABASE_URL, which cannot bypass RLS.
+    log.info("startup: applying database schema")
     with connect_admin() as conn:
         bootstrap(conn)
+    log.info("startup: schema ready in %.1fs", time.monotonic() - started)
     # Ingestion runs as the unprivileged app role like everything else, so a bug
-    # here cannot cross a tenant boundary either.
+    # here cannot cross a tenant boundary either. It reports its own progress:
+    # it is the part of startup long enough to be mistaken for a stall.
     with connect() as conn:
-        report = ingest_all(conn, DATA_DIR)
-    log.info("startup ingest: %s", report.summary())
+        ingest_all(conn, DATA_DIR)
+    log.info("startup complete in %.1fs", time.monotonic() - started)
     yield
 
 

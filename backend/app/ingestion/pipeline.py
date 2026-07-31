@@ -54,6 +54,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -78,6 +79,11 @@ log = logging.getLogger(__name__)
 #: Where the three TMS directories live. Overridable for tests and for the
 #: container, whose working directory differs from a developer's.
 DEFAULT_DATA_ROOT = Path(os.environ.get("DATA_DIR", "../data"))
+
+#: How often a run says how far it has got. Counted in files *ingested*, not
+#: files seen, so the idempotent re-run — every file already present, no work
+#: done — stays silent instead of logging progress on every restart.
+_PROGRESS_EVERY = 25
 
 
 @dataclass(frozen=True, slots=True)
@@ -137,11 +143,37 @@ def ingest_all(
     it safe to run on every container start (D8) and what makes the manual replay
     endpoint harmless.
     """
+    started = time.monotonic()
     brokers = list_brokers(conn)
+    files = discover_sync_files(Path(data_root), brokers)
+    log.info(
+        "ingest: %d sync files from %d brokers under %s",
+        len(files),
+        len(brokers),
+        data_root,
+    )
     report = IngestionReport()
-    for discovered in discover_sync_files(Path(data_root), brokers):
-        report.record(ingest_sync_file(conn, discovered))
-    log.info("ingestion complete: %s", report.summary())
+    for discovered in files:
+        outcome = ingest_sync_file(conn, discovered)
+        report.record(outcome)
+        # Gated on this file having been ingested, not just on the running
+        # total: otherwise a multiple-of-N total re-logs for every skipped file
+        # that follows it.
+        if outcome.ingested and report.files_ingested % _PROGRESS_EVERY == 0:
+            log.info(
+                "ingest: %d/%d files (%d ingested, %d already present, %.1fs)",
+                report.files_discovered,
+                len(files),
+                report.files_ingested,
+                report.files_skipped,
+                time.monotonic() - started,
+            )
+    log.info(
+        "ingest complete: %d files in %.1fs; %s",
+        len(files),
+        time.monotonic() - started,
+        report.summary(),
+    )
     return report
 
 
